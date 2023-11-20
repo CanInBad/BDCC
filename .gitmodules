@@ -1,0 +1,3 @@
+[submodule "Modules/RNGPerks"]
+	path = Modules/RNGPerks
+	url = https://github.com/CanInBad/RNGPerks
