@@ -11,3 +11,4 @@ logs/
 
 *.pck
 .mono/**
+*.ai

@@ -244,6 +244,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Player/FluidProduction/CumProduction.gd"
 }, {
+"base": "FluidProduction",
+"class": "CumProductionNew",
+"language": "GDScript",
+"path": "res://Modules/PointBurnerCIB/Overwrite/CumProductionNew.gd"
+}, {
 "base": "ImmediateGeometry",
 "class": "CurveRenderer",
 "language": "GDScript",
@@ -1192,6 +1197,7 @@ _global_script_class_icons={
 "ComputerBase": "",
 "ContentType": "",
 "CumProduction": "",
+"CumProductionNew": "",
 "CurveRenderer": "",
 "CycleStage": "",
 "DamageType": "",
