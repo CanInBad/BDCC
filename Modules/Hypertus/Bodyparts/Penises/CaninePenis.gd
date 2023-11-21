@@ -1,11 +1,11 @@
 extends BodypartPenis
 
 func _init():
-	visibleName = "hyperable barbed penis"
-	id = "felinepenishyperable"
+	visibleName = "hyperable knotted penis"
+	id = "caninepenishyperable"
 	pickedGColor = Color.red
 	pickedBColor = Color.darkred
-	var newCumProClass = load("res://Modules/PointBurnerCIB/Misc/CumProductionModi.gd")
+	var newCumProClass = load("res://Modules/Hypertus/Misc/CumProductionModi.gd")
 	fluidProduction = newCumProClass.new()
 	fluidProduction.bodypart = weakref(self)
 
@@ -13,14 +13,14 @@ func getCompatibleSpecies():
 	return [Species.Any]
 
 func getLewdAdjective():
-	return RNG.pick(["barbed", "feline-shaped", "feline"])
+	return RNG.pick(["knotted", "canine-shaped", "canine"])
 
 func getDoll3DScene():
-	return "res://Player/Player3D/Parts/Penis/FelinePenis/FelinePenis.tscn"
+	return "res://Player/Player3D/Parts/Penis/CaninePenis/CaninePenis.tscn"
 
 func getTraits():
 	return {
-		PartTrait.PenisBarbs: true,
+		PartTrait.PenisKnot: true,
 		"PartTrait.Hyperable": true,
 	}
 

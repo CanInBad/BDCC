@@ -6,7 +6,7 @@ func _init():
 	lengthCM = 26
 	pickedGColor = Color.red
 	pickedBColor = Color.darkred
-	var newCumProClass = load("res://Modules/PointBurnerCIB/Misc/CumProductionModi.gd")
+	var newCumProClass = load("res://Modules/Hypertus/Misc/CumProductionModi.gd")
 	fluidProduction = newCumProClass.new()
 	fluidProduction.bodypart = weakref(self)
 

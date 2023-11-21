@@ -1,33 +1,34 @@
 extends PerkBase
 
 func _init():
-	id = "Perk.CumProduBuff1"
+	id = "Perk.CumProduBuff3"
 	skillGroup = Skill.CumLover
 
 func getVisibleName():
-	return "Hyperspermia Ⅰ"
+	return "Hyperspermia Ⅲ"
 
 func getVisibleDescription():
-	return "Your balls fills up faster by 30%"
+	return "Your balls fills up faster by 120%"
 
 func getMoreDescription():
-	return "You won't believe it, flat increase by 30%???? crazy."
+	return "Damn, bet you can end the world hunger at this point."
 
 func getRequiredPerks():
-	return [Perk.CumStud, Perk.CumStudV2]
+	return [Perk.CumStud, Perk.CumStudV2, "Perk.CumProduBuff1", "Perk.CumProduBuff2"]
 
 func getSkillTier():
 	return 2
 
 func getCost():
-	return 4
+	return 16
 
 func getPicture():
-	return "res://Modules/PointBurnerCIB/Images/Perks/CumProduBuff1.png"
+	return "res://Modules/Hypertus/Images/Perks/CumProduBuff2.png"
 
 func getBuffs():
 	return [
-		buff("Buff.CumPenisProductionBuff", [30])
+		buff("Buff.CumPenisProductionBuff", [120]),
+		buff("Buff.CumPenisCapacityBuff", [100]),
 	]
 
 func hiddenWhenLocked() -> bool:

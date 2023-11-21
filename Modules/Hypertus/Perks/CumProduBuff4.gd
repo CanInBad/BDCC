@@ -29,7 +29,7 @@ func getCost():
 	return 32
 
 func getPicture():
-	return "res://Modules/PointBurnerCIB/Images/Perks/CumProduBuff2.png"
+	return "res://Modules/Hypertus/Images/Perks/CumProduBuff2.png"
 
 func getBuffs():
 	return [

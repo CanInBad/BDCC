@@ -1,11 +1,11 @@
 extends BodypartBreasts
-var breastSizeModClass = load("res://Modules/PointBurnerCIB/Misc/BreastsSizeModi.gd")
+var breastSizeModClass = load("res://Modules/Hypertus/Misc/BreastsSizeModi.gd")
 
 func _init():
 	visibleName = "hyperable breasts"
 	id = "breastshyperable"
 	size = breastSizeModClass.G
-	var lactationModClass = load("res://Modules/PointBurnerCIB/Misc/LactationMod.gd")
+	var lactationModClass = load("res://Modules/Hypertus/Misc/LactationMod.gd")
 	fluidProduction = lactationModClass.new()
 	fluidProduction.bodypart = weakref(self)
 

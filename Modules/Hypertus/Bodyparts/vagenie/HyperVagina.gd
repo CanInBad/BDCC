@@ -3,7 +3,7 @@ extends BodypartVagina
 func _init():
 	visibleName = "hyperable vagina"
 	id = "vaginahyperable"
-	var hyperVagOrificeClass = load("res://Modules/PointBurnerCIB/Bodyparts/Orifices/HyperVaginaOrifice.gd")
+	var hyperVagOrificeClass = load("res://Modules/Hypertus/Bodyparts/Orifices/HyperVaginaOrifice.gd")
 	orifice = hyperVagOrificeClass.new()
 	orifice.bodypart = weakref(self)
 

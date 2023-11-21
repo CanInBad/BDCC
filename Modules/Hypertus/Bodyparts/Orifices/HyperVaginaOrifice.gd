@@ -24,3 +24,9 @@ func getBaseResistance() -> float:
 	if(pc != null):
 		multi += pc.getCustomAttribute("BuffAttribute.HyperVaginaResistance")
 	return 2.5 * multi
+
+func getOverstuffedSpill() -> float:
+	var pc = bodypart.get_ref().getCharacter()
+	if pc.hasPerk("Perk.HyperStopOverfill"):
+		return 0.0
+	return 20.0

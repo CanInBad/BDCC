@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crit.png-5bf6a18edefeb79bae8a3d4940d94adf.stex"
+path="res://.import/CumProduBuff2.png-061954b8c63bce11c96431ca6a0f63ac.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Modules/PointBurnerCIB/Images/Perks/crit.png"
-dest_files=[ "res://.import/crit.png-5bf6a18edefeb79bae8a3d4940d94adf.stex" ]
+source_file="res://Modules/Hypertus/Images/Perks/CumProduBuff2.png"
+dest_files=[ "res://.import/CumProduBuff2.png-061954b8c63bce11c96431ca6a0f63ac.stex" ]
 
 [params]
 
