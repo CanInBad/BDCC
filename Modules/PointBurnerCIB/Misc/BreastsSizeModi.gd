@@ -91,16 +91,15 @@ static func breastSizeToString(bsize:int):
 		V:"V",
 		X:"X",
 		Y:"Y",
-		Z:"Z"
+		Z:"Z",
+		
 	}
-	#print(bsize," ",names[bsize])
+	# print(bsize," ",names[bsize])
 	if(names.has(bsize)):
-		
-		
 		return names[bsize]
 	if(bsize < -1):
 		return "Forever flat"
-	return "O+"
+	return "Z+" #this shouldn't happen right
 
 static func breastSizeToCupString(bsize:int): # so I have been googling and 
 	var cupName = breastSizeToString(bsize)   # https://en.wikipedia.org/wiki/Bra_size#Manufacturer_design_standards

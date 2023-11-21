@@ -3,10 +3,10 @@ extends BodypartPenis
 func _init():
 	visibleName = "hyperable flared penis"
 	id = "equinepenishyperable"
-	lengthCM = 22
+	lengthCM = 26
 	pickedGColor = Color.red
 	pickedBColor = Color.darkred
-	var newCumProClass = load("res://Modules/PointBurnerCIB/Overwrite/CumProductionModi.gd")
+	var newCumProClass = load("res://Modules/PointBurnerCIB/Misc/CumProductionModi.gd")
 	fluidProduction = newCumProClass.new()
 	fluidProduction.bodypart = weakref(self)
 
@@ -26,17 +26,17 @@ func getPickableAttributes():
 		"textButton": "Length",
 		"buttonDesc": "Pick the cock's length",
 		"options": [
-			[5*2, Util.cmToString(5*2), "Pick this length"],
-			[8*2, Util.cmToString(8*2), "Pick this length"],
-			[10*2, Util.cmToString(10*2), "Pick this length"],
-			[13*2, Util.cmToString(13*2), "Pick this length"],
-			[15*2, Util.cmToString(15*2), "Pick this length"],
-			[18*2, Util.cmToString(18*2), "Pick this length"],
-			[22*2, Util.cmToString(22*2), "Pick this length"],
-			[25*2, Util.cmToString(25*2), "Pick this length"],
-			[30*2, Util.cmToString(30*2), "Pick this length"],
-			[40*2, Util.cmToString(40*2), "Pick this length"],
-			[50*2, Util.cmToString(50*2), "Pick this length"],
+			[5*2, Util.cmToString(8*2), "Pick this length"],
+			[8*2, Util.cmToString(10*2), "Pick this length"],
+			[10*2, Util.cmToString(13*2), "Pick this length"],
+			[13*2, Util.cmToString(15*2), "Pick this length"],
+			[15*2, Util.cmToString(18*2), "Pick this length"],
+			[18*2, Util.cmToString(22*2), "Pick this length"],
+			[22*2, Util.cmToString(25*2), "Pick this length"],
+			[25*2, Util.cmToString(30*2), "Pick this length"],
+			[30*2, Util.cmToString(40*2), "Pick this length"],
+			[40*2, Util.cmToString(50*2), "Pick this length"],
+			[50*2, Util.cmToString(60*2), "Pick this length"],
 		]
 	}
 	return result
@@ -50,6 +50,15 @@ func getTraits():
 		PartTrait.PenisFlare: true,
 		"PartTrait.Hyperable": true,
 	}
+
+func getAttributesText():
+	var curAttribute = .getAttributesText()
+	curAttribute.append(["Bluespace anomalies", "Yes"])
+	return curAttribute
+	# return [
+	# 	["Penis length", Util.cmToString(lengthCM)],
+	# 	["Balls scale", str(Util.roundF(ballsScale*100.0, 1))+"%"],
+	# ]
 
 func generateDataFor(_dynamicCharacter):
 	lengthCM = RNG.randf_range(20.0, 30.0)

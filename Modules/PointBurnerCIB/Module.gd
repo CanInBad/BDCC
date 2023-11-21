@@ -20,12 +20,13 @@ func _init():
 		"res://Modules/PointBurnerCIB/Buffs/LustDamageBuffRNG.gd",
 	]
 	bodyparts = [
-		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/EquinePenis.gd",
-		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/CaninePenis.gd",
-		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/DragonPenis.gd",
-		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/FelinePenis.gd",
-		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/HumanPenis.gd",
-		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/bob/HyperableBreasts.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/Penises/EquinePenis.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/Penises/CaninePenis.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/Penises/DragonPenis.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/Penises/FelinePenis.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/Penises/HumanPenis.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/bob/HyperableBreasts.gd",
+		# "res://Modules/PointBurnerCIB/old/Bodyparts/vagenie/HyperVagina.gd",
 	]
-	print(GlobalRegistry.getBodypartsIdsBySlot(BodypartSlot.Penis))
+	# print(GlobalRegistry.getBodypartsIdsBySlot(BodypartSlot.Penis))
 	# changed res://Player/Bodyparts/BodypartPenis.gd!!!!!
