@@ -19,4 +19,12 @@ func _init():
 		"res://Modules/PointBurnerCIB/Buffs/PhysicalDamageBuffRNG.gd",
 		"res://Modules/PointBurnerCIB/Buffs/LustDamageBuffRNG.gd",
 	]
+	bodyparts = [
+		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/EquinePenis.gd",
+		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/CaninePenis.gd",
+		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/DragonPenis.gd",
+		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/FelinePenis.gd",
+		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/HumanPenis.gd",
+	
+	]
 	# changed res://Player/Bodyparts/BodypartPenis.gd!!!!!

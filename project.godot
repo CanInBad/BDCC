@@ -1487,6 +1487,7 @@ gameui_menu={
 [mono]
 
 project/assembly_name="BDCC"
+export/export_assemblies_inside_pck=false
 
 [physics]
 
