@@ -2,7 +2,7 @@ extends Orifice
 # class_name VaginaOrifice
 
 func _init():
-	orificeType = "OrificeType.HyperVagina"
+	orificeType = OrificeType.Vagina
 	
 func getCapacity() -> float:
 	var multi = 1.0
