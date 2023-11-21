@@ -152,7 +152,7 @@ _global_script_classes=[ {
 "base": "Object",
 "class": "BreastsSize",
 "language": "GDScript",
-"path": "res://Modules/PointBurnerCIB/Overwrite/BreastsSizeMod.gd"
+"path": "res://Game/Gameplay/BreastsSize.gd"
 }, {
 "base": "Object",
 "class": "Buff",
