@@ -16,6 +16,12 @@ func getMoreDescription():
 func getRequiredPerks():
 	return [Perk.CumStud, Perk.CumStudV2, "Perk.CumProduBuff1", "Perk.CumProduBuff2", "Perk.CumProduBuff3"]
 
+func hiddenWhenLocked() -> bool:
+	var penisPartHas = GM.pc.bodypartHasTrait(BodypartSlot.Penis,"PartTrait.Hyperable")
+	if !penisPartHas:
+		return true
+	return false
+
 func getSkillTier():
 	return 2
 

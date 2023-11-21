@@ -1,11 +1,12 @@
 extends BodypartPenis
 
 func _init():
-	visibleName = "dragon penis"
-	id = "dragonpenis"
+	visibleName = "hyperable dragon penis"
+	id = "dragonpenismhyper"
 	pickedGColor = Color.red
 	pickedBColor = Color.darkred
-	fluidProduction = CumProductionNew.new()
+	var newCumProClass = load("res://Modules/PointBurnerCIB/Overwrite/CumProductionModi.gd")
+	fluidProduction = newCumProClass.new()
 	fluidProduction.bodypart = weakref(self)
 
 func getCompatibleSpecies():
@@ -21,4 +22,5 @@ func getTraits():
 	return {
 		PartTrait.PenisKnot: true,
 		PartTrait.PenisRidges: true,
+		"PartTrait.Hyperable": true,
 	}

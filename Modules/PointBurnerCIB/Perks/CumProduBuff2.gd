@@ -30,3 +30,9 @@ func getBuffs():
 		buff("Buff.CumPenisProductionBuff", [50]),
 		buff("Buff.CumPenisCapacityBuff", [50])
 	]
+
+func hiddenWhenLocked() -> bool:
+	var penisPartHas = GM.pc.bodypartHasTrait(BodypartSlot.Penis,"PartTrait.Hyperable")
+	if !penisPartHas:
+		return true
+	return false

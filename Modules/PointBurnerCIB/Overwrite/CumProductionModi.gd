@@ -1,5 +1,5 @@
 extends FluidProduction
-class_name CumProductionNew
+# class_name CumProductionNew # 😤
 
 func getCapacity() -> float:
 	var penis = getBodypart()

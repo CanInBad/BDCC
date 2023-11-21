@@ -25,6 +25,7 @@ func _init():
 		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/DragonPenis.gd",
 		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/FelinePenis.gd",
 		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/Penises/HumanPenis.gd",
-	
+		"res://Modules/PointBurnerCIB/Overwrite/Bodyparts/bob/HyperableBreasts.gd",
 	]
+	print(GlobalRegistry.getBodypartsIdsBySlot(BodypartSlot.Penis))
 	# changed res://Player/Bodyparts/BodypartPenis.gd!!!!!

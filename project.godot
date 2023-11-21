@@ -152,7 +152,7 @@ _global_script_classes=[ {
 "base": "Object",
 "class": "BreastsSize",
 "language": "GDScript",
-"path": "res://Game/Gameplay/BreastsSize.gd"
+"path": "res://Modules/PointBurnerCIB/Overwrite/BreastsSizeMod.gd"
 }, {
 "base": "Object",
 "class": "Buff",
@@ -243,11 +243,6 @@ _global_script_classes=[ {
 "class": "CumProduction",
 "language": "GDScript",
 "path": "res://Player/FluidProduction/CumProduction.gd"
-}, {
-"base": "FluidProduction",
-"class": "CumProductionNew",
-"language": "GDScript",
-"path": "res://Modules/PointBurnerCIB/Overwrite/CumProductionNew.gd"
 }, {
 "base": "ImmediateGeometry",
 "class": "CurveRenderer",
@@ -1197,7 +1192,6 @@ _global_script_class_icons={
 "ComputerBase": "",
 "ContentType": "",
 "CumProduction": "",
-"CumProductionNew": "",
 "CurveRenderer": "",
 "CycleStage": "",
 "DamageType": "",
