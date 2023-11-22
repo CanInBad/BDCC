@@ -40,6 +40,7 @@ func _init():
 	]
 	events = [
 		"res://Modules/Z_Hypertus/Events/CustomizationButton.gd",
+		"res://Modules/Z_Hypertus/Events/NewDayGainHyperXP.gd",
 	]
 	skills = [
 		"res://Modules/Z_Hypertus/Skill/HyperSkill.gd",
