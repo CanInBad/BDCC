@@ -20,3 +20,6 @@ func getTraits():
 	return {
 		"PartTrait.Hyperable": true,
 	}
+
+func getCharacterCreatorDesc():
+	return "required to experience the hyper mod"

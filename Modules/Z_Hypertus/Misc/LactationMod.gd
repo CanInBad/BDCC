@@ -101,12 +101,12 @@ func processTime(seconds: int):
 			lactationProgress = 0.0
 		
 func getProductionSpeedPerHour() -> float:
-	if(!shouldProduce()):
+	var pc = getCharacter()
+	if(!shouldProduce() or !pc.hasPerk("Perk.MilkStopNonProdDrain")):
 		return -5.0
 		
 	var mult = 1.0
 		
-	var pc = getCharacter()
 	if(pc != null):
 		mult += pc.getCustomAttribute(BuffAttribute.BreastsMilkProduction)
 		

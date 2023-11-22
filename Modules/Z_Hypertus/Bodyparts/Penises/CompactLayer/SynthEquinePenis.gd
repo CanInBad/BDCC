@@ -1,20 +1,20 @@
 extends "res://Modules/Z_Hypertus/Misc/ModBodypartPenis.gd"
 
 func _init():
-	visibleName = "hyperable knotted horse penis"
-	id = "knottedequinepenishyperable"
+	visibleName = "hyperable synth horsecock"
+	id = "synthequinepenishyperable"
 	lengthCM = 22
-	pickedGColor = Color.red
-	pickedBColor = Color.darkred
+	pickedGColor = Color.gray
+	pickedBColor = Color.cyan
 
 func getCompatibleSpecies():
 	return [Species.Any]
 
 func getLewdAdjective():
-	return RNG.pick(["flared", "horse-shaped", "horse", "knotted"])
+	return RNG.pick(["flared", "synthetic", "horse"])
 
 func getDoll3DScene():
-	return "res://Modules/Knotted Horsecock/Bodyparts/KnottedEquinePenis.tscn"
+	return "res://Modules/SynthSpecies/Bodyparts/SynthPenisHorse/SynthEquinePenis.tscn"
 
 func getPenisScale():
 	return max(0.1 + (lengthCM - 5.0) / 21.0, 0.3)
@@ -22,7 +22,6 @@ func getPenisScale():
 func getTraits():
 	return {
 		PartTrait.PenisFlare: true,
-		PartTrait.PenisKnot: true,
 		"PartTrait.Hyperable": true,
 	}
 
@@ -63,7 +62,5 @@ func generateRandomColors(_dynamicCharacter):
 		pickedBColor.v = RNG.randf_rangeX2(0.7, 0.95)
 		pickedBColor.s = RNG.randf_rangeX2(0.7, 0.95)
 
-func getAttributesText():
-	var curAttribute = .getAttributesText()
-	curAttribute.append(["Bluespace anomalies", "Yes"])
-	return curAttribute
+func getCharacterCreatorDesc():
+	return "a synthetic horsecock from a third party manufacturer, because why not?\nrequired to experience the hyper mod"

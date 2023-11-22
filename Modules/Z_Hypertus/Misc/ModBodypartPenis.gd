@@ -60,7 +60,7 @@ func getLewdName():
 # static func bruh():
 
 func getPickableAttributes():
-	var customValue = GM.main.getFlag("Hypertus.HyperPenisCustomSize", 0)
+	var customValue = GM.main.getFlag("Hypertus.HyperPenisCustomSize", 60)
 	var result = .getPickableAttributes()
 	result["cocksize"] = {
 		"text": "Pick your hyper cock's length",
@@ -79,8 +79,8 @@ func getPickableAttributes():
 			[70, Util.cmToString(70), "Pick this length"],
 			[85, Util.cmToString(85), "Pick this length"],
 			[100, Util.cmToString(100), "Pick this length (maybe too hyper)"],
-			[customValue, Util.cmToString(customValue), "Pick custom one (might have unintented consequences)"]
-			# [] # this is going to be custom scaling but alright
+			[max(customValue,1), "Custom: "+Util.cmToString(max(customValue,1)), "Pick custom one (might have unintented consequences)"]
+			# better max(x,1) than sorry
 		]
 	}
 	result["ballsscale"] = {

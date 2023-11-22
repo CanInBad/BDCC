@@ -21,7 +21,7 @@ func getPickableAttributes():
 		[breastSizeModClass.FLAT, "Flat", "Flat breasts (hard mode)"],
 	]
 	for breastSize in breastSizeModClass.getAll():
-		if(breastSize <= breastSizeModClass.FLAT || breastSize > breastSizeModClass.Z):
+		if(breastSize <= breastSizeModClass.FLAT || breastSize > breastSizeModClass.O):
 			continue
 		breastVariants.append([breastSize, breastSizeModClass.breastSizeToString(breastSize), breastSizeModClass.breastSizeToCupString(breastSize)])
 	result["breastsize"]= {

@@ -12,6 +12,9 @@ func getCompatibleSpecies():
 
 # currently does nothing, will have interaction with perks later
 
+func getCharacterCreatorDesc():
+	return "required to experience the hyper mod"
+
 func getLewdSizeAdjective():
 	return ""
 

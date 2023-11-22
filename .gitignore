@@ -10,5 +10,10 @@ doc/_build/
 logs/
 
 *.pck
+
+# me when i download mono version and don't want to redownload 💀
 .mono/**
 *.ai
+
+# compact testing
+Modules/SynthSpecies
