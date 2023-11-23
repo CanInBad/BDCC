@@ -16,4 +16,5 @@ logs/
 *.ai
 
 # compact testing
+Modules/OldHypertusMod
 Modules/SynthSpecies
