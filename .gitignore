@@ -15,8 +15,11 @@ logs/
 .mono/**
 *.ai
 
-# compact testing
+# Old version of the mod (i wish to learn workspace managment faster but whatever)
 Modules/OldHypertusMod
+
+# compact testing
 Modules/SynthSpecies
 Modules/FluffBodyPartsV3
 Modules/Knotted Horsecock
+Modules/Avali Species
