@@ -15,6 +15,9 @@ logs/
 .mono/**
 *.ai
 
+# whe the vscdoium still use the same namespace
+.vscode/**
+
 # Old version of the mod (i wish to learn workspace managment faster but whatever)
 Modules/OldHypertusMod
 
