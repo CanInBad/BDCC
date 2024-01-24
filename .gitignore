@@ -18,12 +18,12 @@ logs/
 # whe the vscdoium still use the same namespace
 .vscode/**
 
-# Old version of the mod (i wish to learn workspace managment faster but whatever)
-Modules/OldHypertusMod
-
 # compact testing
 Modules/SynthSpecies
 Modules/FluffBodyPartsV3
 Modules/Knotted Horsecock
 Modules/Avali Species
 Modules/Ace'sAvairyMod
+
+/.idea/
+/*.iml

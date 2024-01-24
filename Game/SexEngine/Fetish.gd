@@ -24,6 +24,7 @@ const Breeding = "Breeding"
 const BeingBred = "BeingBred"
 const Condoms = "Condoms"
 const Lactation = "Lactation"
+const SeedMilking = "SeedMilking"
 
 const Exhibitionism = "Exhibitionism"
 
@@ -35,3 +36,6 @@ const RimmingReceiving = "RimmingReceiving"
 
 const FeetplayGiving = "FeetplayGiving"
 const FeetplayReceiving = "FeetplayReceiving"
+
+const HypnosisHypnotist = "HypnosisHypnotist"
+const HypnosisSubject = "HypnosisSubject"

@@ -391,8 +391,16 @@ func calculateBestRestraintLevel():
 	return RNG.randi_range(1, 5)
 
 func canForceOntoNpc():
-	return isRestraint() && !isImportant()
-	
+	return isRestraint()
+
+func canForceOntoStaticNpc():
+	return canForceOntoNpc()
+
+func canBeEasilyRemovedByDom():
+	if(restraintData != null):
+		return restraintData.canBeEasilyRemovedByDom()
+	return false
+
 func onEquippedBy(_otherCharacter, _forced = false):
 	pass
 
@@ -523,3 +531,9 @@ func getInventoryImage():
 func onUnequipped():
 	if(itemState != null):
 		itemState.resetState()
+
+func isPersistent():
+	return false
+
+func alwaysRecoveredAfterSex():
+	return false
