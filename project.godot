@@ -1537,6 +1537,11 @@ gameui_menu={
 project/assembly_name="BDCC"
 export/export_assemblies_inside_pck=false
 
+[network]
+
+limits/debugger_stdout/max_chars_per_second=4096
+limits/debugger_stdout/max_messages_per_frame=20
+
 [physics]
 
 common/enable_pause_aware_picking=true
