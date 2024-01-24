@@ -4,6 +4,3 @@
 [submodule "Modules/Z_Hypertus"]
 	path = Modules/Z_Hypertus
 	url = https://github.com/CanInBad/HypertusMod.git
-[submodule "Modules/SelfPanties"]
-	path = Modules/SelfPanties
-	url = https://github.com/CanInBad/SelfPanties
