@@ -4,6 +4,3 @@
 [submodule "Modules/Z_Hypertus"]
 	path = Modules/Z_Hypertus
 	url = https://github.com/CanInBad/HypertusMod.git
-[submodule "Modules/Y_cheatingFloor"]
-	path = Modules/Y_cheatingFloor
-	url = https://CanInBad@github.com/CanInBad/cheatingFloor.git

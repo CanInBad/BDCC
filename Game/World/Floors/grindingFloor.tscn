@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Game/World/SubWorld.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Game/World/GameRoom.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Game/World/Floors/grindingFloor.gd" type="Script" id=3]
+
+[node name="cheatingFloor" instance=ExtResource( 1 )]
+script = ExtResource( 3 )
+
+[node name="CustomFightClubRoom" parent="." index="0" instance=ExtResource( 2 )]
+self_modulate = Color( 0.7, 0.7, 0.7, 1 )
+roomName = "Entrance"
+roomID = "custom_fight_entrance"
+roomDescription = "Dark narrow corridor that was previously used for maintenance, judging from many tubes sprawling around the walls. "
+roomSprite = 5
+roomColor = 8
+population = 1
+
+[node name="Room2" parent="." index="1" instance=ExtResource( 2 )]
+position = Vector2( 0, -128 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room2"
+roomID = "cheatingRoom2"
+roomDescription = "Room2"
+population = 1
+
+[node name="Room1" parent="." index="2" instance=ExtResource( 2 )]
+self_modulate = Color( 0.5, 0.5, 0.5, 1 )
+position = Vector2( 0, -64 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room1"
+roomID = "cheatingRoom1"
+roomDescription = "RooM1"
+roomColor = 7
+population = 1
