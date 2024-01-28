@@ -5,7 +5,7 @@
 [ext_resource path="res://Game/World/Floors/grindingFloor.gd" type="Script" id=3]
 [ext_resource path="res://Images/World/room.png" type="Texture" id=4]
 [ext_resource path="res://Images/World/connection.png" type="Texture" id=5]
-[ext_resource path="res://Modules/Y_grindingFloor/Images/CIB.jpg" type="Texture" id=7]
+[ext_resource path="res://Modules/Z_IgrindingFloor/Images/CIB.jpg" type="Texture" id=7]
 
 [sub_resource type="DynamicFontData" id=1]
 font_path = "res://Fonts/SourceCodePro/SourceCodePro-Regular.otf"
@@ -262,7 +262,7 @@ loctag_GuardsEncounter = true
 loctag_EngineersEncounter = true
 population = 3
 
-[node name="grindingRoomATP2" parent="." index="21" instance=ExtResource( 2 )]
+[node name="grindingRoomCIB" parent="." index="21" instance=ExtResource( 2 )]
 position = Vector2( 128, -64 )
 roomName = "Meet CaninBad"
 roomID = "grinding_meetCIB"
@@ -270,6 +270,9 @@ roomDescription = "NOT DONE"
 canNorth = false
 canSouth = false
 
-[node name="Sprite2" type="Sprite" parent="grindingRoomATP2" index="2"]
+[node name="CanTheBad" type="Sprite" parent="grindingRoomCIB" index="2"]
 scale = Vector2( 0.35, 0.35 )
 texture = ExtResource( 7 )
+
+[connection signal="onEnter" from="grindingRoomCIB" to="." method="_on_grindingRoomCIB_enter"]
+[connection signal="onReact" from="grindingRoomCIB" to="." method="_on_grindingRoomCIB_react"]
