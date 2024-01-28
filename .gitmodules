@@ -5,5 +5,5 @@
 	path = Modules/Z_Hypertus
 	url = https://github.com/CanInBad/HypertusMod.git
 [submodule "grindingFloor"]
-	path = Modules/Y_grindingFloor
+	path = Modules/ZA_grindingFloor
 	url = https://CanInBad@github.com/CanInBad/grindingFloor.git
