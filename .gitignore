@@ -28,3 +28,7 @@ Modules/Misc. Bodyparts
 
 /.idea/
 /*.iml
+
+# those existed in Game/World/Floors already
+
+Modules/Y_cheatingFloor/Floors
