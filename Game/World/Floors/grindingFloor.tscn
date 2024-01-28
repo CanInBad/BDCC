@@ -1,37 +1,275 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Game/World/SubWorld.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Game/World/GameRoom.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Game/World/Floors/grindingFloor.gd" type="Script" id=3]
+[ext_resource path="res://Images/World/room.png" type="Texture" id=4]
+[ext_resource path="res://Images/World/connection.png" type="Texture" id=5]
+[ext_resource path="res://Modules/Y_grindingFloor/Images/CIB.jpg" type="Texture" id=7]
 
-[node name="cheatingFloor" instance=ExtResource( 1 )]
+[sub_resource type="DynamicFontData" id=1]
+font_path = "res://Fonts/SourceCodePro/SourceCodePro-Regular.otf"
+
+[sub_resource type="DynamicFontData" id=3]
+font_path = "res://Fonts/DroidSansJapanese.woff2"
+
+[sub_resource type="DynamicFontData" id=4]
+font_path = "res://Fonts/DroidSansFallback.woff2"
+
+[sub_resource type="DynamicFontData" id=2]
+font_path = "res://Fonts/Titillium-Regular.otf"
+
+[sub_resource type="DynamicFont" id=5]
+size = 48
+use_mipmaps = true
+use_filter = true
+font_data = SubResource( 2 )
+fallback/0 = SubResource( 1 )
+fallback/1 = SubResource( 3 )
+fallback/2 = SubResource( 4 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 60
+outline_size = 4
+outline_color = Color( 1, 0, 0, 1 )
+use_mipmaps = true
+use_filter = true
+font_data = SubResource( 2 )
+fallback/0 = SubResource( 1 )
+fallback/1 = SubResource( 3 )
+fallback/2 = SubResource( 4 )
+
+[node name="grindingFloor" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
 
-[node name="CustomFightClubRoom" parent="." index="0" instance=ExtResource( 2 )]
+[node name="decoreRoom" type="Sprite" parent="." index="0"]
+self_modulate = Color( 0.831373, 0.768627, 1, 1 )
+position = Vector2( 3.8147e-06, -128 )
+scale = Vector2( 3.1875, 3.625 )
+texture = ExtResource( 4 )
+
+[node name="Label" type="Label" parent="." index="1"]
+margin_left = -93.0
+margin_top = -228.0
+margin_right = 651.0
+margin_bottom = 636.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "Welcome to grindingFloor!
+
+here is where you can grind experiences, items, or lust!
+
+Green room is prisoners, BlueRed room is guard, YellowGray is engineers, and Red is medical staff.
+
+the right is all the things combined
+
+bottom right is me!
+I hope you enjoy! -CIB
+(this is not part of BDCC and apart of a mod)"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="GrindingEntrance" parent="." index="2" instance=ExtResource( 2 )]
 self_modulate = Color( 0.7, 0.7, 0.7, 1 )
-roomName = "Entrance"
-roomID = "custom_fight_entrance"
-roomDescription = "Dark narrow corridor that was previously used for maintenance, judging from many tubes sprawling around the walls. "
+roomName = "Ladder room"
+roomID = "grinding_entrance"
+roomDescription = "There is a hatch and ladder in "
 roomSprite = 5
 roomColor = 8
+
+[node name="FakeRoomConnect4" type="Sprite" parent="." index="3"]
+position = Vector2( 0, -16 )
+rotation = 1.5708
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 5 )
+
+[node name="grindingRoomEntrance30" parent="." index="4" instance=ExtResource( 2 )]
+position = Vector2( -64, -192 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room32"
+roomID = "grinding_entrance32"
+roomDescription = "Big ballroom"
+
+[node name="grindingRoomEntrance20" parent="." index="5" instance=ExtResource( 2 )]
+position = Vector2( -64, -128 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room20"
+roomID = "grinding_entrance20"
+roomDescription = "Big ballroom"
+
+[node name="grindingRoomEntrance10" parent="." index="6" instance=ExtResource( 2 )]
+self_modulate = Color( 0.5, 0.5, 0.5, 1 )
+position = Vector2( -64, -64 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room10"
+roomID = "grinding_entrance10"
+roomDescription = "Big ballroom"
+roomColor = 7
+
+[node name="FakeRoomConnect1" type="Sprite" parent="." index="7"]
+position = Vector2( 96, -192 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 5 )
+
+[node name="FakeRoomConnect2" type="Sprite" parent="." index="8"]
+position = Vector2( 96, -128 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 5 )
+
+[node name="FakeRoomConnect3" type="Sprite" parent="." index="9"]
+position = Vector2( 96, -64 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 5 )
+
+[node name="grindingRoomEntrance32" parent="." index="10" instance=ExtResource( 2 )]
+position = Vector2( 64, -192 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room30"
+roomID = "grinding_entrance30"
+roomDescription = "Big ballroom"
+
+[node name="grindingRoomEntrance22" parent="." index="11" instance=ExtResource( 2 )]
+position = Vector2( 64, -128 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room22"
+roomID = "grinding_entrance22"
+roomDescription = "Big ballroom"
 population = 1
 
-[node name="Room2" parent="." index="1" instance=ExtResource( 2 )]
+[node name="grindingRoomEntrance12" parent="." index="12" instance=ExtResource( 2 )]
+self_modulate = Color( 0.5, 0.5, 0.5, 1 )
+position = Vector2( 64, -64 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room10"
+roomID = "grinding_entrance12"
+roomDescription = "Big ballroom"
+roomColor = 7
+population = 1
+
+[node name="grindingRoomEntrance31" parent="." index="13" instance=ExtResource( 2 )]
+position = Vector2( 0, -192 )
+scale = Vector2( 1e-05, 1e-05 )
+texture = null
+roomName = "Room31"
+roomID = "grinding_entrance31"
+roomDescription = "Big ballroom"
+
+[node name="grindingRoomEntrance21" parent="." index="14" instance=ExtResource( 2 )]
 position = Vector2( 0, -128 )
 scale = Vector2( 1e-05, 1e-05 )
 texture = null
-roomName = "Room2"
-roomID = "cheatingRoom2"
-roomDescription = "Room2"
-population = 1
+roomName = "Room21"
+roomID = "grinding_entrance21"
+roomDescription = "Big ballroom"
 
-[node name="Room1" parent="." index="2" instance=ExtResource( 2 )]
+[node name="grindingRoomEntrance11" parent="." index="15" instance=ExtResource( 2 )]
 self_modulate = Color( 0.5, 0.5, 0.5, 1 )
 position = Vector2( 0, -64 )
 scale = Vector2( 1e-05, 1e-05 )
 texture = null
-roomName = "Room1"
-roomID = "cheatingRoom1"
-roomDescription = "RooM1"
+roomName = "Room11"
+roomID = "grinding_entrance11"
+roomDescription = "Big ballroom"
 roomColor = 7
+
+[node name="grindingRoomPrisoners" parent="." index="16" instance=ExtResource( 2 )]
+self_modulate = Color( 0.7, 1, 0.7, 1 )
+position = Vector2( -128, -192 )
+roomName = "Prisoners"
+roomID = "grinding_prisoners"
+roomDescription = "This room contains prisoners"
+canNorth = false
+canSouth = false
+roomSprite = 1
+roomColor = 1
 population = 1
+
+[node name="grindingRoomGuards" parent="." index="17" instance=ExtResource( 2 )]
+self_modulate = Color( 0.7, 0.7, 1, 1 )
+position = Vector2( -128, -128 )
+roomName = "Guards"
+roomID = "grinding_guards"
+roomDescription = "This room contains guards"
+canNorth = false
+canSouth = false
+roomSprite = 1
+roomColor = 3
+gridColor = 2
+loctag_Greenhouses = true
+loctag_GuardsEncounter = true
+population = 2
+
+[node name="grindingRoomEngineers" parent="." index="18" instance=ExtResource( 2 )]
+self_modulate = Color( 0.5, 0.5, 0.5, 1 )
+position = Vector2( -128, -64 )
+roomName = "Engineers"
+roomID = "grinding_engineers"
+roomDescription = "This room contains engineers"
+canNorth = false
+canSouth = false
+roomSprite = 1
+roomColor = 7
+gridColor = 6
+loctag_EngineersEncounter = true
+population = 2
+
+[node name="grindingRoomMedicalStaff" parent="." index="19" instance=ExtResource( 2 )]
+self_modulate = Color( 1, 0.6, 0.6, 1 )
+position = Vector2( 128, -192 )
+roomName = "Medical staff"
+roomID = "grinding_medic"
+roomDescription = "This room contains Medical staff"
+canNorth = false
+canSouth = false
+roomColor = 2
+loctag_MentalWard = true
+population = 2
+
+[node name="Label" type="Label" parent="grindingRoomMedicalStaff" index="2"]
+margin_left = -26.0
+margin_top = -30.0
+margin_right = 28.0
+margin_bottom = 30.0
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_outline_modulate = Color( 1, 0, 0, 1 )
+custom_fonts/font = SubResource( 6 )
+text = "+"
+align = 1
+valign = 1
+
+[node name="grindingRoomATP" parent="." index="20" instance=ExtResource( 2 )]
+self_modulate = Color( 1, 0.6, 0.6, 1 )
+position = Vector2( 128, -128 )
+roomName = "All the personal"
+roomID = "grinding_ATP"
+roomDescription = "This room contains EVERYONE
+EVERYONE IS HERE!"
+canNorth = false
+canSouth = false
+roomSprite = 4
+roomColor = 2
+gridColor = 5
+loctag_MentalWard = true
+loctag_GuardsEncounter = true
+loctag_EngineersEncounter = true
+population = 3
+
+[node name="grindingRoomATP2" parent="." index="21" instance=ExtResource( 2 )]
+position = Vector2( 128, -64 )
+roomName = "Meet CaninBad"
+roomID = "grinding_meetCIB"
+roomDescription = "NOT DONE"
+canNorth = false
+canSouth = false
+
+[node name="Sprite2" type="Sprite" parent="grindingRoomATP2" index="2"]
+scale = Vector2( 0.35, 0.35 )
+texture = ExtResource( 7 )
