@@ -12,3 +12,5 @@ logs/
 *.pck
 /.idea/
 /*.iml
+
+.vscode
