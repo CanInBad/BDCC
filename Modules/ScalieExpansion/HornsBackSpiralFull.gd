@@ -1,0 +1,14 @@
+extends BodypartHorns
+
+func _init():
+	visibleName = "Backwards Spiral Full"
+	id = "backspiralfull"
+
+func getCompatibleSpecies():
+	return [Species.Any]
+
+func getDoll3DScene():
+	return "res://Modules/ScalieExpansion/Bodyparts/HornsBackSpiralFull/HornsBackSpiralFull.tscn"
+
+func getCharacterCreatorDesc():
+	return "(ScalieExpansion)"

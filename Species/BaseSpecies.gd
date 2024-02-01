@@ -54,7 +54,7 @@ func getDefaultHorns(_gender):
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "humanpenis"
+		return "humanpenishyperable"
 	else:
 		return null
 

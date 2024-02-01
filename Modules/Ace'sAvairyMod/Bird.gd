@@ -31,12 +31,12 @@ func getDefaultEars(_gender):
 func getDefaultPenis(_gender):
 	if file.file_exists("res://Modules/Z_Hypertus/Module.gd"):
 		if(_gender in [Gender.Male, Gender.Androgynous]):
-			return "birdpenishyperable"
+			return "birdpenishyperablehyperable"
 		else:
 			return null
 	else:
 		if(_gender in [Gender.Male, Gender.Androgynous]):
-			return "birdpenis"
+			return "birdpenishyperable"
 		else:
 			return null
 

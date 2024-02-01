@@ -29,7 +29,7 @@ func getDefaultEars(_gender):
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "ACEavianpenis"
+		return "ACEavianpenishyperable"
 	else:
 		return null
 
