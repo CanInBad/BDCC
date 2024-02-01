@@ -30,9 +30,15 @@ func getDefaultEars(_gender):
 func getDefaultBody(_gender):
 	return "sharkbody"
 
+func getDefaultBreasts(_gender):
+	if(_gender in [Gender.Male]):
+		return "malebreastshyperable"
+	
+	return "breastshyperable"
+
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "dragonpenishyperable"
+		return "dragonpenismhyper"
 	else:
 		return null
 

@@ -27,6 +27,21 @@ func getDefaultArms(_gender):
 func getDefaultEars(_gender):
 	return "horseears"
 
+func getDefaultBreasts(_gender):
+	if(_gender in [Gender.Male]):
+		return "malebreastshyperable"
+	
+	return "breastshyperable"
+
+func getDefaultVagina(_gender):
+	if(_gender in [Gender.Female, Gender.Androgynous]):
+		return "vaginahyperable"
+	else:
+		return null
+
+func getDefaultAnus(_gender):
+	return RNG.pick(["anushyperable","anuswombhyperable"])
+
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
 		return "equinepenishyperable"

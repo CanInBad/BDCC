@@ -5,10 +5,10 @@ func _init():
 	
 
 func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "avaliMalebreasts"
+	if(_gender == Gender.Male):
+		return "avaliMalebreastshyperable"
 	
-	return "avalibreasts"
+	return "avalibreastshyperable"
 
 func getVisibleName():
 	return "Avali"
@@ -34,14 +34,14 @@ func getDefaultArms(_gender):
 func getDefaultEars(_gender):
 	return "avaliears"
 
+func getDefaultVagina(_gender):
+	if(_gender in [Gender.Female, Gender.Androgynous]):
+		return "vaginahyperable"
+	else:
+		return null
 
-#broken breasts spawn, dont use
-
-#func getDefaultBreasts(_gender):
-#	if(_gender in [Gender.Male, Gender.Androgynous]):
-#		return "avalibreasts"
-#	else:
-#		return "avaliMalebreasts"
+func getDefaultAnus(_gender):
+	return RNG.pick(["anushyperable","anuswombhyperable"])
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
