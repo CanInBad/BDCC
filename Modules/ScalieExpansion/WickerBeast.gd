@@ -10,7 +10,7 @@ func getDefaultLegs(_gender):
 	return "digilegs"
 
 func getDefaultTail(_gender):
-	return "dragontail"
+	return "wickertail"
 
 func isPlayable():
 	return true

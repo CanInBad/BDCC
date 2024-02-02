@@ -5,7 +5,7 @@ func _init():
 	id = "backhookhornsalt"
 
 func getCompatibleSpecies():
-	return [Species.Any]
+	return [Species.Dragon, "felkin", "wickerbeast", "easterndragon"]
 
 func getDoll3DScene():
 	return "res://Modules/ScalieExpansion/Bodyparts/HornsBackHookAlt/HornBackHook2.tscn"

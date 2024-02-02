@@ -10,7 +10,7 @@ func getDefaultLegs(_gender):
 	return "digilegs"
 
 func getDefaultTail(_gender):
-	return "dragontail"
+	return "easterntail"
 
 func isPlayable():
 	return true
@@ -44,7 +44,7 @@ func getDefaultVagina(_gender):
 
 func getDefaultAnus(_gender):
 	return RNG.pick(["anushyperable","anuswombhyperable"])
-
+	
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
 		return "dragonpenismhyper"

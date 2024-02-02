@@ -5,7 +5,7 @@ func _init():
 	id = "backspiralfull"
 
 func getCompatibleSpecies():
-	return [Species.Any]
+	return [Species.Dragon, "felkin", "wickerbeast", "easterndragon"]
 
 func getDoll3DScene():
 	return "res://Modules/ScalieExpansion/Bodyparts/HornsBackSpiralFull/HornsBackSpiralFull.tscn"

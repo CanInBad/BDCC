@@ -1,7 +1,7 @@
 extends Module
 
 func _init():
-	id = "DEV BITS"
+	id = "ScalieExpansion"
 	author = "AverageAce"
 	
 	bodyparts = [
