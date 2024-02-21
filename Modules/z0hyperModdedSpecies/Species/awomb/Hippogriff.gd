@@ -59,4 +59,4 @@ func getEggCellOvulationAmount():
 	]
 
 func getAllowedBodyparts():
-	return ["horsetail", "horseears", "noears", "anushyperable", "anuswombhyperable"]
+	return ["horsetail", "horseears", "noears", "anuswombhyperable", "knottedequinepenishyperable"]

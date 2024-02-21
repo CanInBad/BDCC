@@ -43,7 +43,7 @@ func getDefaultAnus(_gender):
 	return "anushyperable"
 
 func getAllowedBodyparts():
-	return ["anushyperable", "anuswombhyperable"]
+	return ["anuswombhyperable"]
 
 func getEggCellOvulationAmount():
 	return [

@@ -64,4 +64,4 @@ func getSkinType():
 	return SkinType.Fur
 
 func getAllowedBodyparts():
-	return ["horsetail", "demonhorns2", "dragonhorns", "dragonears2", "anushyperable", "anuswombhyperable"]
+	return ["horsetail", "demonhorns2", "dragonhorns", "dragonears2", "anuswombhyperable", "knottedequinepenishyperable"]

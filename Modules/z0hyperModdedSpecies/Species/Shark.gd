@@ -45,6 +45,9 @@ func getDefaultPenis(_gender):
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
+func getAllowedBodyparts():
+	return ["knottedequinepenishyperable"]
+
 func getEggCellOvulationAmount():
 	return [
 		[2, 3.0],

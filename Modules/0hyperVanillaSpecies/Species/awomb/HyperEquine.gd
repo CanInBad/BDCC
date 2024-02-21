@@ -43,7 +43,7 @@ func getDefaultAnus(_gender):
 	return "anushyperable"
 
 func getAllowedBodyparts():
-	return ["anushyperable", "anuswombhyperable", "knottedequinepenishyperable"]
+	return ["anuswombhyperable", "knottedequinepenishyperable"]
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):

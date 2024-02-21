@@ -49,9 +49,8 @@ func getDefaultPenis(_gender):
 	else:
 		return null
 		
-# breed edition - allow npcs to gen w/ ass womb
 func getAllowedBodyparts():
-	return ["anushyperable", "anuswombhyperable"]
+	return ["anuswombhyperable", "knottedequinepenishyperable"]
 
 func getEggCellOvulationAmount():
 	return [

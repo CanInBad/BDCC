@@ -43,7 +43,7 @@ func getDefaultBreasts(_gender):
 	return "breastshyperable"
 
 func getAllowedBodyparts():
-	return ["caninetail", "huskytail", "canineears", "wolfears", "anushyperable", "anuswombhyperable"]
+	return ["caninetail", "huskytail", "canineears", "wolfears", "anuswombhyperable"]
 
 func getDefaultAnus(_gender):
 	return "anushyperable"
