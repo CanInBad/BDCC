@@ -65,7 +65,7 @@ func _init():
             var hasAnusWomb = speciesList[i][2]
             var fileName = speciesList[i][1]
             
-            if hasAnusWomb:
+            if (hasAnusWomb || forceBreedEdition):
                 fileName = "awomb/"+fileName
             
             var theFile:String = "res://Modules/z0hyperModdedSpecies/Species/"+fileName+".gd"
