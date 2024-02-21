@@ -1,5 +1,4 @@
 extends Species
-var file = File.new()
 
 func _init():
 	id = "bird"
@@ -28,32 +27,11 @@ func getDefaultArms(_gender):
 func getDefaultEars(_gender):
 	return "noears"
 
-func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "malebreastshyperable"
-	
-	return "breastshyperable"
-
-func getDefaultVagina(_gender):
-	if(_gender in [Gender.Female, Gender.Androgynous]):
-		return "vaginahyperable"
+func getDefaultPenis(_gender):
+	if(_gender in [Gender.Male, Gender.Androgynous]):
+		return "birdpenis"
 	else:
 		return null
-
-func getDefaultAnus(_gender):
-	return RNG.pick(["anushyperable","anuswombhyperable"])
-
-func getDefaultPenis(_gender):
-	if file.file_exists("res://Modules/Z_Hypertus/Module.gd"):
-		if(_gender in [Gender.Male, Gender.Androgynous]):
-			return "birdpenishyperablehyperable"
-		else:
-			return null
-	else:
-		if(_gender in [Gender.Male, Gender.Androgynous]):
-			return "birdpenishyperable"
-		else:
-			return null
 
 func getEggCellOvulationAmount():
 	return [

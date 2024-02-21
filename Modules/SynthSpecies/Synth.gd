@@ -29,16 +29,11 @@ func getDefaultEars(_gender):
 
 func getDefaultBody(_gender):
 	return "synthbody"
-
-func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "malebreastshyperable"
 	
-	return "breastshyperable"
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return RNG.pick(["synthpenishyperable", "synthequinepenishyperable", "synthpenishyperablehuman"])
+		return RNG.pick(["synthpenis", "synthequinepenis", "synthpenishuman"])
 	else:
 		return null
 

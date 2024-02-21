@@ -1526,6 +1526,13 @@ gameui_menu={
  ]
 }
 
+[network]
+
+limits/debugger_stdout/max_chars_per_second=8192
+limits/debugger_stdout/max_messages_per_frame=64
+limits/debugger_stdout/max_errors_per_second=300
+limits/debugger_stdout/max_warnings_per_second=300
+
 [physics]
 
 common/enable_pause_aware_picking=true

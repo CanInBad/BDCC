@@ -29,24 +29,9 @@ func getDefaultEars(_gender):
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "dragonpenismhyper"
+		return "dragonpenis"
 	else:
 		return null
-
-func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "malebreastshyperable"
-	
-	return "breastshyperable"
-
-func getDefaultVagina(_gender):
-	if(_gender in [Gender.Female, Gender.Androgynous]):
-		return "vaginahyperable"
-	else:
-		return null
-
-func getDefaultAnus(_gender):
-	return RNG.pick(["anushyperable","anuswombhyperable"])
 
 func getEggCellOvulationAmount():
 	return [

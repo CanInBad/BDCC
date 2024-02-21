@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://Player/Player3D/Parts/Part3D.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Player/Player3D/Parts/Head/WolfHead/headwolf.png" type="Texture" id=2]
@@ -6,13 +6,15 @@
 [ext_resource path="res://Player/Player3D/Parts/PartStatePicker.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Player/Player3D/Parts/PartState.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Player/Player3D/Parts/AttachmentProxy.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/shark_gag1_overlay.png" type="Texture" id=7]
-[ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/shark_gag2_overlay.png" type="Texture" id=8]
+[ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/TeethOverlay2.png" type="Texture" id=7]
+[ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/shark_gag2_overlayandteeth.png" type="Texture" id=8]
 [ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/sharkhead_mouth_finless.png" type="Texture" id=9]
 [ext_resource path="res://Player/Player3D/Parts/MeshWithPattern.gd" type="Script" id=10]
 [ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/sharkhead_gag1_finless.png" type="Texture" id=11]
 [ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/sharkhead_gag2_finless.png" type="Texture" id=12]
 [ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/sharkhead_finless.png" type="Texture" id=13]
+[ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/shark_gag1_overlayandteeth.png" type="Texture" id=14]
+[ext_resource path="res://Modules/SharkSpecies/Bodyparts/SharkHead/TeethOverlay.png" type="Texture" id=15]
 
 [sub_resource type="SpatialMaterial" id=8]
 resource_name = "headwolf.png"
@@ -259,9 +261,9 @@ material/0 = SubResource( 18 )
 script = ExtResource( 10 )
 pattern_start = Vector2( 2, 0 )
 bodypartSlot = "head"
+customOverlay = ExtResource( 7 )
 
 [node name="PartState2" parent="PartStatePicker2" index="1" instance=ExtResource( 5 )]
-visible = false
 stateValue = "ballgag"
 
 [node name="headwolfpng" type="MeshInstance" parent="PartStatePicker2/PartState2" index="0"]
@@ -271,7 +273,7 @@ material/0 = SubResource( 21 )
 script = ExtResource( 10 )
 pattern_start = Vector2( 2, 0 )
 bodypartSlot = "head"
-customOverlay = ExtResource( 7 )
+customOverlay = ExtResource( 14 )
 
 [node name="PartState3" parent="PartStatePicker2" index="2" instance=ExtResource( 5 )]
 visible = false
@@ -297,6 +299,7 @@ material/0 = SubResource( 19 )
 script = ExtResource( 10 )
 pattern_start = Vector2( 2, 0 )
 bodypartSlot = "head"
+customOverlay = ExtResource( 15 )
 
 [node name="PartStatePicker" parent="." index="2" instance=ExtResource( 4 )]
 state = "muzzle"
