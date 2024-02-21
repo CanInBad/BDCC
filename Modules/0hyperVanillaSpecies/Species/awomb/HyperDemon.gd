@@ -45,14 +45,14 @@ func getDefaultVagina(_gender):
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
+func getAllowedBodyparts():
+	return ["anushyperable", "anuswombhyperable", "knottedequinepenishyperable"]
+
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
 		return "equinepenishyperable"
 	else:
 		return null
-
-func getAllowedBodyparts():
-	return ["knottedequinepenishyperable"]
 
 func getEggCellOvulationAmount():
 	return [

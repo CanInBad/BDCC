@@ -1,34 +1,31 @@
 extends Species
 
 func _init():
-	id = Species.Demon
+	id = Species.Feline
 	
 func getVisibleName():
-	return "Demon"
+	return "Feline"
 
 func getDefaultLegs(_gender):
-	return "hoofs"
+	return "digilegs"
 
 func getDefaultTail(_gender):
-	return "demontail"
-
-func getDefaultHorns(_gender):
-	return "demonhorns"
+	return "felinetail"
 
 func isPlayable():
 	return true
 
 func getVisibleDescription():
-	return "Your non-friendly neighbors"
+	return "Cute fluffballs"
 
 func getDefaultHead(_gender):
-	return "humanhead"
+	return "felinehead"
 
 func getDefaultArms(_gender):
 	return "anthroarms"
 
 func getDefaultEars(_gender):
-	return "humanears"
+	return "felineears"
 
 func getDefaultBreasts(_gender):
 	if(_gender in [Gender.Male]):
@@ -45,31 +42,22 @@ func getDefaultVagina(_gender):
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
+func getAllowedBodyparts():
+	return ["anushyperable", "anuswombhyperable"]
+
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "equinepenishyperable"
+		return "felinepenishyperable"
 	else:
 		return null
 
-func getAllowedBodyparts():
-	return ["knottedequinepenishyperable"]
-
 func getEggCellOvulationAmount():
 	return [
-		[1, 0.1],
+		[1, 2.0],
+		[2, 8.0],
+		[3, 6.0],
+		[4, 4.0],
+		[5, 2.0],
+		[6, 1.0],
+		[7, 0.5],
 	]
-
-func npcGenerationWeight():
-	return 0.0
-
-func getSkinType():
-	return SkinType.SkinAndFur
-
-func generateSkinColors():
-	var humanColors = ColorUtils.generateGenericHumanSkinColors()
-	#var furryColors = ColorUtils.generateGenericFurryColors()
-	#humanColors[2] = RNG.pick(furryColors)
-	#humanColors[2] = ColorUtils.generateRandomVibrantColor()
-	humanColors[2].v = RNG.randf_rangeX2(0.2, 0.5)
-	
-	return humanColors

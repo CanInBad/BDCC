@@ -1,5 +1,6 @@
 extends Module
 var files = File.new()
+var forceBreedEdition:bool = false
 # var isExisted:bool = false
 # const dialogFile = preload("res://Modules/0hyperSpeciesChk/dialog.gd")
 # signal hypertusNotExist
@@ -29,14 +30,24 @@ func _init():
             if inEditor:
                 Log.print("// "+id+": Erased\t"+i+"\tfrom GlobalRegistry allSpecies...")
 
-    species = [
-        "res://Modules/0hyperVanillaSpecies/Species/HyperCanine.gd",
-        "res://Modules/0hyperVanillaSpecies/Species/HyperDemon.gd",
-        "res://Modules/0hyperVanillaSpecies/Species/HyperDragon.gd",
-        "res://Modules/0hyperVanillaSpecies/Species/HyperEquine.gd",
-        "res://Modules/0hyperVanillaSpecies/Species/HyperFeline.gd",
-        "res://Modules/0hyperVanillaSpecies/Species/HyperHuman.gd",
-    ]
+    if !forceBreedEdition:
+        species = [
+            "res://Modules/0hyperVanillaSpecies/Species/HyperCanine.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/HyperDemon.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/HyperDragon.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/HyperEquine.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/HyperFeline.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/HyperHuman.gd",
+        ]
+    else:
+        species = [
+            "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperCanine.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperDemon.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperDragon.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperEquine.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperFeline.gd",
+            "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperHuman.gd",
+        ]
 
 # func loadingFinished():
 #     if !isExisted:

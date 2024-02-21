@@ -1,34 +1,22 @@
 extends Species
 
 func _init():
-	id = Species.Dragon
+	id = Species.Human
 	
 func getVisibleName():
-	return "Dragon"
+	return "Human"
 
 func getDefaultLegs(_gender):
-	return "digilegs"
-
-func getDefaultTail(_gender):
-	return "dragontail"
+	return "plantilegs"
 
 func isPlayable():
 	return true
 
 func getVisibleDescription():
-	return "They roar and stuff"
-
-func getDefaultArms(_gender):
-	return "anthroarms"
-
-func getDefaultHorns(_gender):
-	return "dragonhorns"
-
-func getDefaultHead(_gender):
-	return "dragonhead"
+	return "Your ordinary human"
 
 func getDefaultEars(_gender):
-	return "dragonears"
+	return "humanears"
 
 func getDefaultBreasts(_gender):
 	if(_gender in [Gender.Male]):
@@ -45,20 +33,24 @@ func getDefaultVagina(_gender):
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
+func getAllowedBodyparts():
+	return ["anushyperable", "anuswombhyperable"]
+
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "dragonpenishyperable"
+		return "humanpenishyperable"
 	else:
 		return null
 
 func getEggCellOvulationAmount():
 	return [
-		[1, 4.0],
-		[2, 5.0],
-		[3, 3.0],
-		[4, 1.0],
-		[5, 0.4],
+		[1, 10.0],
+		[2, 1.0],
+		[3, 0.3],
 	]
 
 func getSkinType():
-	return SkinType.Scales
+	return SkinType.Skin
+
+func generateSkinColors():
+	return ColorUtils.generateGenericHumanSkinColors()
