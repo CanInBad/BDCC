@@ -52,10 +52,11 @@ func _init():
                 textErase += "\n\t// "+abbreviatedName+": Erased\t"+i+"\tfrom GlobalRegistry allSpecies..."
             if !(_ok):
                 textToReportError += "\n\t!! "+abbreviatedName+": "+i+"\tcan't be remove from the GlobalRegistry! Please tell "+author+" about this."
-    Log.print(textErase)
-    
-    printErrorLBL(textToReportError)
-    textToReportError = "" # reset
+    if textErase != "":
+        Log.print(textErase)
+    if textToReportError != "":
+        printErrorLBL(textToReportError)
+        textToReportError = "" # reset
 
     if (forceBreedEdition):
         textToReport = "\n ---- "+abbreviatedName+": Forcing **Breed edition** on all species!!!! ---- "
@@ -73,15 +74,17 @@ func _init():
                 species.append(theFile)
 
                 textToReport += "\n\t### "+abbreviatedName+": Successfully added \""+i+"\" to species list."
-                if (hasAnusWomb || forceBreedEdition):
+                if (hasAnusWomb):
                     if (!forceBreedEdition):
                         textToReport = textToReport + " (Breed edition)"
 
             else:
                 textToReportError += "\n\t!!! "+abbreviatedName+": Something went wrong when adding \""+i+"\" to species list. Please tell "+author+" about this.\n\t↳("+theFile+")"
     
-    Log.print(textToReport)
-    printErrorLBL(textToReportError)
+    if !textToReport.empty():
+        Log.print(textToReport)
+    if !textToReportError.empty():
+        printErrorLBL(textToReportError)
 
 static func printErrorLBL(text:String): # line by line
     var lines:Array = text.split("\n")

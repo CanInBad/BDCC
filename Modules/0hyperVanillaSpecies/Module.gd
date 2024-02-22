@@ -39,6 +39,9 @@ func _init():
                 "res://Modules/0hyperVanillaSpecies/Species/HyperFeline.gd",
                 "res://Modules/0hyperVanillaSpecies/Species/HyperHuman.gd",
             ]
+            if files.file_exists("res://.breedEdition"):
+                Log.error("\t"+id+": It is recommended to play with one of the version and not both")
+                OS.alert("It is recommended to play with one of the version and not both","Hypertus Species")
         else:
             species = [
                 "res://Modules/0hyperVanillaSpecies/Species/awomb/HyperCanine.gd",
