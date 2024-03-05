@@ -13,5 +13,21 @@ logs/
 /.idea/
 /*.iml
 
-.vscode
+**/.vscode 
 *.zip
+
+# others mod that I do not want to rehost.
+Modules/Ace'sAvairyMod
+Modules/Avali Species
+Modules/EspeonSpecies
+Modules/Knotted Horsecock
+Modules/LeafeonSpecies
+Modules/LucarioSpecies
+Modules/ProtogenSpecies
+Modules/RabbitSpeciesModule
+Modules/RatSpeciesModule
+Modules/ScalieExpansion
+Modules/SharkSpecies
+Modules/Skulldog Species
+Modules/SylveonSpecies
+Modules/SynthSpecies
