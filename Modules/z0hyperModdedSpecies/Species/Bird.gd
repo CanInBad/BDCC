@@ -1,5 +1,4 @@
 extends Species
-var file = File.new()
 
 func _init():
 	id = "bird"
@@ -44,16 +43,10 @@ func getDefaultAnus(_gender):
 	return "anushyperable"
 
 func getDefaultPenis(_gender):
-	if file.file_exists("res://Modules/Z_Hypertus/Module.gd"):
-		if(_gender in [Gender.Male, Gender.Androgynous]):
-			return "birdpenishyperablehyperable"
-		else:
-			return null
+	if(_gender in [Gender.Male, Gender.Androgynous]):
+		return "birdpenishyperable"
 	else:
-		if(_gender in [Gender.Male, Gender.Androgynous]):
-			return "birdpenishyperable"
-		else:
-			return null
+		return null
 
 func getEggCellOvulationAmount():
 	return [

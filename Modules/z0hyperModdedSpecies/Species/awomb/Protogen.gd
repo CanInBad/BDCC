@@ -45,9 +45,6 @@ func getDefaultVagina(_gender):
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
-func getAllowedBodyparts():
-	return ["anuswombhyperable", "wolfears", "caninetail", "huskytail"]
-
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
 		return "caninepenishyperable"
@@ -63,3 +60,8 @@ func getEggCellOvulationAmount():
 		[6, 4.0],
 		[7, 1.0],
 	]
+
+#remember to add/remove anus and anus womb depending on breed edition 
+# Yes sir!!!!! -CIB
+func getAllowedBodyparts():
+	return ["wolfears", "caninetail", "huskytail", "anuswombhyperable"]

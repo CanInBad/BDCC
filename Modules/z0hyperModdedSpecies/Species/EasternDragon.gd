@@ -64,4 +64,4 @@ func getSkinType():
 	return SkinType.Scales
 
 func getAllowedBodyparts():
-	return "backhookhorns, backhookhornsalt, demonhorns2"
+	return ["backhookhorns", "backhookhornsalt", "demonhorns2"]

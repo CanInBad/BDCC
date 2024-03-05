@@ -45,6 +45,12 @@ func getDefaultBreasts(_gender):
 func getAllowedBodyparts():
 	return ["caninetail", "huskytail", "canineears", "wolfears"]
 
+func getDefaultVagina(_gender):
+	if(_gender in [Gender.Female, Gender.Androgynous]):
+		return "vaginahyperable"
+	else:
+		return null
+
 func getDefaultAnus(_gender):
 	return "anushyperable"
 

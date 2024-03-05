@@ -1,5 +1,4 @@
 extends Species
-var file = File.new()
 
 func _init():
 	id = "bird"
@@ -43,14 +42,14 @@ func getDefaultVagina(_gender):
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
-func getAllowedBodyparts():
-	return ["anuswombhyperable"]
-
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "birdpenishyperablehyperable"
+		return "birdpenishyperable"
 	else:
 		return null
+
+func getAllowedBodyparts():
+	return ["anuswombhyperable"]
 
 func getEggCellOvulationAmount():
 	return [

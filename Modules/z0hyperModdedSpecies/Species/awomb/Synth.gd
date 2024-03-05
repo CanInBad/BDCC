@@ -38,15 +38,21 @@ func getDefaultBreasts(_gender):
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return RNG.pick(["synthpenishyperable", "synthequinepenishyperable", "synthpenishyperablehuman"])
+		return "synthpenishyperable"
+	else:
+		return null
+
+func getDefaultVagina(_gender):
+	if(_gender in [Gender.Female, Gender.Androgynous]):
+		return "vaginahyperable"
 	else:
 		return null
 
 func getDefaultAnus(_gender):
 	return "anushyperable"
 
-func getAllowedBodyparts():
-	return ["anuswombhyperable"]
+func getAllowedBodypart():
+	return ["synthequinepenishyperable", "synthpenishyperablehuman", "anuswombhyperable"]
 
 func getEggCellOvulationAmount():
 	return [
@@ -59,4 +65,5 @@ func getEggCellOvulationAmount():
 	]
 
 func onDynamicNpcCreation(_npc, _args):
-	_npc.giveBodypartUnlessSame(GlobalRegistry.createBodypart("baldhair"))
+	if RNG.chance(66):
+		_npc.giveBodypartUnlessSame(GlobalRegistry.createBodypart("baldhair"))
