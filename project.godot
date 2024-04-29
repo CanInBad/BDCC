@@ -1593,8 +1593,10 @@ export/export_assemblies_inside_pck=false
 
 [network]
 
-limits/debugger_stdout/max_chars_per_second=4096
-limits/debugger_stdout/max_messages_per_frame=20
+limits/debugger_stdout/max_chars_per_second=64000
+limits/debugger_stdout/max_messages_per_frame=32000
+limits/debugger_stdout/max_errors_per_second=32000
+limits/debugger_stdout/max_warnings_per_second=32000
 
 [physics]
 
