@@ -1,7 +1,7 @@
 {
     "name": "Hypertus Species Compact Layers",
-    "description": "This mod [b]REQUIRES HYPERTUS![/b], if not then it will force close the game\nThis mod overwrite most of the species (yes, even the modded ones) with skin support to have hyperable parts",
+    "description": "This mod [b]REQUIRES HYPERTUS![/b], if not then it will force close the game!!!\nThis mod overwrite most of the species (yes, even the modded ones) that have skin support to have hyperable parts. [b]WILL NOT REPLACE EXISTING NPC![/b] Generate new NPCs to see the mod in action",
     "author": "CanInBad",
-    "modversion": "R2",
-    "gameversion": "0.1.2"
+    "modversion": "R3",
+    "gameversion": "0.1.3"
 }

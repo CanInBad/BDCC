@@ -1,38 +1,60 @@
 extends Module
 var files = File.new()
 var forceBreedEdition:bool = false
+var _inEditor:bool = false
 
 func _init():
     id = "Hypertus Modded Species Overwriter"
     var abbreviatedName = "HyperMSpeciesO"
     author = "CanInBad"
-    var _inEditor:bool = false
     if OS.has_feature("editor"):
         _inEditor = true
 
+    forceBreedEdition = GlobalRegistry.getModule("Hypertus Vanilla Species Overwriter").get("forceBreedEdition")
+
     var speciesList = {#       |    File        |Anus|   
         # ID           |Enabled|    Name        |Womb|
-        "avian":        [false, "Avian",        false],
-        "bird":         [false, "Bird",         false],
-        "gryphon":      [false, "Gryphon",      false],
-        "hippogriff":   [false, "Hippogriff",   false],
-        "avali":        [false, "Avali",        false],
         "Espeon":       [false, "Espeon",       false],
         "Leafeon":      [false, "Leafeon",      false],
-        "lucario":      [false, "Lucario",      false],
-        "protogen":     [false, "Protogen",     false],
-        "rabbit":       [false, "Rabbit",       false],
-        "rat":          [false, "Rat",          false],
+        "ampwave":      [false, "Ampwave",      false],
+        "avali":        [false, "Avali",        false],
+        "avian":        [false, "Avian",        false],
+        "bird":         [false, "Bird",         false],
+        "bovine":       [false, "Bovine",       false],
+        "crow":         [false, "Crow",         false],
+        "deer":         [false, "Deer",         false],
         "easterndragon":[false, "EasternDragon",false],
         "felkin":       [false, "Felkin",       false],
+        "gryphon":      [false, "Gryphon",      false],
+        "hippogriff":   [false, "Hippogriff",   false],
+        "houndoom":     [false, "Houndoom",     false],
         "kobold":       [false, "Kobold",       false],
-        "snake":        [false, "Snake",        false],
-        "wickerbeast":  [false, "WickerBeast",  false],
+        "laquine":      [false, "Laquine",      false],
+        "lopunny":      [false, "Lopunny",      false],
+        "lucario":      [false, "Lucario",      false],
+        "nightstalker": [false, "Nightstalkers",false],
+        "protogen":     [false, "Protogen",     false],
+        "rabbit":       [false, "Rabbit",       false],
+        "racoon":       [false, "Racoon",       false],
+        "rat":          [false, "Rat",          false],
+        "seahorse":     [false, "Seahorse",     false],
         "shark":        [false, "Shark",        false],
         "skulldog":     [false, "Skullwolf",    false],
+        "snake":        [false, "Snake",        false],
         "sylveon":      [false, "Sylveon",      false],
         "synth":        [false, "Synth",        false],
+        "treenuts":     [false, "Treenuts",     false],
+        "wickerbeast":  [false, "WickerBeast",  false],
     }
+
+    if false:
+        var yes = speciesList.keys()
+        yes.sort()
+        var _text = "{\n"
+        for i in yes:
+            _text += "\t\""+i+"\":\t["+str(speciesList[i][0]).to_lower()+", \""+str(speciesList[i][1])+"\", "+str(speciesList[i][2]).to_lower()+"],\n"
+        _text += "}"
+        print(_text)
 
     # so it turns out that Ace does not use captial S in the name so it should be safe to not handle this
     # if "SharkSpecies" in GlobalRegistry.modules:
@@ -42,16 +64,16 @@ func _init():
     var textToReport:String = ""
     var textToReportError:String = ""
     var textErase:String = ""
-    for i in GlobalRegistry.allSpecies.keys(): # Deregister vanilla species
-        if i in speciesList.keys():
-            if "anuswomb" in GlobalRegistry.allSpecies[i].getAllowedBodyparts():
-                speciesList[i][2] = true
-            var _ok = GlobalRegistry.allSpecies.erase(i)
-            speciesList[i][0] = true # signified enabled
+    for specie in GlobalRegistry.allSpecies.keys(): # Deregister vanilla species
+        if specie in speciesList.keys():
+            if "anuswomb" in GlobalRegistry.allSpecies[specie].getAllowedBodyparts():
+                speciesList[specie][2] = true
+            var _ok = GlobalRegistry.allSpecies.erase(specie)
+            speciesList[specie][0] = true # signified enabled
             if _inEditor:
-                textErase += "\n\t// "+abbreviatedName+": Erased\t"+i+"\tfrom GlobalRegistry allSpecies..."
+                textErase += "\n\t// "+abbreviatedName+": Erased\t"+specie+"\tfrom GlobalRegistry allSpecies..."
             if !(_ok):
-                textToReportError += "\n\t!! "+abbreviatedName+": "+i+"\tcan't be remove from the GlobalRegistry! Please tell "+author+" about this."
+                textToReportError += "\n\t!! "+abbreviatedName+": "+specie+"\tcan't be remove from the GlobalRegistry! Please tell "+author+" about this."
     if textErase != "":
         Log.print(textErase)
     if textToReportError != "":
@@ -65,13 +87,14 @@ func _init():
         if speciesList[i][0]:
             var hasAnusWomb = speciesList[i][2]
             var fileName = speciesList[i][1]
-            
-            if (hasAnusWomb || forceBreedEdition):
-                fileName = "awomb/"+fileName
+            var willHaveAWomb = (hasAnusWomb || forceBreedEdition)
             
             var theFile:String = "res://Modules/z0hyperModdedSpecies/Species/"+fileName+".gd"
             if files.file_exists(theFile):
-                species.append(theFile)
+                GlobalRegistry.registerSpecies(theFile)
+
+                if willHaveAWomb:
+                    GlobalRegistry.getSpecies(i).anus = "anuswombhyperable"
 
                 textToReport += "\n\t### "+abbreviatedName+": Successfully added \""+i+"\" to species list."
                 if (hasAnusWomb):
@@ -85,6 +108,14 @@ func _init():
         Log.print(textToReport)
     if !textToReportError.empty():
         printErrorLBL(textToReportError)
+
+func logPrintOnDemand(txt):
+	if _inEditor:
+		Log.print(txt)
+
+func logErrorOnDemand(txt):
+	if _inEditor:
+		Log.error(txt)
 
 static func printErrorLBL(text:String): # line by line
     var lines:Array = text.split("\n")

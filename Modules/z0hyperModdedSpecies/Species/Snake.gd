@@ -1,4 +1,4 @@
-extends Species
+extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
 	id = "snake"
@@ -33,20 +33,11 @@ func getDefaultPenis(_gender):
 	else:
 		return null
 
-func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "malebreastshyperable"
-	
-	return "breastshyperable"
-
 func getDefaultVagina(_gender):
 	if(_gender in [Gender.Female, Gender.Androgynous]):
 		return "vaginahyperable"
 	else:
 		return null
-
-func getDefaultAnus(_gender):
-	return "anushyperable"
 
 func getEggCellOvulationAmount():
 	return [
@@ -56,6 +47,9 @@ func getEggCellOvulationAmount():
 		[4, 1.0],
 		[5, 0.4],
 	]
+
+func getAllowedBodyparts():
+	return ["spinedragonpenishyperable"]
 
 func getSkinType():
 	return SkinType.Scales

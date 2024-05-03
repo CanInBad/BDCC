@@ -1,4 +1,4 @@
-extends Species
+extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
 	id = "sylveon"
@@ -29,21 +29,6 @@ func getDefaultEars(_gender):
 
 func getDefaultBody(_gender):
 	return "Sylvebody"
-
-func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "malebreastshyperable"
-	
-	return "breastshyperable"
-
-func getDefaultVagina(_gender):
-	if(_gender in [Gender.Female, Gender.Androgynous]):
-		return "vaginahyperable"
-	else:
-		return null
-
-func getDefaultAnus(_gender):
-	return "anushyperable"
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):

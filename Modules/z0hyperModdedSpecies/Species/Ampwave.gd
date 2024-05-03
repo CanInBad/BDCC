@@ -1,34 +1,34 @@
 extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "lucario"
+	id = "ampwave"
 	
 func getVisibleName():
-	return "Lucario"
+	return "Ampwave"
 
 func getDefaultLegs(_gender):
-	return "lucariolegs"
+	return "amplegs"
 
 func getDefaultTail(_gender):
-	return "lucariotail"
+	return "amptail"
 
 func isPlayable():
 	return true
 
 func getVisibleDescription():
-	return "The most sexualized pokemon"
+	return "Sound-based cybernetic organism"
 
 func getDefaultHead(_gender):
-	return "Lucariohead2"
+	return "amphead"
 
 func getDefaultArms(_gender):
-	return "lucarioarms"
+	return "amparms2"
 
 func getDefaultEars(_gender):
-	return "lucarioears"
+	return "ampears"
 
 func getDefaultBody(_gender):
-	return "lucariobody"
+	return "ampbodyalt"
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
@@ -36,12 +36,9 @@ func getDefaultPenis(_gender):
 	else:
 		return null
 
+#nuke fertility because cyborgs, which I should probably go back and do to synths if I ever update that one.
 func getEggCellOvulationAmount():
 	return [
-		[2, 3.0],
-		[3, 6.0],
-		[4, 8.0],
-		[5, 6.0],
-		[6, 4.0],
-		[7, 1.0],
+		[1, 5.0],
+		[2, 2.0],
 	]

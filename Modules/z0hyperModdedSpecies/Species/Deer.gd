@@ -1,55 +1,43 @@
-extends Species
+extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "rat"
+	id = "deer"
 
 func isPlayable():
 	return true
 
 func getVisibleName():
-	return "Rat"
+	return "Deer"
 
 func getVisibleDescription():
 	return "Cheeselovers"
 
 func getDefaultLegs(_gender):
-	return "digilegs"
+	return "deerlegs"
 
 func getDefaultTail(_gender):
-	return "rattail"
+	return "deertail"
+
+func getDefaultHorns(_gender):
+	if(_gender in [Gender.Male, Gender.Androgynous]):
+		return "deerhorns"
+	else:
+		return null
 
 func getDefaultHead(_gender):
-	return "rathead"
+	return "deerhead"
 
 func getDefaultArms(_gender):
 	return "anthroarms"
 
 func getDefaultEars(_gender):
-	return "ratears"
-
-func getDefaultBreasts(_gender):
-	if(_gender in [Gender.Male]):
-		return "malebreastshyperable"
-	
-	return "breastshyperable"
-
-func getDefaultVagina(_gender):
-	if(_gender in [Gender.Female, Gender.Androgynous]):
-		return "vaginahyperable"
-	else:
-		return null
-
-func getDefaultAnus(_gender):
-	return "anushyperable"
+	return "deerears"
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "humanpenishyperable"
+		return "deerpenishyperable"
 	else:
 		return null
-
-func getAllowedBodyparts():
-	return ["anuswombhyperable"]
 
 func getEggCellOvulationAmount():
 	return [
@@ -61,3 +49,6 @@ func getEggCellOvulationAmount():
 		[6, 1.0],
 		[7, 0.5],
 	]
+
+func getAllowedBodyparts():
+	return ["knottedequinepenishyperable", "barbedequinepenishyperable", "equinepenishyperable"]

@@ -1,40 +1,37 @@
-extends Species
+extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "Leafeon"
+	id = "houndoom"
 	
 func getVisibleName():
-	return "Leafeon"
+	return "Houndoom"
 
 func getDefaultLegs(_gender):
-	return "Leaflegs"
+	return "doomlegs"
 
 func getDefaultTail(_gender):
-	return "leafeontail"
+	return "doomtail"
+
+func getDefaultHorns(_gender):
+	return "doomhorns"
 
 func isPlayable():
 	return true
 
 func getVisibleDescription():
-	return "Some seedy individuals..."
+	return "The Devilish Pokemon"
 
 func getDefaultHead(_gender):
-	return "leafeonhead"
+	return "caninehead"
+
+func getDefaultBody(_gender):
+	return "doombody1alt"
 
 func getDefaultArms(_gender):
-	return "anthroarms"
+	return "doomarms"
 
 func getDefaultEars(_gender):
-	return "leafeonears"
-
-func getDefaultAnus(_gender):
-	return "anushyperable"
-
-func getDefaultVagina(_gender):
-	if(_gender in [Gender.Female, Gender.Androgynous]):
-		return "vaginahyperable"
-	else:
-		return null
+	return "canineears"
 
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
@@ -42,15 +39,15 @@ func getDefaultPenis(_gender):
 	else:
 		return null
 
-func getAllowedBodyparts():
-	return ["anuswombhyperable"]
-
 func getEggCellOvulationAmount():
 	return [
 		[2, 3.0],
 		[3, 6.0],
-		[4, 8.0],
-		[5, 6.0],
-		[6, 4.0],
+		[4, 0.0],
+		[5, 0.0],
+		[6, 0.0],
 		[7, 1.0],
 	]
+
+func getAllowedBodyparts():
+	return ["felinetail", "canineears", "wolfears", "caninehead", "wolfhead"]

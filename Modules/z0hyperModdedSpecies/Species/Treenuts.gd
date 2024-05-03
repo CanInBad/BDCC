@@ -1,47 +1,51 @@
 extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "Leafeon"
-	
+	id = "treenuts"
+
+#I cant fucking type squrriel consistently so you get treenuts instead
+
 func getVisibleName():
-	return "Leafeon"
+	return "Squirrel"
 
 func getDefaultLegs(_gender):
-	return "Leaflegs"
+	return "digilegs"
 
 func getDefaultTail(_gender):
-	return "leafeontail"
+	return "treenutstail"
 
 func isPlayable():
 	return true
 
 func getVisibleDescription():
-	return "Some seedy individuals..."
+	return "Nut joke."
 
 func getDefaultHead(_gender):
-	return "leafeonhead"
+	return "treenutshead"
 
 func getDefaultArms(_gender):
 	return "anthroarms"
 
 func getDefaultEars(_gender):
-	return "leafeonears"
+	return "felineears"
 
-func getDefaultAnus(_gender):
-	return "anushyperable"
-
+#A lot of the refs I saw had human dick so we're gonna do both and see how it goes
+# NO!!!!!!
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
 		return "caninepenishyperable"
 	else:
 		return null
 
+func getAllowedBodyparts():
+	return ["shorttail", "felineears", "wolfears", "humanpenishyperable"]
+
+#I actually gave this one a custom Ovulation count this time
+
 func getEggCellOvulationAmount():
 	return [
-		[2, 3.0],
-		[3, 6.0],
-		[4, 8.0],
-		[5, 6.0],
-		[6, 4.0],
-		[7, 1.0],
+		[2, 6.0],
+		[3, 8.0],
+		[4, 6.0],
+		[5, 1.0],
 	]

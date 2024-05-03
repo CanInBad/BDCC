@@ -1,39 +1,37 @@
 extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "rat"
+	id = "racoon"
 
 func isPlayable():
 	return true
 
 func getVisibleName():
-	return "Rat"
+	return "Racoon"
 
 func getVisibleDescription():
-	return "Cheeselovers"
+	return "Trash pandas"
 
 func getDefaultLegs(_gender):
 	return "digilegs"
 
 func getDefaultTail(_gender):
-	return "rattail"
+	return "racoontail2"
 
 func getDefaultHead(_gender):
-	return "rathead"
+	return "racoonhead2"
 
 func getDefaultArms(_gender):
 	return "anthroarms"
 
 func getDefaultEars(_gender):
-	return "ratears"
+	return "racoonears"
 
 func getEggCellOvulationAmount():
 	return [
-		[1, 2.0],
-		[2, 8.0],
-		[3, 6.0],
-		[4, 4.0],
-		[5, 2.0],
-		[6, 1.0],
-		[7, 0.5],
+		[1, 1.0],
+		[2, 6.0],
+		[3, 8.0],
+		[4, 5.0],
+		[5, 4.0],
 	]

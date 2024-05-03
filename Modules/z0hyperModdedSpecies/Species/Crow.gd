@@ -1,31 +1,37 @@
 extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "rat"
+	id = "crow"
 
 func isPlayable():
 	return true
 
 func getVisibleName():
-	return "Rat"
+	return "Crow"
 
 func getVisibleDescription():
-	return "Cheeselovers"
+	return "Black mischievous bird"
 
 func getDefaultLegs(_gender):
-	return "digilegs"
+	return "crowlegs2"
 
 func getDefaultTail(_gender):
-	return "rattail"
+	return "crowtail"
 
 func getDefaultHead(_gender):
-	return "rathead"
+	return "crowhead"
 
 func getDefaultArms(_gender):
-	return "anthroarms"
+	return "crowarms"
 
 func getDefaultEars(_gender):
-	return "ratears"
+	return "noears"
+
+func getDefaultPenis(_gender):
+	if(_gender in [Gender.Male, Gender.Androgynous]):
+		return "avianpenishyperable"
+	else:
+		return null
 
 func getEggCellOvulationAmount():
 	return [
