@@ -14,45 +14,50 @@ func _init():
 
     var speciesList = {#       |    File        |Anus|   
         # ID           |Enabled|    Name        |Womb|
-        "Espeon":       [false, "Espeon",       false],
-        "Leafeon":      [false, "Leafeon",      false],
-        "ampwave":      [false, "Ampwave",      false],
-        "avali":        [false, "Avali",        false],
-        "avian":        [false, "Avian",        false],
-        "bird":         [false, "Bird",         false],
-        "bovine":       [false, "Bovine",       false],
-        "crow":         [false, "Crow",         false],
-        "deer":         [false, "Deer",         false],
-        "easterndragon":[false, "EasternDragon",false],
-        "felkin":       [false, "Felkin",       false],
-        "gryphon":      [false, "Gryphon",      false],
-        "hippogriff":   [false, "Hippogriff",   false],
-        "houndoom":     [false, "Houndoom",     false],
-        "kobold":       [false, "Kobold",       false],
-        "laquine":      [false, "Laquine",      false],
-        "lopunny":      [false, "Lopunny",      false],
-        "lucario":      [false, "Lucario",      false],
-        "nightstalker": [false, "Nightstalkers",false],
-        "protogen":     [false, "Protogen",     false],
-        "rabbit":       [false, "Rabbit",       false],
-        "racoon":       [false, "Racoon",       false],
-        "rat":          [false, "Rat",          false],
-        "seahorse":     [false, "Seahorse",     false],
-        "shark":        [false, "Shark",        false],
-        "skulldog":     [false, "Skullwolf",    false],
-        "snake":        [false, "Snake",        false],
-        "sylveon":      [false, "Sylveon",      false],
-        "synth":        [false, "Synth",        false],
-        "treenuts":     [false, "Treenuts",     false],
-        "wickerbeast":  [false, "WickerBeast",  false],
-    }
+        "ampwave":	    [false, "Ampwave",      false],
+        "avali":	    [false, "Avali",        false],
+        "avian":	    [false, "Avian",        false],
+        "bird":	        [false, "Bird",         false],
+        "bovine":	    [false, "Bovine",       false],
+        "crow":	        [false, "Crow",         false],
+        "deer":	        [false, "Deer",         false],
+        "easterndragon":[false, "Easterndragon",false],
+        "Espeon":	    [false, "Espeon",       false],
+        "felkin":	    [false, "Felkin",       false],
+        "gryphon":	    [false, "Gryphon",      false],
+        "hippogriff":	[false, "Hippogriff",   false],
+        "houndoom":	    [false, "Houndoom",     false],
+        "kobold":	    [false, "Kobold",       false],
+        "laquine":	    [false, "Laquine",      false],
+        "Leafeon":	    [false, "Leafeon",      false],
+        "lopunny":	    [false, "Lopunny",      false],
+        "lucario":	    [false, "Lucario",      false],
+        "nightstalker":	[false, "Nightstalkers",false],
+        "protogen":	    [false, "Protogen",     false],
+        "rabbit":	    [false, "Rabbit",       false],
+        "racoon":	    [false, "Racoon",       false],
+        "rat":	        [false, "Rat",          false],
+        "seahorse":	    [false, "Seahorse",     false],
+        "shark":	    [false, "Shark",        false],
+        "skulldog":	    [false, "Skullwolf",    false],
+        "snake":	    [false, "Snake",        false],
+        "sylveon":	    [false, "Sylveon",      false],
+        "synth":	    [false, "Synth",        false],
+        "treenuts":	    [false, "Treenuts",     false],
+        "wickerbeast":	[false, "Wickerbeast",  false],
+}
 
-    if false:
-        var yes = speciesList.keys()
-        yes.sort()
+
+    if false: # sorting using filename
+        var yes2 = []
+        for i in speciesList:
+            yes2.append(speciesList[i][1])
+        yes2.sort()
         var _text = "{\n"
-        for i in yes:
-            _text += "\t\""+i+"\":\t["+str(speciesList[i][0]).to_lower()+", \""+str(speciesList[i][1])+"\", "+str(speciesList[i][2]).to_lower()+"],\n"
+        for i in range(yes2.size()):
+            for j in speciesList:
+                if yes2[i] == speciesList[j][1]:
+                    _text += "\t\""+j+"\":\t["+str(speciesList[j][0]).to_lower()+", \""+str(speciesList[j][1])+"\", "+str(speciesList[j][2]).to_lower()+"],\n"
         _text += "}"
         print(_text)
 
