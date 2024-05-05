@@ -58,6 +58,7 @@ func _init():
             for j in speciesList:
                 if yes2[i] == speciesList[j][1]:
                     _text += "\t\""+j+"\":\t["+str(speciesList[j][0]).to_lower()+", \""+str(speciesList[j][1])+"\", "+str(speciesList[j][2]).to_lower()+"],\n"
+                    continue
         _text += "}"
         print(_text)
 
