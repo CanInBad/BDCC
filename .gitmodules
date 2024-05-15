@@ -7,3 +7,6 @@
 [submodule "grindingFloor"]
 	path = Modules/Z_IgrindingFloor
 	url = https://CanInBad@github.com/CanInBad/grindingFloor.git
+[submodule "Modules/selfFight"]
+	path = Modules/selfFight
+	url = https://github.com/CanInBad/selfFight.git
