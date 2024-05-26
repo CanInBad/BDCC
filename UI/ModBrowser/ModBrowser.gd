@@ -23,7 +23,7 @@ func _ready():
 func _on_ModBrowser_visibility_changed():
 	if(visible && !downloadedMods):
 		downloadedMods = true
-		var error = http_request.request("https://raw.githubusercontent.com/Alexofp/BDCCMods/main/allmods.json")
+		var error = http_request.request("https://raw.githubusercontent.com/CanInBad/BDCCMods/modified/allmods.json")
 		if error != OK:
 			Log.printerr("[ModBrowser] An error occurred in the HTTP request.")
 
