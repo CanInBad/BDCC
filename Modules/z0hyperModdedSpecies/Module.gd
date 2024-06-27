@@ -7,7 +7,7 @@ func _init():
     id = "Hypertus Modded Species Overwriter"
     var abbreviatedName = "HyperMSpeciesO"
     author = "CanInBad"
-    if OS.has_feature("editor"):
+    if GlobalRegistry.getModule("Hypertus Vanilla Species Overwriter").inEditor:
         _inEditor = true
 
     forceBreedEdition = GlobalRegistry.getModule("Hypertus Vanilla Species Overwriter").get("forceBreedEdition")
@@ -38,6 +38,7 @@ func _init():
         "racoon":	    [false, "Racoon",       false],
         "rat":	        [false, "Rat",          false],
         "seahorse":	    [false, "Seahorse",     false],
+        "sergal":	    [false, "Sergal",       false],
         "shark":	    [false, "Shark",        false],
         "skulldog":	    [false, "Skullwolf",    false],
         "snake":	    [false, "Snake",        false],
@@ -45,8 +46,7 @@ func _init():
         "synth":	    [false, "Synth",        false],
         "treenuts":	    [false, "Treenuts",     false],
         "wickerbeast":	[false, "Wickerbeast",  false],
-}
-
+        }
 
     if false: # sorting using filename
         var yes2 = []
@@ -116,12 +116,12 @@ func _init():
         printErrorLBL(textToReportError)
 
 func logPrintOnDemand(txt):
-	if _inEditor:
-		Log.print(txt)
+    if _inEditor:
+        Log.print(txt)
 
 func logErrorOnDemand(txt):
-	if _inEditor:
-		Log.error(txt)
+    if _inEditor:
+        Log.error(txt)
 
 static func printErrorLBL(text:String): # line by line
     var lines:Array = text.split("\n")

@@ -1,52 +1,49 @@
 extends "res://Modules/0hyperVanillaSpecies/SpeciesExtend.gd"
 
 func _init():
-	id = "felkin"
+	id = "sergal"
 	
 func getVisibleName():
-	return "Felkin"
+	return "Sergal"
 
 func getDefaultLegs(_gender):
-	return "digilegs"
+	return "serglegs"
 
 func getDefaultTail(_gender):
-	return "horsetail"
+	return "sergaltail"
 
 func isPlayable():
 	return true
 
 func getVisibleDescription():
-	return "huge dragon-equines"
+	return "Haha. Wedge."
 
 func getDefaultArms(_gender):
-	return "anthroarms"
-
-func getDefaultHorns(_gender):
-	return "backspiralfull"
+	return "sergarms"
 
 func getDefaultHead(_gender):
-	return "felkinhead2"
+	return "sergalhead"
 
 func getDefaultEars(_gender):
-	return "felkinears"
+	return "sergalearsbig"
 
+func getDefaultBody(_gender):
+	return "sergalbody"
+	
 func getDefaultPenis(_gender):
 	if(_gender in [Gender.Male, Gender.Androgynous]):
-		return "equinepenishyperable"
+		return "caninepenishyperable"
 	else:
 		return null
 
 func getEggCellOvulationAmount():
 	return [
 		[1, 4.0],
-		[2, 5.0],
-		[3, 3.0],
-		[4, 1.0],
-		[5, 0.4],
+		[2, 0.5],
 	]
 
 func getSkinType():
 	return SkinType.Fur
 
-func getAllowedBodyparts():
-	return ["horsetail", "demonhorns2", "dragonhorns", "dragonears2", "knottedequinepenishyperable", "barbedequinepenishyperable"]
+func onDynamicNpcCreation(_npc, _args):
+	_npc.giveBodypartUnlessSame(GlobalRegistry.createBodypart("baldhair"))

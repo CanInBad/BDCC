@@ -7,7 +7,7 @@ var strSpecies = ["canine","demon","dragon","equine","feline","human"]
 # const dialogFile = preload("res://Modules/0hyperSpeciesChk/dialog.gd")
 # signal hypertusNotExist
 
-var inEditor:bool = false
+var inEditor:bool = true
 
 func logPrintOnDemand(txt):
 	if inEditor:
@@ -37,21 +37,31 @@ func _init():
     else:
         Log.print(" ### "+id+": Hypertus found, Will not force exit")
     
-        for i in GlobalRegistry.allSpecies.keys(): # Deregister vanilla species
-            if i in strSpecies:
-                var _ok = GlobalRegistry.allSpecies.erase(i)
-                logPrintOnDemand("// "+id+": Erased\t"+i+"\tfrom GlobalRegistry allSpecies...")
-
         var speciesPath = [
                 "res://Modules/0hyperVanillaSpecies/Species/HyperCanine.gd",
-                "res://Modules/0hyperVanillaSpecies/Species/HyperDemon.gd",
+                # "res://Modules/0hyperVanillaSpecies/Species/HyperDemon.gd",
                 "res://Modules/0hyperVanillaSpecies/Species/HyperDragon.gd",
                 "res://Modules/0hyperVanillaSpecies/Species/HyperEquine.gd",
                 "res://Modules/0hyperVanillaSpecies/Species/HyperFeline.gd",
-                "res://Modules/0hyperVanillaSpecies/Species/HyperHuman.gd",
+                "res://Modules/0hyperVanillaSpecies/Species/HyperHuman.gd"
         ]
 
+        for i in GlobalRegistry.allSpecies.keys(): # Deregister vanilla species
+            if i in strSpecies:
+                if i == "demon":
+                    logPrintOnDemand("skipped demon")
+                    print(String(GlobalRegistry.getSpecies(i).getDefaultHead(NpcGender.Male)))
+                    if GlobalRegistry.getSpecies(i).getDefaultHead(NpcGender.Male) == "wolfhead":
+                        logPrintOnDemand("// "+id+": Made\t"+i+"\tto be hellhound!")
+                        speciesPath.append("res://Modules/0hyperVanillaSpecies/Species/Compat/HyperHellhound.gd")
+                    else:
+                        logPrintOnDemand("// "+id+": Made\t"+i+"\tis a normal demon")
+                        speciesPath.append("res://Modules/0hyperVanillaSpecies/Species/HyperDemon.gd")
+                var _ok = GlobalRegistry.allSpecies.erase(i)
+                logPrintOnDemand("// "+id+": Erased\t"+i+"\tfrom GlobalRegistry allSpecies...")
+
         for path in speciesPath:
+            logPrintOnDemand("")
             GlobalRegistry.registerSpecies(path)
 
         if !forceBreedEdition:
