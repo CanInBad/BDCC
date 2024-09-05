@@ -10,3 +10,6 @@
 [submodule "Modules/selfFight"]
 	path = Modules/selfFight
 	url = https://github.com/CanInBad/selfFight.git
+[submodule "Modules/MedicalDBOverwrite"]
+	path = Modules/MedicalDBOverwrite
+	url = https://CanInBad@github.com/CanInBad/MedicalDBOverwrite
