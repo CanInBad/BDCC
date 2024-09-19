@@ -10,3 +10,6 @@
 [submodule "Modules/selfFight"]
 	path = Modules/selfFight
 	url = https://github.com/CanInBad/selfFight.git
+[submodule "Modules/PartOrientPicker"]
+	path = Modules/PartOrientPicker
+	url = https://CanInBad@github.com/CanInBad/OrientPartPicker.git
