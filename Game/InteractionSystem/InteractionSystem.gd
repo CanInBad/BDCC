@@ -455,6 +455,9 @@ func startInteraction(interactionID:String, involvedPawns:Dictionary, args:Dicti
 	interaction.start(involvedPawns, args)
 
 func stopInteraction(interaction:PawnInteractionBase):
+	if(interaction == null || !interactions.has(interaction) || interaction.wasDeleted):
+		return
+	interaction.onStopped()
 	interactions.erase(interaction)
 	interaction.wasDeleted = true
 	
@@ -656,3 +659,13 @@ func resetExtraText():
 
 func saynnExtra(newT:String):
 	extraText += newT + "\n\n"
+
+func getAvailableNursesAmount() -> int:
+	var result:int = 0
+	
+	for pawnID in pawns:
+		var pawn:CharacterPawn = pawns[pawnID]
+		if(pawn.isNurse() && pawn.canBeInterrupted()):
+			result += 1
+	
+	return result

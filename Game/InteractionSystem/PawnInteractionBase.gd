@@ -76,6 +76,12 @@ func getCharByRole(role:String):
 func getRoleChar(role:String):
 	return getCharByRole(role)
 
+func hasRole(role:String) -> bool:
+	return involvedPawns.has(role)
+
+func hasRoleChar(role:String) -> bool:
+	return hasRole(role) && (getRoleChar(role) != null)
+
 func playAnimation():
 	var animData = getAnimDataFinal()
 	
@@ -778,6 +784,11 @@ func doFightAftermath(_fightersData, newResult):
 		if(wonPawn.isPlayer() && lostPawn != null):
 			var pawnWonPower:float = wonPawn.calculatePowerScore()
 			var pawnLostPower:float = lostPawn.calculatePowerScore()
+			if(pawnWonPower < pawnLostPower):
+				wonPawn.addExperienceIfPlayer(50)
+			else:
+				wonPawn.addExperienceIfPlayer(30)
+			
 			var powerScale:float = sqrt(pawnLostPower / max(0.1, pawnWonPower + pawnLostPower))
 			if(lostPawn.isInmate()):
 				wonPawn.addRepScore(RepStat.Inmates, powerScale)
@@ -786,11 +797,11 @@ func doFightAftermath(_fightersData, newResult):
 	if(lostPawn != null):
 		lostPawn.afterLostFight()
 		
-		#GM.main.WHS.addEvent(WHEvent.LostFight, lostPawn.charID, wonPawn.charID)
-		
 		if(lostPawn.isPlayer() && wonPawn != null):
 			var pawnWonPower:float = wonPawn.calculatePowerScore()
 			var pawnLostPower:float = lostPawn.calculatePowerScore()
+			wonPawn.addExperienceIfPlayer(5)
+			
 			var powerScale:float = sqrt(pawnWonPower / max(0.1, pawnWonPower + pawnLostPower))
 			if(wonPawn.isInmate()):
 				lostPawn.addRepScore(RepStat.Inmates, -powerScale)
@@ -949,6 +960,9 @@ func processTime(_howMuch:int):
 
 func stopMe():
 	GM.main.IS.stopInteraction(self)
+
+func onStopped():
+	pass
 
 func getDebugInfo():
 	return [
@@ -1143,6 +1157,11 @@ func makeRoleExhausted(role:String):
 
 func addMessage(text: String):
 	GM.main.addMessage(text)
+
+func addExperienceToPlayer(ex: int, showMessage: bool = true):
+	if(showMessage):
+		addMessage("You received "+str(ex)+" experience")
+	GM.pc.addExperience(ex)
 
 func runScene(sceneid: String, args = [], tag = ""):
 	var scene = GM.main.runScene(sceneid, args)
