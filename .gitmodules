@@ -13,3 +13,6 @@
 [submodule "Modules/VenomBoss"]
 	path = Modules/VenomBoss
 	url = https://CanInBad@github.com/CanInBad/VenomBoss.git
+[submodule "Modules/charImportSave"]
+	path = Modules/charImportSave
+	url = https://CanInBad@github.com/CanInBad/charImportSave.git

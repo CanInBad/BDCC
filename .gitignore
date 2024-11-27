@@ -18,6 +18,9 @@ logs/
 # whe the vscdoium still use the same namespace
 .vscode/**
 
+# doll changes
+AssetsSource/*/DollSkeleton3.*
+
 # compact testing
 Modules/SynthSpecies
 Modules/FluffBodyPartsV3
