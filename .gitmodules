@@ -16,3 +16,6 @@
 [submodule "Modules/charImportSave"]
 	path = Modules/charImportSave
 	url = https://CanInBad@github.com/CanInBad/charImportSave.git
+[submodule "Modules/WingStatic"]
+	path = Modules/WingStatic
+	url = https://CanInBad@github.com/CanInBad/WingStatic.git
