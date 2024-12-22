@@ -20,10 +20,12 @@ var maxKeepNPCKids:int = 30
 # Sandbox options
 var sandboxPawnCount:int = 30
 var sandboxBreeding:String = "rare" # normal reduced rare veryrare never
+var sandboxNpcLeveling:float = 1.0
 
 # Difficulty options
 var hardStruggleEnabled: bool = false
 var smartLockRarity: String = "normal" # never veryrare rare normal often veryoften bdsmslut always
+var overstimulationEnabled: bool = true
 
 var shouldScaleUI: bool = true
 var uiScaleMultiplier = 1.0
@@ -81,6 +83,7 @@ func resetToDefaults():
 	maxKeepNPCKids = 30
 	hardStruggleEnabled = false
 	smartLockRarity = "normal"
+	overstimulationEnabled = true
 	shouldScaleUI = true
 	uiScaleMultiplier = 1.0
 	showSpeakerName = true
@@ -111,6 +114,7 @@ func resetToDefaults():
 	genderNamesOverrides = {}
 	sandboxPawnCount = 30
 	sandboxBreeding = "rare"
+	sandboxNpcLeveling = 1.0
 	
 	enabledContent.clear()
 	for contentType in ContentType.getAll():
@@ -177,6 +181,9 @@ func isHardStruggleEnabled():
 
 func getSmartLockRarity():
 	return smartLockRarity
+
+func isOverstimulationEnabled():
+	return overstimulationEnabled
 
 func shouldShowSpeakerName():
 	return showSpeakerName
@@ -259,6 +266,9 @@ func getCumShotsIntensityMult():
 func getSandboxPawnCount() -> int:
 	return sandboxPawnCount
 
+func getSandboxNpcLeveling() -> float:
+	return sandboxNpcLeveling
+
 func getSandboxOffscreenBreedingMult() -> float:
 	if(sandboxBreeding == "normal"):
 		return 1.0
@@ -320,6 +330,25 @@ func getChangeableOptions():
 						["rare", "Rare (20%)"],
 						["veryrare", "Very rare (5%)"],
 						["never", "Never (0%)"],
+					],
+				},
+				{
+					"name": "Accelerated pawn auto-leveling",
+					"description": "Pawns receive more or less experience depending on the player's level. This setting adjusts the strength of this modifier. Normal leveling makes the npcs earn a fixed amount of experience from fights.",
+					"id": "sandboxNpcLeveling",
+					"type": "list",
+					"value": sandboxNpcLeveling,
+					"values": [
+						[-1.0, "Disable npc leveling"],
+						[0.0, "Normal leveling"],
+						[0.05, "5%"],
+						[0.1, "10%"],
+						[0.25, "25%"],
+						[0.5, "50%"],
+						[0.75, "75%"],
+						[1.0, "100%"],
+						[1.5, "150%"],
+						[2.0, "200%"],
 					],
 				},
 			],
@@ -441,6 +470,13 @@ func getChangeableOptions():
 						["bdsmslut", "BDSM SLUT"],
 						["always", "Always"],
 					]
+				},
+				{
+					"name": "Overstimulation mechanic",
+					"description": "Makes it so any erogenous zone can be overstimulated during sex. Overstimulated zones lose sensitivity when stimulated further. Nipples can be overstimulated even if this option is disabled.",
+					"id": "overstimulationEnabled",
+					"type": "checkbox",
+					"value": overstimulationEnabled
 				},
 			]
 		},
@@ -835,6 +871,8 @@ func applyOption(categoryID, optionID, value):
 				sandboxPawnCount = 0
 		if(optionID == "sandboxBreeding"):
 			sandboxBreeding = value
+		if(optionID == "sandboxNpcLeveling"):
+			sandboxNpcLeveling = value
 	
 	if(categoryID == "jigglephysics"):
 		if(optionID == "jigglePhysicsBreastsEnabled"):
@@ -891,6 +929,8 @@ func applyOption(categoryID, optionID, value):
 			hardStruggleEnabled = value
 		if optionID == "smartLockRarity":
 			smartLockRarity = value
+		if optionID == "overstimulationEnabled":
+			overstimulationEnabled = value
 	
 	if(categoryID == "other"):
 		if(optionID == "fetchLatestRelease"):
@@ -982,6 +1022,7 @@ func saveData():
 		"maxKeepNPCKids": maxKeepNPCKids,
 		"hardStruggleEnabled": hardStruggleEnabled,
 		"smartLockRarity": smartLockRarity,
+		"overstimulationEnabled": overstimulationEnabled,
 		"shouldScaleUI": shouldScaleUI,
 		"uiScaleMultiplier": uiScaleMultiplier,
 		"uiButtonSize": uiButtonSize,
@@ -1015,6 +1056,7 @@ func saveData():
 		"cumIntensityMult": cumIntensityMult,
 		"sandboxPawnCount": sandboxPawnCount,
 		"sandboxBreeding": sandboxBreeding,
+		"sandboxNpcLeveling": sandboxNpcLeveling,
 	}
 	
 	return data
@@ -1034,6 +1076,7 @@ func loadData(data):
 	maxKeepNPCKids = loadVar(data, "maxKeepNPCKids", 30)
 	hardStruggleEnabled = loadVar(data, "hardStruggleEnabled", false)
 	smartLockRarity = loadVar(data, "smartLockRarity", "normal")
+	overstimulationEnabled = loadVar(data, "overstimulationEnabled", true)
 	shouldScaleUI = loadVar(data, "shouldScaleUI", true)
 	uiScaleMultiplier = loadVar(data, "uiScaleMultiplier", 1.0)
 	uiButtonSize = loadVar(data, "uiButtonSize", 0)
@@ -1067,6 +1110,7 @@ func loadData(data):
 	cumIntensityMult = loadVar(data, "cumIntensityMult", 1.0)
 	sandboxPawnCount = loadVar(data, "sandboxPawnCount", 30)
 	sandboxBreeding = loadVar(data, "sandboxBreeding", "rare")
+	sandboxNpcLeveling = loadVar(data, "sandboxNpcLeveling", 1.0)
 
 func saveToFile():
 	var saveData = saveData()

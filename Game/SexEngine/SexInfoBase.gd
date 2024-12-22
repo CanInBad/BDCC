@@ -31,7 +31,46 @@ func getChar() -> BaseCharacter:
 	return GlobalRegistry.getCharacter(charID)
 
 func getInfoString():
-	return ""
+	var character = getChar()
+	
+	var text:String = ""
+	if(character != null):
+		text += character.getName()
+	
+	return text
+
+func getInfoStringFinal() -> String:
+	var text:String = getInfoString()
+	
+	var extraInfo:Array = getExtraInfoLines()
+	if(!extraInfo.empty()):
+		for line in extraInfo:
+			text += "\n - "+str(line)
+	
+	return text
+
+func getExtraInfoLines() -> Array:
+	var result:Array = []
+	
+	var sensitiveZones:Array = getChar().getSensitiveZones()
+	for zone in sensitiveZones:
+		if(zone.shouldShowOverstimualtedTextInSexEngine(self)):
+			var zoneStimulation:float = zone.getStimulationOrOverstimulation()
+			var zoneName:String = zone.getName()
+			var isOrgasmEffect:bool = zone.hasOrgasmEffect()
+			var isBads:bool = (zoneStimulation >= 0.9) || zone.isOverstimulated()
+			var isVeryBads:bool = zone.isOverstimulated()
+			var colorString:String = ("red" if isVeryBads else "#FF9999")
+			var extraTexts:Array = []
+			if(isOrgasmEffect):
+				extraTexts.append("orgasm")
+			if(!zone.canOrgasm()):
+				extraTexts.append("not sensitive enough to cum")
+			
+			result.append(zoneName+" overstimulation: "+("[color="+colorString+"]" if isBads else "")+str(Util.roundF(zoneStimulation*100.0, 1))+"%"+("[/color]" if isBads else "")+(" ("+Util.join(extraTexts, ", ")+")" if extraTexts.size() > 0 else ""))
+	
+	
+	return result
 
 func initFromPersonality():
 	pass
@@ -87,10 +126,12 @@ func canTalk():
 	return true
 
 func arousalNaturalFade():
-	if(!hadStim):
+	if(!hadStim && getArousal() > 0.0):
 		addArousal(-0.01)
 		turnsLastStim += 1
 		
+		if(turnsLastStim > 1):
+			onDenyTick()
 		if(turnsLastStim > 4):
 			addArousal(-0.02)
 		if(turnsLastStim > 8):
@@ -98,6 +139,20 @@ func arousalNaturalFade():
 	#else:
 	#	turnsLastStim = 0
 	hadStim = false
+
+func onDenyTick():
+	for zone in getChar().getSensitiveZones():
+		zone.onDenyTick()
+
+func isBeingDenied() -> bool:
+	if(!hadStim && getArousal() > 0.2 && turnsLastStim > 2):
+		return true
+	return false
+
+func isBeingDeniedHard() -> bool:
+	if(!hadStim && getArousal() > 0.7 && turnsLastStim > 1):
+		return true
+	return false
 
 func addArousalForeplay(howmuch: float):
 	#var lustLevel = getChar().getLustLevel()
@@ -107,11 +162,43 @@ func addArousalForeplay(howmuch: float):
 
 func addArousalSex(howmuch: float):
 	var lustLevel = getChar().getLustLevel()
-	if(lustLevel < 0.4):
+	if(lustLevel < 0.6):
 		# should be less efficient at low lust
-		addArousal(howmuch * max(lustLevel, 0.1))
+		addArousal(howmuch * max(lustLevel+0.3, 0.6))
 	else:
 		addArousal(howmuch)
+
+func stimulateArousalZone(howmuch: float, bodypartSlot, stimulation:float = 1.0):
+	if(bodypartSlot == BodypartSlot.Penis && getChar().isWearingStrapon()):
+		var strapon = getChar().getWornStrapon()
+		var pleasureMod = strapon.getStraponPleasureForDom()
+		
+		addArousalSex(howmuch * pleasureMod)
+		return
+	
+	var sensitiveZone:SensitiveZone = getChar().getBodypart(bodypartSlot).getSensitiveZone()
+	if(sensitiveZone != null):
+		turnsLastStim = 0
+		hadStim = true
+		sensitiveZone.stimulate(stimulation)
+		
+		var howMuchActually:float = sensitiveZone.getArousalGainModifier()
+		
+		var theArousal:float = getArousal()
+		
+		howMuchActually *= max((1.0 - min(theArousal, 0.5)*0.1 - theArousal*0.25), 0.01)
+		#if(howMuchActually <= 0.08 && RNG.chance(50)):
+		#	addArousalSex(-0.01)
+		#	return
+		if(howMuchActually*0.2 <= 0.07):
+			addArousalSex(-0.02)
+			return
+		#if(howMuchActually <= 0.09):
+		#	howMuchActually *= 0.2
+		
+		addArousalSex(howmuch * howMuchActually)
+	else:
+		addArousalSex(howmuch)
 
 func isCloseToCumming() -> bool:
 	return getArousal() >= 0.7

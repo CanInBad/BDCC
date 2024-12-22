@@ -304,10 +304,10 @@ func copyEverythingFrom(otherCharacter): #:BaseCharacter
 	
 	inventory.loadData(otherCharacter.getInventory().saveData().duplicate(true))
 	for item in inventory.getItems():
-		item.uniqueID = GlobalRegistry.generateUniqueID()
+		item.uniqueID = "item"+str(GlobalRegistry.generateUniqueID())
 	for itemSlot in inventory.getEquippedItems():
 		var item = inventory.getEquippedItem(itemSlot)
-		item.uniqueID = GlobalRegistry.generateUniqueID()
+		item.uniqueID = "item"+str(GlobalRegistry.generateUniqueID())
 	
 	skillsHolder.loadData(otherCharacter.skillsHolder.saveData().duplicate(true))
 	lustInterests.loadData(otherCharacter.lustInterests.saveData().duplicate(true))
@@ -487,8 +487,8 @@ func loadData(data):
 				continue
 			bodypart = GlobalRegistry.createBodypart(replacementID)
 			
-		bodypart.loadData(SAVE.loadVar(loadedBodyparts[slot], "data", {}))
 		giveBodypart(bodypart, false)
+		bodypart.loadData(SAVE.loadVar(loadedBodyparts[slot], "data", {}))
 	checkSkins(true)
 	
 	loadStatusEffectsData(SAVE.loadVar(data, "statusEffects", {}))
@@ -686,7 +686,7 @@ func loadFromDatapackCharacter(_datapack:Datapack, _datapackChar:DatapackCharact
 					if(foundData != null):
 						npcDefaultEquipment.append({id=equipItemData["id"], datapackdata=foundData})
 					else:
-						npcDefaultEquipment.append(equipItemData["id"]) # Gets requipped if the character loses it after a while
+						npcDefaultEquipment.append(equipItemData["id"]) # Gets reequipped if the character loses it after a while
 				
 				if(foundData != null):
 					for dataID in foundData:
