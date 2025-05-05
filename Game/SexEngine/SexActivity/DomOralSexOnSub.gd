@@ -45,6 +45,15 @@ func getDomTagsCheck():
 func getSubTagsCheck():
 	return [SexActivityTag.OrderedToDoSomething, SexActivityTag.HavingSex, SexActivityTag.PenisUsed, SexActivityTag.VaginaUsed]
 
+func isActivityImpossibleShouldStop() -> bool:
+	if(state in ["blowjob", "lickingcock"]):
+		if(!getSub().hasReachablePenis() && !getSub().isWearingStrapon()):
+			return true
+	if(state in ["licking", "grinding"]):
+		if(!getSub().hasReachableVagina()):
+			return true
+	return false
+
 func startActivity(_args):
 	state = ""
 	
@@ -342,7 +351,7 @@ func doDomAction(_id, _actionInfo):
 		var condomBroke = false
 		if(state in ["subabouttocum", "licking", "tonguefucking"]):
 			text = RNG.pick([
-				"{dom.You} {dom.youVerb('press', 'presses')} {dom.yourHis} lips against {sub.yourHis} "+RNG.pick(["pussy", "slit", "sensetive folds", "petals"])+" and keep lapping up the arousal until [b]{sub.you} {sub.youVerb('cum')}[/b]! {sub.YourHis} juices rush into {dom.yourHis} mouth as {sub.youHe} squirts!",
+				"{dom.You} {dom.youVerb('press', 'presses')} {dom.yourHis} lips against {sub.yourHis} "+RNG.pick(["pussy", "slit", "sensitive folds", "petals"])+" and keep lapping up the arousal until [b]{sub.you} {sub.youVerb('cum')}[/b]! {sub.YourHis} juices rush into {dom.yourHis} mouth as {sub.youHe} squirts!",
 			])
 			getDom().cummedInMouthBy(subID, FluidSource.Vagina)
 			subInfo.cum()
@@ -391,15 +400,15 @@ func doDomAction(_id, _actionInfo):
 		var text
 		if(level <= 0.3):
 			text = RNG.pick([
-				"{dom.You} "+RNG.pick(["{dom.youVerb('grope')}", "{dom.youVerb('fondle')}", "{dom.youVerb('play')}"])+" with {sub.your} balls and {dom.youVerb('feel')} them "+RNG.pick(["getting heavier", "becoming more heavy", "producing more seed", "producing cum"])+".",
+				"{dom.You} "+RNG.pick(["{dom.youVerb('grope')}", "{dom.youVerb('fondle')}", "{dom.youVerb('play')} with"])+" {sub.your} balls and {dom.youVerb('feel')} them "+RNG.pick(["getting heavier", "becoming more heavy", "producing more seed", "producing cum"])+".",
 			])
 		elif(level <= 0.7):
 			text = RNG.pick([
-				"{dom.You} "+RNG.pick(["{dom.youVerb('grope')}", "{dom.youVerb('fondle')}", "{dom.youVerb('play')}"])+" with {sub.your} balls and {dom.youVerb('feel')} quite some weight to them. But they still "+RNG.pick(["get even more heavy", "produce even more seed", "produce more cum"])+" as {dom.youHe} tease them.",
+				"{dom.You} "+RNG.pick(["{dom.youVerb('grope')}", "{dom.youVerb('fondle')}", "{dom.youVerb('play')} with"])+" {sub.your} balls and {dom.youVerb('feel')} quite some weight to them. But they still "+RNG.pick(["get even more heavy", "produce even more seed", "produce more cum"])+" as {dom.youHe} {dom.youVerb('tease')} them.",
 			])
 		else:
 			text = RNG.pick([
-				"{dom.You} "+RNG.pick(["{dom.youVerb('grope')}", "{dom.youVerb('fondle')}", "{dom.youVerb('play')} with"])+" {sub.your} balls and {dom.youVerb('realize')} "+RNG.pick(["that they are full", "how heavy they are", "how much cum is stored in them"])+". They "+RNG.pick(["tense up slightly"])+" as {dom.youHe} tease them.",
+				"{dom.You} "+RNG.pick(["{dom.youVerb('grope')}", "{dom.youVerb('fondle')}", "{dom.youVerb('play')} with"])+" {sub.your} balls and {dom.youVerb('realize')} "+RNG.pick(["that they are full", "how heavy they are", "how much cum is stored in them"])+". They "+RNG.pick(["tense up slightly"])+" as {dom.youHe} {dom.youVerb('tease')} them.",
 			])
 		cumProduction.fillPercent(0.2)
 		affectSub(subInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.1, -0.05, -0.01)
@@ -458,7 +467,7 @@ func doDomAction(_id, _actionInfo):
 		var text = RNG.pick([
 			"{dom.You} {dom.youVerb('open')} {dom.yourHis} mouth and {dom.youVerb('let')} {sub.your} "+RNG.pick(["cock", "dick", "member"])+" in before wrapping {dom.yourHis} lips around it.",
 		])
-		getDom().gotOrificeStretchedBy(BodypartSlot.Head, subID, 0.1)
+		getDom().gotOrificeStretchedBy(BodypartSlot.Head, subID, true, 0.1)
 		affectSub(subInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.1, -0.3, -0.01)
 		sendSexEvent(SexEvent.HolePenetrated, subID, domID, {hole=BodypartSlot.Head,engulfed=true,strapon=false})
 		return {text = text, domSay=domReaction(SexReaction.AboutToSuckSubOff)}
@@ -466,7 +475,7 @@ func doDomAction(_id, _actionInfo):
 		state = "tonguefucking"
 		
 		var text = RNG.pick([
-			"{dom.You} "+RNG.pick(["{dom.youVerb('find')}", "{dom.youVerb('reach')}"])+" for {sub.yourHis} "+RNG.pick(["pussy hole", "pussy entering"])+" and {dom.youVerb('penetrate')} it before proceeding to slide {dom.yourHis} tongue in and out, fucking it that way!",
+			"{dom.You} "+RNG.pick(["{dom.youVerb('find')}", "{dom.youVerb('reach', 'reaches')}"])+" for {sub.yourHis} "+RNG.pick(["pussy hole", "pussy entering"])+" and {dom.youVerb('penetrate')} it before proceeding to slide {dom.yourHis} tongue in and out, fucking it that way!",
 		])
 		affectSub(subInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.1, -0.3, -0.01)
 		return {text = text}
@@ -603,11 +612,11 @@ func doSubAction(_id, _actionInfo):
 			])
 		if(state == "licking"):
 			text += RNG.pick([
-				"{dom.You} {dom.youAre} licking {sub.yourHis} "+RNG.pick(["pussy", "sensetive folds", "kitty", "petals", "wet pussy"])+".",
+				"{dom.You} {dom.youAre} licking {sub.yourHis} "+RNG.pick(["pussy", "sensitive folds", "kitty", "petals", "wet pussy"])+".",
 			])
 		if(state == "tonguefucking"):
 			text += RNG.pick([
-				"{dom.You} {dom.youAre} tongue-fucking {sub.yourHis} "+RNG.pick(["pussy", "sensetive folds", "kitty", "petals", "wet pussy"])+".",
+				"{dom.You} {dom.youAre} tongue-fucking {sub.yourHis} "+RNG.pick(["pussy", "sensitive folds", "kitty", "petals", "wet pussy"])+".",
 			])
 		if(state == "lickingcock"):
 			text += RNG.pick([

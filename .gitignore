@@ -10,6 +10,7 @@ doc/_build/
 logs/
 
 *.pck
+**/*.blend1
 
 # me when i download mono version and don't want to redownload 💀
 .mono/**
@@ -45,3 +46,4 @@ Modules/ModsOptions
 
 /.idea/
 /*.iml
+*.blend1

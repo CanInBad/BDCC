@@ -66,12 +66,16 @@ func getPoseDescriptor():
 		return " in a behind pose"
 	if(currentPose == POSE_MATINGPRESS):
 		return " in a mating press"
+	if(currentPose == POSE_LOWDOGGY):
+		return " on all fours"
 	if(currentPose == POSE_LEGRAISED):
 		return " with one leg raised"
 	if(currentPose == POSE_AGAINSTWALL):
-		return " agaisnt a wall"
+		return " against a wall"
 	if(currentPose == POSE_PINNEDWALL):
-		return " pinned agaisnt a wall"
+		return " pinned against a wall"
+	if(currentPose == POSE_WALLPRESS):
+		return " pinned against a wall"
 	return " [color=red]FIX DESCRIPTOR[/color]"
 
 const POSE_DEFAULT = "POSE_DEFAULT"
@@ -82,9 +86,11 @@ const POSE_FULLNELSON = "POSE_FULLNELSON"
 const POSE_CHOKEFUCK = "POSE_CHOKEFUCK"
 const POSE_BEHIND = "POSE_BEHIND"
 const POSE_MATINGPRESS = "POSE_MATINGPRESS"
+const POSE_LOWDOGGY = "POSE_LOWDOGGY"
 const POSE_LEGRAISED = "POSE_LEGRAISED"
 const POSE_AGAINSTWALL = "POSE_AGAINSTWALL"
 const POSE_PINNEDWALL = "POSE_PINNEDWALL"
+const POSE_WALLPRESS = "POSE_WALLPRESS"
 
 
 const PoseToName = {
@@ -96,9 +102,11 @@ const PoseToName = {
 	POSE_CHOKEFUCK: "Choke fuck",
 	POSE_BEHIND: "Behind",
 	POSE_MATINGPRESS: "Mating Press",
+	POSE_LOWDOGGY: "Low Doggy",
 	POSE_LEGRAISED: "Raised leg",
 	POSE_AGAINSTWALL: "Against a wall",
 	POSE_PINNEDWALL: "Pinned into wall",
+	POSE_WALLPRESS: "Wall Press",
 }
 const PoseToAnimName = {
 	POSE_DEFAULT: StageScene.SexAllFours,
@@ -109,9 +117,11 @@ const PoseToAnimName = {
 	POSE_CHOKEFUCK: StageScene.Choking,
 	POSE_BEHIND: StageScene.SexBehind,
 	POSE_MATINGPRESS: StageScene.SexMatingPress,
+	POSE_LOWDOGGY: StageScene.SexLowDoggy,
 	POSE_LEGRAISED: StageScene.SexPawLick,
 	POSE_AGAINSTWALL: StageScene.SexStanding,
 	POSE_PINNEDWALL: StageScene.SexPinnedBehind,
+	POSE_WALLPRESS: StageScene.SexAgainstWall,
 }
 func getAvaiablePoses():
 	if(currentPose == POSE_CHOKEFUCK):
@@ -119,13 +129,19 @@ func getAvaiablePoses():
 	
 	if(getSexType() == SexType.DefaultSex):
 		if(subInfo.isUnconscious()):
-			return [POSE_ALLFOURS, POSE_MISSONARY, POSE_FULLNELSON, POSE_BEHIND, POSE_MATINGPRESS]
+			var possible:= [POSE_ALLFOURS, POSE_MISSONARY, POSE_FULLNELSON, POSE_BEHIND, POSE_MATINGPRESS, POSE_LOWDOGGY]
+		
+			if(getSexEngine() != null && getSexEngine().hasWallsNearby()):
+				possible.append(POSE_WALLPRESS)
+		
+			return possible
 		else:
-			var possible:= [POSE_ALLFOURS, POSE_STANDING, POSE_MISSONARY, POSE_FULLNELSON, POSE_BEHIND, POSE_MATINGPRESS, POSE_LEGRAISED]
+			var possible:= [POSE_ALLFOURS, POSE_STANDING, POSE_MISSONARY, POSE_FULLNELSON, POSE_BEHIND, POSE_MATINGPRESS, POSE_LEGRAISED, POSE_LOWDOGGY]
 			
 			if(getSexEngine() != null && getSexEngine().hasWallsNearby()):
 				possible.append(POSE_AGAINSTWALL)
 				possible.append(POSE_PINNEDWALL)
+				possible.append(POSE_WALLPRESS)
 			
 			return possible
 	
@@ -140,6 +156,16 @@ func canStartActivity(_sexEngine: SexEngine, _domInfo: SexDomInfo, _subInfo: Sex
 		return false
 	
 	return .canStartActivity(_sexEngine, _domInfo, _subInfo)
+
+func isActivityImpossibleShouldStop() -> bool:
+	if(!getDom().hasReachablePenis() && !getDom().isWearingStrapon()):
+		return true
+	if(usedBodypart == BodypartSlot.Vagina && !getSub().hasReachableVagina()):
+		return true
+	if(usedBodypart == BodypartSlot.Anus && !getSub().hasReachableAnus()):
+		return true
+		
+	return false
 
 func getVisibleName():
 	return "Vaginal"
@@ -167,7 +193,7 @@ func getSubTagsCheck():
 func isStraponSex():
 	return getDom().isWearingStrapon()
 
-func domSensetivity():
+func domSensitivity():
 	var strapon = getDom().getWornStrapon()
 	if(strapon == null):
 		return 1.0
@@ -208,7 +234,11 @@ func getStartTextForPose(thePose):
 	var text = ""
 	if(thePose == POSE_ALLFOURS):
 		text = RNG.pick([
-			"{dom.You} {dom.youVerb('put')} {sub.you} on all fours and {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt with {dom.yourHis} "+getDickName()+" out and presses it against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
+			"{dom.You} {dom.youVerb('put')} {sub.you} on all fours and {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt with {dom.yourHis} "+getDickName()+" out and {dom.youVerb('press', 'presses')} it against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
+		])
+	elif(thePose == POSE_LOWDOGGY):
+		text = RNG.pick([
+			"{dom.You} {dom.youVerb('put')} {sub.you} on all fours and {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt with {dom.yourHis} "+getDickName()+" out and {dom.youVerb('press', 'presses')} it against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
 		])
 	elif(thePose == POSE_STANDING):
 		text = RNG.pick([
@@ -228,7 +258,7 @@ func getStartTextForPose(thePose):
 		])
 	elif(thePose == POSE_MATINGPRESS):
 		text = RNG.pick([
-			"{dom.You} {dom.youVerb('pin')} {sub.you} firmly against the floor in a mating press position, folding {sub.yourHis} legs up toward {sub.yourHis} shoulders. {dom.You} {dom.youVerb('press')} {dom.yourself} close, aligning {dom.yourHis} "+getDickName()+" against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
+			"{dom.You} {dom.youVerb('pin')} {sub.you} firmly against the floor in a mating press position, folding {sub.yourHis} legs up toward {sub.yourHis} shoulders. {dom.You} {dom.youVerb('press', 'presses')} {dom.yourself} close, aligning {dom.yourHis} "+getDickName()+" against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
 		])
 	elif(thePose == POSE_LEGRAISED):
 		text = RNG.pick([
@@ -236,21 +266,29 @@ func getStartTextForPose(thePose):
 		])
 	elif(thePose == POSE_AGAINSTWALL):
 		text = RNG.pick([
-			"{dom.You} {dom.youVerb('press')} {sub.you} firmly against the wall, {sub.yourHis} hands braced against it for support. {dom.You} {dom.youVerb('position')} {dom.yourself} behind, letting {dom.yourHis} "+getDickName()+" press against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
+			"{dom.You} {dom.youVerb('press', 'presses')} {sub.you} firmly against the wall, {sub.yourHis} hands braced against it for support. {dom.You} {dom.youVerb('position')} {dom.yourself} behind, letting {dom.yourHis} "+getDickName()+" press against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
 		])
 	elif(thePose == POSE_PINNEDWALL):
 		text = RNG.pick([
 			"{dom.You} {dom.youVerb('pin')} {sub.you} against the wall, {sub.yourHis} hands instinctively reaching up to grab it for stability. {dom.You} {dom.youVerb('get')} a hold of one of {sub.yourHis} legs and {dom.youVerb('press', 'presses')} {dom.yourHis} "+getDickName()+" against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
 		])
+	elif(thePose == POSE_WALLPRESS):
+		text = RNG.pick([
+			"{dom.You} {dom.youVerb('pin')} {sub.you} firmly against the wall, legs raised high, {sub.yourHis} hands reaching out to grab {dom.yourHis} shoulders. {dom.You} {dom.youVerb('press', 'presses')} {dom.yourHis} "+getDickName()+" against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
+		])
 	else:
 		text = RNG.pick([
-			"{dom.You} {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt with {dom.yourHis} "+getDickName()+" out and presses it against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
+			"{dom.You} {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt with {dom.yourHis} "+getDickName()+" out and {dom.youVerb('press', 'presses')} it against {sub.yourHis} "+getUsedBodypartName()+throughClothing,
 		])
 	return text
 	
 func getSwitchPoseTextForPose(thePose):
 	var text = ""
 	if(thePose == POSE_ALLFOURS):
+		text = RNG.pick([
+			"{dom.You} {dom.youVerb('put')} {sub.you} on all fours and {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt, {dom.yourHis} "+getDickName()+" still inside {sub.yourHis} "+getUsedBodypartName()+"!",
+		])
+	elif(thePose == POSE_LOWDOGGY):
 		text = RNG.pick([
 			"{dom.You} {dom.youVerb('put')} {sub.you} on all fours and {dom.youVerb('position')} {dom.yourself} behind {sub.your} butt, {dom.yourHis} "+getDickName()+" still inside {sub.yourHis} "+getUsedBodypartName()+"!",
 		])
@@ -280,11 +318,15 @@ func getSwitchPoseTextForPose(thePose):
 		])
 	elif(thePose == POSE_AGAINSTWALL):
 		text = RNG.pick([
-			"{dom.You} {dom.youVerb('press')} {sub.you} firmly against the wall, {sub.yourHis} hands braced against it for support. {dom.You} {dom.youVerb('position')} {dom.yourself} behind, {dom.yourHis} "+getDickName()+" is still inside {sub.yourHis} "+getUsedBodypartName()+"!",
+			"{dom.You} {dom.youVerb('press', 'presses')} {sub.you} firmly against the wall, {sub.yourHis} hands braced against it for support. {dom.You} {dom.youVerb('position')} {dom.yourself} behind, {dom.yourHis} "+getDickName()+" is still inside {sub.yourHis} "+getUsedBodypartName()+"!",
 		])
 	elif(thePose == POSE_PINNEDWALL):
 		text = RNG.pick([
 			"{dom.You} {dom.youVerb('pin')} {sub.you} against the wall, {sub.yourHis} hands instinctively reaching up to grab it for stability. {dom.YourHis} "+getDickName()+" is still inside {sub.yourHis} "+getUsedBodypartName()+"!",
+		])
+	elif(thePose == POSE_WALLPRESS):
+		text = RNG.pick([
+			"{dom.You} {dom.youVerb('pin')} {sub.you} firmly against the wall, legs raised high, {sub.yourHis} hands reaching out to grab {dom.yourHis} shoulders. {dom.YourHis} "+getDickName()+" is still inside {sub.yourHis} "+getUsedBodypartName()+"!",
 		])
 	else:
 		text = RNG.pick([
@@ -332,13 +374,13 @@ func processTurn():
 			sendSexEvent(SexEvent.PainInflicted, domID, subID, {pain=howMuchPainAdd,isDefense=false,intentional=false})
 			domInfo.addLust(10)
 			domInfo.addArousalForeplay(0.1)
-			getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.1)
+			getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.1)
 			return {text = text}
 	
 	if(state == "fucking"):
 		times += 1
 		affectSub(subInfo.fetishScore({fetishReceiving: 1.0})+0.5, 0.1, -0.1, -0.01)
-		affectDom(domInfo.fetishScore({fetishGiving: 1.0})+0.3, 0.1*domSensetivity(), 0.0)
+		affectDom(domInfo.fetishScore({fetishGiving: 1.0})+0.3, 0.1*domSensitivity(), 0.0)
 		subInfo.stimulateArousalZone(0.2, usedBodypart, 1.0)
 		domInfo.stimulateArousalZone(0.2, BodypartSlot.Penis, 1.0)
 		
@@ -355,7 +397,7 @@ func processTurn():
 		if(RNG.chance(20)):
 			var freeRoom = getSub().getPenetrationFreeRoomBy(usedBodypart, domID)
 			
-			getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.1)
+			getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.1)
 			
 			if(usedBodypart == BodypartSlot.Vagina):
 				if(freeRoom <= 5.0):
@@ -398,7 +440,7 @@ func processTurn():
 			elif(domInfo.isCloseToCumming()):
 				text += RNG.pick([
 					" {dom.You} {dom.youVerb('pant')} eagerly.",
-					" {dom.You} closes in on {dom.yourHis} orgasm.",
+					" {dom.You} {dom.youVerb('close')} in on {dom.yourHis} orgasm.",
 					" {dom.You} {dom.youAre} gonna cum soon.",
 				])
 		else:
@@ -413,7 +455,7 @@ func processTurn():
 			elif(domInfo.isCloseToCumming()):
 				text += RNG.pick([
 					" {dom.You} {dom.youVerb('pant')} eagerly.",
-					" {dom.You} closes in on {dom.yourHis} orgasm.",
+					" {dom.You} {dom.youVerb('close')} in on {dom.yourHis} orgasm.",
 					" {dom.You} {dom.youAre} gonna cum soon.",
 					" {dom.Your} "+RNG.pick(["cock", "dick", "member"])+" is throbbing.",
 					" {dom.Your} "+RNG.pick(["cock", "dick", "member"])+" is twitching and leaking a lot."
@@ -596,7 +638,7 @@ func doDomAction(_id, _actionInfo):
 	
 	if(_id == "rub"):
 		affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.05, -0.1, 0.0)
-		affectDom(max(0.1, domInfo.fetishScore({fetishGiving: 1.0})+1.0), 0.05*domSensetivity(), 0.0)
+		affectDom(max(0.1, domInfo.fetishScore({fetishGiving: 1.0})+1.0), 0.05*domSensitivity(), 0.0)
 		
 		var text = RNG.pick([
 			"{dom.You} {dom.youVerb('rub')} {dom.yourHis} "+getDickName()+" against {sub.your} "+RNG.pick(usedBodypartNames)+".",
@@ -605,7 +647,7 @@ func doDomAction(_id, _actionInfo):
 	if(_id == "insert"):
 		if(RNG.chance(20)):
 			affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.01, -0.1, 0.0)
-			affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.01*domSensetivity(), 0.01)
+			affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.01*domSensitivity(), 0.01)
 			
 			var text = RNG.pick([
 				"{dom.You} {dom.youVerb('attempt')} to sink {dom.yourHis} "+getDickName()+" into {sub.your} "+RNG.pick(usedBodypartNames)+".",
@@ -616,36 +658,36 @@ func doDomAction(_id, _actionInfo):
 		else:
 			# Cock len vs Vagina depth check here
 			if(!RNG.chance(getSub().getPenetrateChanceBy(usedBodypart, domID))):
-				getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.1)
+				getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.1)
 				var text = RNG.pick([
 					"{dom.Your} "+getDickName()+" stretches {sub.your} "+RNG.pick(usedBodypartNames)+" out while trying to fit inside.",
 				])
 				affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.05, -0.2, -0.01)
-				affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.05*domSensetivity(), -0.01)
+				affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.05*domSensitivity(), -0.01)
 				subInfo.addArousalForeplay(0.05)
-				domInfo.addArousalForeplay(0.05*domSensetivity())
+				domInfo.addArousalForeplay(0.05*domSensitivity())
 				
 				return {text = text}
 			else:
 				sendSexEvent(SexEvent.HolePenetrated, domID, subID, {hole=usedBodypart,engulfed=false,strapon=isStraponSex()})
 				gonnaCumOutside = false
 				#getSub().gotFuckedBy(usedBodypart, domID)
-				getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.2)
+				getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.2)
 				state = "fucking"
 				affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.1, -0.3, 0.0)
-				affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1*domSensetivity(), -0.05)
+				affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1*domSensitivity(), -0.05)
 				subInfo.addArousalForeplay(0.1)
-				domInfo.addArousalForeplay(0.1*domSensetivity())
+				domInfo.addArousalForeplay(0.1*domSensitivity())
 				var text = RNG.pick([
 					"{dom.You} {dom.youVerb('manage','manages')} to penetrate {sub.your} "+RNG.pick(usedBodypartNames)+"!",
 					"{dom.You} {dom.youVerb('shove','shoves')} {dom.yourHis} "+getDickName()+" inside {sub.your} "+RNG.pick(usedBodypartNames)+"!",
 				])
 				if(usedBodypart == BodypartSlot.Anus && getSub().getInventory().hasSlotEquipped(InventorySlot.Anal)):
 					var item = getSub().getInventory().getEquippedItem(InventorySlot.Anal)
-					text = "{dom.You} temporary {dom.youVerb('take')} out "+str(item.getAStackName())+" out of {sub.your} ass. "+text
+					text = "{dom.You} temporarily {dom.youVerb('retrieve')} "+str(item.getAStackName())+" out of {sub.your} ass. "+text
 				elif(usedBodypart == BodypartSlot.Vagina && getSub().getInventory().hasSlotEquipped(InventorySlot.Vagina)):
 					var item = getSub().getInventory().getEquippedItem(InventorySlot.Vagina)
-					text = "{dom.You} temporary {dom.youVerb('take')} out "+str(item.getAStackName())+" out of {sub.your} pussy. "+text
+					text = "{dom.You} temporarily {dom.youVerb('retrieve')} "+str(item.getAStackName())+" out of {sub.your} pussy. "+text
 				
 				var freeRoom = getSub().getPenetrationFreeRoomBy(usedBodypart, domID)
 				var chanceToPain = -freeRoom * 2.0
@@ -684,7 +726,7 @@ func doDomAction(_id, _actionInfo):
 				getSub().doPainfullyStretchHole(usedBodypart, domID)
 			
 			#isTryingToKnot = true
-			getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.5)
+			getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.5)
 			if(RNG.chance(getSub().getKnottingChanceBy(usedBodypart, domID))):
 				knotSuccess = true
 			else:
@@ -820,7 +862,7 @@ func doDomAction(_id, _actionInfo):
 			var text = RNG.pick([
 				"{dom.You} {dom.youVerb('try', 'tries')} to "+RNG.pick(["pull", "yank"])+" {dom.yourHis} "+RNG.pick(["cock", "dick"])+" out but {dom.youVerb('fail')}. The knot slowly deflates.",
 			])
-			getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.1)
+			getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.1)
 			affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.1, -0.3, 0.0)
 			affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1, -0.05)
 			subInfo.addArousalForeplay(0.1)
@@ -945,26 +987,26 @@ func doSubAction(_id, _actionInfo):
 		#switchCurrentActivityTo("SexFuckTest2")
 		domInfo.addAnger(-0.05)
 		affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.1, 0.0, 0.0)
-		affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1*domSensetivity(), -0.01)
+		affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1*domSensitivity(), -0.01)
 		subInfo.addArousalForeplay(0.05)
-		domInfo.addArousalForeplay(0.05*domSensetivity())
+		domInfo.addArousalForeplay(0.05*domSensitivity())
 		
 		return {text = "{sub.You} {sub.youVerb('rub')} against {dom.youHim}.",}
 	if(_id == "envelop"):
 		if(!RNG.chance(getSub().getPenetrateChanceBy(usedBodypart, domID))):
-			getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.1)
+			getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.1)
 			affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.1, 0.0, 0.0)
 			affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.2, -0.01)
 			return {text="{sub.You} {sub.youVerb('try', 'tries')} to envelop {dom.yourHis} "+getDickName()+" but it's too big!"}
 		
 		sendSexEvent(SexEvent.HolePenetrated, domID, subID, {hole=usedBodypart,engulfed=true,strapon=isStraponSex()})
 		affectSub(subInfo.fetishScore({fetishReceiving: 1.0}), 0.1, 0.0, 0.0)
-		affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1*domSensetivity(), -0.01)
+		affectDom(domInfo.fetishScore({fetishGiving: 1.0}), 0.1*domSensitivity(), -0.01)
 		subInfo.stimulateArousalZone(0.1, usedBodypart, 0.5)
 		domInfo.stimulateArousalZone(0.1, BodypartSlot.Penis, 0.5)
 		
 		#getSub().gotFuckedBy(usedBodypart, domID)
-		getSub().gotOrificeStretchedBy(usedBodypart, domID, 0.2)
+		getSub().gotOrificeStretchedBy(usedBodypart, domID, true, 0.2)
 		gonnaCumOutside = false
 		state = "fucking"
 		return {text = "{sub.You} {sub.youVerb('engulf')} {dom.youHis} "+getDickName()+", letting it penetrate {sub.yourHis} "+RNG.pick(usedBodypartNames)+"."}
@@ -1033,7 +1075,7 @@ func doSubAction(_id, _actionInfo):
 			
 			state = ""
 			var text = RNG.pick([
-				"{sub.You} {sub.youVerb('strugle')} enough for {dom.youHim} to pull out!",
+				"{sub.You} {sub.youVerb('struggle')} enough for {dom.youHim} to pull out!",
 			])
 			return {text = text}
 		else:

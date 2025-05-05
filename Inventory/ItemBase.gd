@@ -385,6 +385,10 @@ func generateFluids():
 func getFluids():
 	return fluids
 
+func setFluidsCauserID(_charID:String):
+	if(fluids != null):
+		fluids.setCauserID(_charID)
+
 func isImportant():
 	return false
 
@@ -426,6 +430,11 @@ func tryAddSmartLock(_forcer, _addMessage = true):
 		return false
 	if(_forcer is String):
 		_forcer = GlobalRegistry.getCharacter(_forcer)
+	if(_forcer == null):
+		return false
+	
+	if(!_forcer.canApplySmartLocks()):
+		return false
 	
 	var amountOfSmartLockedItems = 0
 	var wearer = getWearer()
@@ -459,7 +468,7 @@ func tryAddSmartLock(_forcer, _addMessage = true):
 		
 	if(!RNG.chance(chanceLock)):
 		return false
-
+	
 	return addRandomSmartLock(_forcer, _addMessage)
 
 func addRandomSmartLock(_forcer, _addMessage = true):
@@ -668,6 +677,12 @@ func canGroupRestraintWithOtherInFightScene(otherItem):
 		return false
 	return true
 
+func getInventoryGroupID() -> String:
+	return id
+
+func getInventoryGroupName() -> String:
+	return getVisibleName()
+
 func getDatapackEditVars():
 	var result = {}
 	if(canDye()):
@@ -692,7 +707,7 @@ func getDatapackEditVars():
 
 func applyDatapackEditVar(_id, _value):
 	if(_id == "clothesColor"):
-		clothesColor = _value
+		clothesColor = Util.tryFixColor(_value, false)
 	if(_id == "restraintLevel"):
 		restraintData.setLevel(_value)
 	if(_id == "aiWontResist"):

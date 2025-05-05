@@ -352,13 +352,13 @@ func setBoneScale(boneName: String, boneScale: float):
 	
 	skeleton.set_bone_custom_pose(boneId, newTransform)
 
-func setBoneScaleAndOffset(boneName: String, boneScale: float, offset: Vector3):
+func setBoneScaleAndOffset(boneName: String, boneScale: float, offset: Vector3, scaleOnZ:bool = false):
 	var skeleton:Skeleton = getDollSkeleton().getSkeleton()
 	var boneId = skeleton.find_bone(boneName)
 	if(boneId < 0):
 		return
 	var newTransform:Transform = Transform.IDENTITY
-	newTransform = newTransform.scaled(Vector3(boneScale,boneScale,boneScale))
+	newTransform = newTransform.scaled(Vector3(boneScale,boneScale,boneScale if scaleOnZ else 1.0))
 	newTransform = newTransform.translated(offset)
 	
 	skeleton.set_bone_custom_pose(boneId, newTransform)
@@ -387,7 +387,7 @@ func setBoneOffset(boneName: String, offset: Vector3):
 func setButtScale(buttScale: float, tailScale:float = 1.0):
 	var buttScaleMod = 1.0 + clamp(buttScale - 1.0, 0.0, 0.2)
 	setBoneScaleAndOffset("DeformButt", buttScale*buttScaleMod, Vector3(-0.109556, -0.109556, 0.0)*clamp((buttScale-1.0)*3, 0.0, 1.0))
-	setBoneScaleAndOffset("Tail1", tailScale, Vector3(0.409556, 0.409556, 0.0)*max(buttScale-1.0, 0.0))
+	setBoneScaleAndOffset("Tail1", tailScale, Vector3(0.0,0.0,0.05)+Vector3(0.409556, 0.409556, 0.0)*max(buttScale-1.0, 0.0))
 
 func setBreastsScale(breastsScale: float):
 	var mul = 0.0
@@ -805,6 +805,7 @@ func checkChains():
 var normalChainScene = preload("res://Player/Player3D/Chains/NormalChain.tscn")
 var shortChainScene = preload("res://Player/Player3D/Chains/ShortChain.tscn")
 var hoseChainScene = preload("res://Player/Player3D/Chains/HoseChain.tscn")
+var hoseShortChainScene = preload("res://Player/Player3D/Chains/HoseChainShort.tscn")
 				
 func createChainScene(chainType:String):
 	if(chainType == "normal"):
@@ -813,6 +814,8 @@ func createChainScene(chainType:String):
 		return shortChainScene.instance()
 	if(chainType == "hose"):
 		return hoseChainScene.instance()
+	if(chainType == "hoseshort"):
+		return hoseShortChainScene.instance()
 	if(chainType.ends_with(".tscn")):
 		return GlobalRegistry.instanceCached(chainType)
 	

@@ -49,7 +49,7 @@ func getSubTagsCheck():
 func isStraponSex():
 	return getDom().isWearingStrapon()
 
-func domSensetivity():
+func domSensitivity():
 	var strapon = getDom().getWornStrapon()
 	if(strapon == null):
 		return 1.0
@@ -353,7 +353,7 @@ func doDomAction(_id, _actionInfo):
 				"{dom.You} {dom.youVerb('try', 'tries')} to force {dom.yourHis} "+getDickName()+" deeper but {sub.yourHis} throat is just too tight.",
 				"{dom.You} {dom.youVerb('try', 'tries')} to make {sub.you} deepthroat {dom.yourHis} "+getDickName()+" but {sub.youHe} {sub.youAre} just too tight.",
 				])
-			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, 0.1)
+			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, true, 0.1)
 			affectSub(domInfo.fetishScore({Fetish.OralSexGiving: 1.0}), 0.1, -0.1, -0.05)
 			domInfo.addLust(0.1)
 			domInfo.addArousalSex(0.03)
@@ -367,9 +367,9 @@ func doDomAction(_id, _actionInfo):
 				text = RNG.pick([
 					"{dom.You} {dom.youVerb('reach', 'reaches')} for {sub.yourHis} horns and use them as handlebars. ",
 				]) + text
-			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, 0.2)
+			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, true, 0.2)
 			affectSub(domInfo.fetishScore({Fetish.OralSexGiving: 1.0}), 0.1, -0.2, -0.05)
-			domInfo.addArousalSex(0.05 * domSensetivity())
+			domInfo.addArousalSex(0.05 * domSensitivity())
 			return {text=text}
 	if(_id == "stopdeepthroat"):
 		var text = RNG.pick([
@@ -547,7 +547,7 @@ func doSubAction(_id, _actionInfo):
 			])
 			
 		domInfo.addLust(10.0 + domInfo.fetishScore({Fetish.OralSexReceiving: 5.0}))
-		domInfo.addArousalForeplay(0.05*domSensetivity())
+		domInfo.addArousalForeplay(0.05*domSensitivity())
 		
 		if(domInfo.isReadyToPenetrate() && clothingItem == null && !isStraponSex()):
 			text += RNG.pick([
@@ -684,17 +684,17 @@ func doSubAction(_id, _actionInfo):
 			var text = RNG.pick([
 				"{sub.You} {sub.youVerb('try', 'tries')} to get {dom.yourHis} "+getDickName()+" into {sub.yourHis} throat but "+RNG.pick(["it's too big", "{sub.youHe} {sub.youVerb('struggle')}", "{sub.youVerb('fail')}"])+".",
 			])
-			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, 0.1)
-			affectDom(domInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.2*domSensetivity(), -0.03)
+			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, true, 0.1)
+			affectDom(domInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.2*domSensitivity(), -0.03)
 			return {text = text}
 		else:
 			state = "deepthroat"
 			var text = RNG.pick([
 				"{sub.You} willingly {sub.youVerb('let')} {dom.yourHis} "+getDickName()+" deep down {sub.yourHis} throat and {sub.youVerb('start')} deepthroating it!",
 			])
-			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, 0.2)
-			affectDom(domInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.2*domSensetivity(), -0.03)
-			domInfo.addArousalForeplay(0.05*domSensetivity())
+			getSub().gotOrificeStretchedBy(BodypartSlot.Head, domID, true, 0.2)
+			affectDom(domInfo.fetishScore({Fetish.OralSexReceiving: 1.0}), 0.2*domSensitivity(), -0.03)
+			domInfo.addArousalForeplay(0.05*domSensitivity())
 			return {text=text}
 	if(_id == "stopdeepthroating"):
 		if(RNG.chance(getSubStopDeepthroatChance())):
@@ -745,7 +745,16 @@ func getAnimation():
 	
 	if(state in ["askingtosuck"]):
 		return [StageScene.SexOral, "tease", {pc=domID, npc=subID}]
+
+func isActivityImpossibleShouldStop() -> bool:
+	if(state in ["askingtolick", "licking", "grinding"]):
+		if(!getDom().hasReachableVagina()):
+			return true
+	if(state in ["askingtosuck", "blowjob", "deepthroat"]):
+		if(!getDom().hasReachablePenis() && !getDom().isWearingStrapon()):
+			return true
 	
+	return false
 
 func getDomOrgasmHandlePriority():
 	if(isStraponSex()):
