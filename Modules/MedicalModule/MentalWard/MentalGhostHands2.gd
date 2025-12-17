@@ -57,7 +57,7 @@ func _run():
 
 		saynn("[say=eliza]I was a ghost, right? That sounds spooky~[/say]")
 
-		saynn("[say=pc]Well, I only saw parts of you that were.. touching me? And that was somewhat unsettling, yes[/say]")
+		saynn("[say=pc]Well, I only saw parts of you that were.. touching me? And that was somewhat unsettling, yes.[/say]")
 
 		saynn("Doctor fidgets around a bit, rubbing her chin and thinking.")
 
@@ -98,7 +98,7 @@ func _run():
 		addButton("Do it", "Try to follow your intuition", "do_it")
 
 	if(state == "do_it"):
-		saynn("You look around, that seems to be helpful even with a blindfold. Then you take a fist step and realize that your ‘eyes’ don’t deceive you, the testing table and the walls are exactly where you think they are. You begin walking around the room like you see everything just fine. Although, when you try to read something from up close, the text is just too blurry.")
+		saynn("You look around, that seems to be helpful even with a blindfold. Then you take a first step and realize that your ‘eyes’ don’t deceive you, the testing table and the walls are exactly where you think they are. You begin walking around the room like you see everything just fine. Although, when you try to read something from up close, the text is just too blurry.")
 
 		saynn("You wonder where Eliza is.")
 
@@ -116,7 +116,7 @@ func _run():
 
 		saynn("A paw appears and grabs you by the collar again before pulling you to the nearest wall. It pins your back to it while something else starts to rub against your chastity belt. Something.. quite phallic and hard.")
 
-		saynn("[say=pc]Is that a.. cock[/say]")
+		saynn("[say=pc]Is that a.. cock.[/say]")
 
 		saynn("[say=eliza]Surprised? Just a feeldoe strapon, relax~[/say]")
 
@@ -182,7 +182,7 @@ func _run():
 
 		saynn("The paws let go of the hair and instead land on your {pc.breasts}, giving them a slight massage "+str("giving little streams of milk from your nipples" if GM.pc.canBeMilked() else "")+" while the cock starts exploring and stretching your insides. You rest your face against the cold wall while the cock hammers at your pleasure point and tries to break into the womb. Your slit leaks juices all over it, coating the shaft like lube. But very quickly, your inner walls begin to clench around it, showing that you are close and also making Eliza moan from pleasure too as the other end of her strapon shifts inside her.")
 
-		addButton("Cum!", "You gonna cum", "cum!")
+		addButton("Cum!", "You're gonna cum", "cum!")
 
 	if(state == "cum!"):
 		saynn("The last thrusts get very close, you let your tongue out and drool while the disembodied dick fucks you rough. Its knot starts to slip past your folds, stretching them very wide in the process. And sure enough, one last thrust was enough for the whole cock to slip inside and break into your babymaker. You hear the doctor’s moans and a second later you cum too, your body starts shaking and shivering while squirting all over the floor. All the while the strapon stuffs your womb with a huge load of warm cum lube, making you feel full without the danger of getting pregnant, hopefully.")
@@ -229,7 +229,7 @@ func _run():
 
 		saynn("The paws let go of the hair and instead land on your {pc.breasts}, giving them a slight massage "+str("giving little streams of milk from your nipples" if GM.pc.canBeMilked() else "")+"while the cock starts exploring and stretching your insides. You rest your face against the cold wall while the cock hammers at your pleasure point and tries to slide deeper each time. The shaft is prelubed which allows it to fuck you nice and fast. But very quickly, your inner walls begin to clench around it, showing that you are close and also making Eliza moan from pleasure too as the other end of her strapon shifts inside her.")
 
-		addButton("Cum!", "You gonna cum", "cum!1")
+		addButton("Cum!", "You're gonna cum", "cum!1")
 
 	if(state == "cum!1"):
 		saynn("The last thrusts get very close, you let your tongue out and drool while the disembodied dick fucks you rough. Its knot starts to slip past your star, stretching it very wide in the process. And sure enough, one last thrust was enough for the whole cock to slip inside your butt. You hear the doctor’s moans and a second later you cum too, your body starts shaking and shivering, legs barely support you. All the while the strapon stuffs your fuckhole with a huge load of warm cum lube, making you feel full.")

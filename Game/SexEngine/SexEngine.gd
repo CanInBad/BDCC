@@ -23,6 +23,8 @@ var disabledGoals:Dictionary = {}
 var bondageDisabled:bool = false
 var subMustGoUnconscious:bool = false
 var noDynamicJoiners:bool = false
+var domNoPullingOut:bool = false
+var mustUseCondoms:bool = false
 
 var pcAllowsDomAutonomy:bool = false
 var pcAllowsDynJoiners:bool = false
@@ -32,6 +34,28 @@ var outputRaw:Array = []
 const OUTPUT_TEXT = 0
 const OUTPUT_SAY = 1
 const OUTPUT_SEPARATOR = 2
+
+var allPossibleGoalsToBeg:Dictionary = {} # A cache, no save
+
+func calcAllPossibleGoalsToBeg():
+	allPossibleGoalsToBeg.clear()
+
+	var allactivities:Dictionary = GlobalRegistry.getSexActivityReferences()
+	
+	for activityID in allactivities:
+		var activityRef = allactivities[activityID]
+		
+		var activityGoals:Dictionary = activityRef.getGoals()
+		var supportedSexTypes:Dictionary = activityRef.getSupportedSexTypes()
+		if(!areSexTypesSupported(supportedSexTypes) || activityGoals.empty()):
+			continue
+		
+		for goalID in activityGoals:
+			if(allPossibleGoalsToBeg.has(goalID) || !GlobalRegistry.hasSexGoal(goalID)):
+				continue
+			var theGoalRef = GlobalRegistry.getSexGoal(goalID)
+			if(theGoalRef && theGoalRef.canBegFor()):
+				allPossibleGoalsToBeg[goalID] = true
 
 func clearOutputRaw():
 	outputRaw.clear()
@@ -97,10 +121,22 @@ func initSexType(theSexType, args:Dictionary = {}):
 		subMustGoUnconscious = args[SexMod.SubMustGoUnconscious]
 	if(args.has(SexMod.DisableDynamicJoiners)):
 		noDynamicJoiners = args[SexMod.DisableDynamicJoiners]
+	if(args.has(SexMod.DomNoPullingOut)):
+		domNoPullingOut = args[SexMod.DomNoPullingOut]
+	if(args.has(SexMod.MustUseCondoms)):
+		mustUseCondoms = args[SexMod.MustUseCondoms]
+	if(args.has(SexMod.SubsStartNaked) && args[SexMod.SubsStartNaked]):
+		for subID in subs:
+			getSubInfo(subID).getChar().lustStateFullyUndress()
+	if(args.has(SexMod.DomsStartNaked) && args[SexMod.DomsStartNaked]):
+		for domID in doms:
+			getDomInfo(domID).getChar().lustStateFullyUndress()
 		
 	if(sexType != null):
 		sexType.setSexEngine(self)
 		sexType.initArgs(args)
+	
+	calcAllPossibleGoalsToBeg()
 
 func getSexTypeID() -> String:
 	if(sexType == null):
@@ -169,6 +205,7 @@ func checkNewExposedBodyparts():
 				var bodypart = character.getBodypart(bodypartID)
 				bodypartsToReactTo.append(bodypart)
 				revealedBodyparts[domID][bodypartID] = true
+				domInfo.fetishAffect(Fetish.Exhibitionism, 1.0*subs.size())
 				addTextRaw("[b]"+bodypart.getRevealMessage()+"[/b]")
 				
 		for bodypart in bodypartsToReactTo:
@@ -185,6 +222,7 @@ func checkNewExposedBodyparts():
 				var bodypart = character.getBodypart(bodypartID)
 				bodypartsToReactTo.append(bodypart)
 				revealedBodyparts[subID][bodypartID] = true
+				subInfo.fetishAffect(Fetish.Exhibitionism, 1.0*doms.size())
 				addTextRaw("[b]"+bodypart.getRevealMessage()+"[/b]")
 				
 		for bodypart in bodypartsToReactTo:
@@ -230,7 +268,8 @@ func reactToActivityEnd(theactivity):
 			continue
 		
 		activity.reactActivityEnd(theactivity)
-		checkExtra()
+	checkExtra()
+	reconsiderPCTarget()
 
 func startActivity(id, theDomID, theSubID, _args = null):
 	var activity = makeActivity(id, theDomID, theSubID)
@@ -241,6 +280,7 @@ func startActivity(id, theDomID, theSubID, _args = null):
 	if(activity.hasEnded):
 		reactToActivityEnd(activity)
 	checkExtra()
+	reconsiderPCTarget()
 
 func switchActivity(oldActivity, newActivityID, _args = []):
 	var theDomIDs:Array = []
@@ -260,6 +300,7 @@ func switchActivity(oldActivity, newActivityID, _args = []):
 	if(activity.hasEnded):
 		reactToActivityEnd(activity)
 	checkExtra()
+	reconsiderPCTarget()
 
 func getActivityWithUniqueID(uniqueID:int):
 	for activity in activities:
@@ -350,6 +391,7 @@ func checkIfDomsNeedMoreGoals():
 
 func doFastSex() -> SexEngineResult:
 	var newResult:SexEngineResult = SexEngineResult.new()
+	newResult.sexType = getSexTypeID()
 	
 	for subID in subs:
 		GM.main.updateCharacterUntilNow(subID)
@@ -737,16 +779,14 @@ func getActionsForCharID(_charID:String, isForMenu:bool = false) -> Array:
 	if(_isDom):
 		_charInfo = getDomInfo(_charID)
 	
-	if(isForMenu && _isPC && _isSub && _charInfo && _charInfo.canDoActions()):
-		var forcedObedienceLevel = GM.pc.getForcedObedienceLevel()
-		if(RNG.chance(forcedObedienceLevel*100.0)):
-			result.append({
-				id = "obey",
-				name = "OBEY",
-				desc = "You have lost control of your body..",
-				priority = 999,
-			})
-			return result
+	if(isForMenu && _isPC && _isSub && _charInfo && _charInfo.canDoActions() && _charInfo.shouldFullyObey()):
+		result.append({
+			id = "obey",
+			name = "OBEY",
+			desc = "You have lost control of your body..",
+			priority = 999,
+		})
+		return result
 	
 	if(_isPC && isForMenu):
 		result.append({
@@ -959,11 +999,7 @@ func processScene():
 func doAction(_actionInfo:Dictionary):
 	if(_actionInfo["id"] == "obey"):
 		clearOutputRaw()
-		if(isSub("pc")):
-			getSubInfo("pc").setObeyMode(true)
 		doFullTurn(true)
-		if(isSub("pc")):
-			getSubInfo("pc").setObeyMode(false)
 	if(_actionInfo["id"] == "auto"):
 		clearOutputRaw()
 		doFullTurn(true)
@@ -1122,8 +1158,14 @@ func endSex():
 	if(sexEnded):
 		return
 	sexResult.clear()
+	sexResult.sexType = getSexTypeID()
+	
+	sexResult.subsWon = true
 	for domID in doms:
 		var domInfo = doms[domID]
+		if(!domInfo.getIsDown()):
+			sexResult.subsWon = false
+		
 		var newDomResult:SexEngineResultDom = SexEngineResultDom.new()
 		newDomResult.grabInfo(self, domInfo)
 		
@@ -1214,8 +1256,8 @@ func getActivityWithMaxAnimPriorityFor(_charID:String, skipOptional:bool = false
 		if(skipOptional && activity.isAnimOptional()):
 			continue
 		
-		var animInfo = activity.getAnimationFinal()
-		if(animInfo == null):
+		var hasAnims:bool = activity.hasAnimsToPlay()
+		if(!hasAnims):
 			continue
 		if(activity.getAnimationPriority() > foundPriority || foundActivity == null):
 			#foundAnimInfo = animInfo
@@ -1267,6 +1309,29 @@ func getXFreeSubIDsForAnim(_amount:int) -> Array:
 				return result
 	return result
 
+# Makes us automatically switch targets if one of the doms grabs us
+func reconsiderPCTarget():
+	if(!isSub("pc") || doms.size() < 2):
+		return
+	var theTargetChar:String = getPCTarget()
+	var theTargetInfo:SexInfoBase = getCharInfo(theTargetChar)
+	if(!theTargetInfo):
+		return
+	var domsThatHaveActivitiesWithPC:Array = []
+	for activity in activities:
+		if(activity.hasEnded || !activity.isInvolved("pc") || activity.getAnimation() == null):
+			continue
+		
+		for otherDomInfo in activity.doms:
+			if(otherDomInfo == theTargetInfo):
+				return # We have at least one animated activity with the current target, all is good
+			
+			if(!domsThatHaveActivitiesWithPC.has(otherDomInfo.charID)):
+				domsThatHaveActivitiesWithPC.append(otherDomInfo.charID)
+	# We have a target but we don't have any sex activities with it, lets try to switch to the one that we do
+	if(!domsThatHaveActivitiesWithPC.empty()):
+		pcTarget = domsThatHaveActivitiesWithPC[0]
+	
 func getBestAnimation():
 	var theTargetChar:String = getPCTarget()
 	if(theTargetChar == ""):
@@ -1445,6 +1510,8 @@ func shouldFindDynamicJoiners() -> bool:
 		return false
 	if(isDom("pc") && !didPCAllowDynamicJoiners()):
 		return false
+	if(isSub("pc") && !GM.main.encounterSettings.shouldSubThreesomesBeEnabled()):
+		return false
 	return true
 
 func toggleDynamicJoiners():
@@ -1609,6 +1676,11 @@ func isLeashed(charIDTarget:String) -> bool:
 		return true
 	return false
 
+func getRevealedPartsAmount(_charID:String) -> int:
+	if(!revealedBodyparts.has(_charID)):
+		return 0
+	return revealedBodyparts[_charID].size()
+
 func saveData():
 	var data = {
 		"revealedBodyparts": revealedBodyparts,
@@ -1624,6 +1696,8 @@ func saveData():
 		"participatedDoms": participatedDoms,
 		"pcAllowsDynJoiners": pcAllowsDynJoiners,
 		"noDynamicJoiners": noDynamicJoiners,
+		"domNoPullingOut": domNoPullingOut,
+		"mustUseCondoms": mustUseCondoms,
 	}
 	if(sexType != null):
 		data["sexTypeID"] = sexType.id
@@ -1663,6 +1737,8 @@ func loadData(data):
 	participatedDoms = SAVE.loadVar(data, "participatedDoms", {})
 	pcAllowsDynJoiners = SAVE.loadVar(data, "pcAllowsDynJoiners", false)
 	noDynamicJoiners = SAVE.loadVar(data, "noDynamicJoiners", false)
+	domNoPullingOut = SAVE.loadVar(data, "domNoPullingOut", false)
+	mustUseCondoms = SAVE.loadVar(data, "mustUseCondoms", false)
 	
 	var sexTypeID = SAVE.loadVar(data, "sexTypeID", SexType.DefaultSex)
 	var theSexType = GlobalRegistry.createSexType(sexTypeID)
@@ -1704,3 +1780,5 @@ func loadData(data):
 		activityObject.loadData(SAVE.loadVar(activityInfo, "data", {}))
 		
 		activities.append(activityObject)
+	
+	calcAllPossibleGoalsToBeg()

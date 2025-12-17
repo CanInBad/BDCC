@@ -71,7 +71,7 @@ func _run():
 
 			saynn("Tavi tilts her head at you and stands up.")
 
-			saynn("[say=tavi]Really now? Someone finally grew a spine? I will make sure to snap it in half[/say]")
+			saynn("[say=tavi]Really now? Someone finally grew a spine? I will make sure to snap it in half.[/say]")
 
 			saynn("Seems like it’s a fight")
 		else:
@@ -79,7 +79,7 @@ func _run():
 
 			saynn("Tavi cracks her knuckles and stretches slightly.")
 
-			saynn("[say=tavi]Well.. It was a huge mistake and I will prove it[/say]")
+			saynn("[say=tavi]Well.. It was a huge mistake and I will prove it.[/say]")
 
 			saynn("Seems like it’s a fight")
 			
@@ -151,11 +151,11 @@ func _run():
 
 		saynn("She looks at her paw, at her digits, then wiggles them a bit before looking back at you.")
 
-		saynn("[say=tavi]I was born in a lab. I don’t have a father or a mother, I’m basically a clone with random dna. That’s why. Satisfying enough?[/say]")
+		saynn("[say=tavi]I was born in a lab. I don’t have a father or a mother, I’m basically a clone with random DNA. That’s why. Satisfying enough?[/say]")
 
 		saynn("You hum to yourself, trying to comprehend that. Lab-made feline, huh.")
 
-		saynn("[say=pc]But what was the point? If you’re here then that means something went horribly wrong[/say]")
+		saynn("[say=pc]But what was the point? If you’re here then that means something went horribly wrong.[/say]")
 
 		saynn("Tavi chuckles and gives you a pat.")
 
@@ -182,7 +182,7 @@ func _run():
 
 		saynn("You can guess that Tavi was doing her criminal activities over the galactic-wide web and got caught eventually.")
 
-		saynn("[say=pc]You don’t share much[/say]")
+		saynn("[say=pc]You don’t share much.[/say]")
 
 		saynn("[say=tavi]Information is the most valuable thing in today’s world, sweetie.[/say]")
 
@@ -195,7 +195,7 @@ func _run():
 
 		saynn("Tavi shrugs, it seems like the question caught her off guard.")
 
-		saynn("[say=tavi]I don’t like crowds. I always worked alone. And you better stop asking those silly questions[/say]")
+		saynn("[say=tavi]I don’t like crowds. I always worked alone. And you better stop asking those silly questions.[/say]")
 
 		saynn("She gives your butt a soft smack.")
 
@@ -213,13 +213,13 @@ func _run():
 
 		saynn("Tavi shifts closer to you and switches to a more quiet voice.")
 
-		saynn("[say=tavi]Mmmh~ Someone is eager to help me, huh[/say]")
+		saynn("[say=tavi]Mmmh~ Someone is eager to help me, huh.[/say]")
 
-		saynn("[say=pc]Weighing out the options. What are you gonna do about the collar? Can’t they just fry your neck remotely[/say]")
+		saynn("[say=pc]Weighing out the options. What are you gonna do about the collar? Can’t they just fry your neck remotely.[/say]")
 
 		saynn("You tug on yours, it’s as tight as ever, always reminding you of its existence.")
 
-		saynn("[say=tavi]If there is only one solution then it’s the right solution. We just make the captain take them off[/say]")
+		saynn("[say=tavi]If there is only one solution then it’s the right solution. We just make the captain take them off.[/say]")
 
 		saynn("Tavi watches your surprised face.")
 
@@ -227,11 +227,11 @@ func _run():
 
 		saynn("She chuckles and grabs you by the chin.")
 
-		saynn("[say=tavi]Naah~. That’s your job, sweetie. I bet the captain is not as strong as he thinks he is. Given the right.. motivation.. he will let collars from just two inmates slip off[/say]")
+		saynn("[say=tavi]Naah~. That’s your job, sweetie. I bet the captain is not as strong as he thinks he is. Given the right.. motivation.. he will let collars from just two inmates slip off.[/say]")
 
 		saynn("Tavi gently caresses your chin while trying to make eye contact with you.")
 
-		saynn("[say=pc]Maybe.. But what's then.. Transport shuttles can’t even do an ftl jump, the big ship is just gonna destroy us.[/say]")
+		saynn("[say=pc]Maybe.. But what's then.. Transport shuttles can’t even do an FTL jump, the big ship is just gonna destroy us.[/say]")
 
 		saynn("[say=tavi]All I need is a computer with access to extranet~ I know people that would be very happy to know the coordinates of this station, in exchange for pulling us out. It’s all about information and the right people, cutie. Look at me.[/say]")
 
@@ -257,19 +257,27 @@ func _run():
 
 
 	if(state == "give_apple"):
+		var apples = GM.pc.getInventory().getAllOf("appleitem")
+		var pcStoleApple = false
+		for apple in apples: # if at least one apple is illegal, present that one to tavi
+			if !apple.isLegal:
+				pcStoleApple = true
+				break
+		
+		
 		saynn("You walk up to Tavi and offer her the shiny apple.")
 
-		saynn("[say=pc]Here, Miss, like you wanted[/say]")
+		saynn("[say=pc]Here, Miss, like you wanted.[/say]")
 
 		saynn("She grabs it, holds it, even breathes on it but then gives it back.")
 
-		saynn("[say=tavi]Good. Keep it. Bet you went through some things to get it.[/say]")
+		saynn("[say=tavi]Good. Keep it. " + ("Bet you went through some things to get it." if pcStoleApple else "Even though you took the easy way to get it.") + "[/say]")
 
 		saynn("Her words leave you confused. She watches your reaction with great interest.")
 
 		saynn("[say=pc]But..[/say]")
 
-		saynn("[say=tavi]Kneel before me, little pet[/say]")
+		saynn("[say=tavi]Kneel before me, little pet.[/say]")
 
 		saynn("You do as she says, slowly lowering yourself onto your knees. She leans down and caresses your cheek, sliding a paw across one. Then she pulls you closer and gives you a sudden quick kiss on the lips. Light blush shows up on your face.")
 
@@ -277,14 +285,11 @@ func _run():
 
 		saynn("You nod and blush harder.")
 
-		saynn("[say=tavi]Say it[/say]")
+		saynn("[say=tavi]Say it.[/say]")
 
 		saynn("[say=pc]I wanna be a good pet for my Miss..[/say]")
 
-		if(GM.pc.getGender() == Gender.Male):
-			saynn("[say=tavi]Good boy~. Keep the apple.[/say]")
-		else:
-			saynn("[say=tavi]Good girl~. Keep the apple.[/say]")
+		saynn("[say=tavi]Good {pc.boy}~. Keep the apple.[/say]")
 
 		saynn("[say=pc]Thank you, Miss..[/say]")
 
@@ -295,11 +300,11 @@ func _run():
 		
 		saynn("[say=pc]Can you punish me, Miss Tavi?[/say]")
 		
-		saynn("[say=tavi]Why would I punish my cutie[/say]")
+		saynn("[say=tavi]Why would I punish my cutie.[/say]")
 		
 		saynn("[say=pc]For all the bad things I did.[/say]")
 		
-		saynn("[say=tavi]Hmm[/say]")
+		saynn("[say=tavi]Hmm.[/say]")
 		
 		addButton("Continue", "See what happens", "startrandompunishment")
 		

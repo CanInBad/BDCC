@@ -64,6 +64,8 @@ func getFormIDs() -> Array:
 		"ProstitutionUsual",
 		"ProstitutionServiceDom",
 		"ProstitutionPricySlut",
+		"ProstitutionClientAskForDomSlut",
+		"ProstitutionClientAskForSubSlut",
 		"ProstitutionDenied",
 		"ProstitutionDeniedWhatever",
 		"ProstitutionAccept",
@@ -81,6 +83,7 @@ func getFormIDs() -> Array:
 		"PunishLockIntoSlutwall",
 		
 		"TalkChatWhat",
+		"TalkStartNemesis",
 		"TalkChatCancel",
 		"TalkChatLeaving",
 		"TalkChatAgree",
@@ -399,7 +402,7 @@ func getText(_id:String, _args:Dictionary):
 			"That leash looks good in your hands. Keep a tight grip.",
 			"That’s how you keep a worthless little slut in line. Good job.",
 			"Look at you, leading that cute little slut around like a proper pet.",
-			"That leash suits them.. but you wear the control even better.",
+			"That leash suits {target.him}.. but you wear the control even better.",
 			"Looks like you’ve trained your little slut well. Impressive.",
 		]
 	if(_id == "ReactFUCKING_SOMEONE"):
@@ -688,6 +691,30 @@ func getText(_id:String, _args:Dictionary):
 			"You’ll love it, sweet thing. "+creds+" credits.",
 			"Pleasure like mine comes at a price. "+creds+" credits.",
 		]
+	if(_id == "ProstitutionClientAskForDomSlut"):
+		return [
+			"A little unusual for me, but.. I'd like you to be in charge this time.",
+			"I'm a little exhausted.. Perhaps you could have your way with me?",
+			"I have a feeling you'd like to be in charge.. Don't disappoint me, hun~.",
+			"Huff.. You should dominate me. I know you want to~.",
+			"Be a good service pet, and serve me.",
+			"I'm curious what you have in store for me, hun~.",
+			"Would you help me get comfortable?~",
+			"You're rather cute~.. Would you like to have your way with me?",
+			"I'd like to see what a cutie like you can do.. When nothing holds you back..",
+		]
+	if(_id == "ProstitutionClientAskForSubSlut"):
+		return [
+			"Hun, I'd like to be the one showing you around~.",
+			"Maybe another time. I'm looking for someone really submissive~.",
+			"Nah cutie, I'm looking for someone to fill up. You'd like that, wouldn't you~.",
+			"Heh sweetie, I think I have something better for you~.",
+			"I think you belong beneath me, sweetie.",
+			"Acting so confident, yet all I see is a pet begging to be forced into its place~.",
+			"There are better ways to use a plaything like you, dear~.",
+			"Act like you belong to me, sweet thing.",
+			"I want to see how obedient you'd be when I'm in control.",
+		]
 	if(_id == "ProstitutionDenied"):
 		return [
 			"Nah, sorry cutie.",
@@ -832,6 +859,15 @@ func getText(_id:String, _args:Dictionary):
 			"What's on your dirty little mind?",
 			"Go ahead, entertain me, sweetheart.",
 			"Are you finally ready to speak, brat?",
+		]
+	if(_id == "TalkStartNemesis"):
+		return [
+			"Get lost before I lose my patience, worm.",
+			"Do us both a favor and disappear, worm.",
+			"You think I care? That’s adorable.",
+			"Don't crawl back to me. Go away.",
+			"Your words don't matter to me.",
+			"Came to beg? I don't care.",
 		]
 	if(_id == "TalkChatCancel"):
 		return [

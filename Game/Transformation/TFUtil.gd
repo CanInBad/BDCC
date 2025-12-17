@@ -2,14 +2,20 @@ extends Object
 class_name TFUtil
 
 static func getRandomColorsForSpecies(species:Array) -> Array:
-	if(species.empty()):
-		species = [Species.Canine]
-	
 	if(species.size() > 1 && species.has(Species.Human)):
 		species = species.duplicate()
 		species.erase(Species.Human)
+
+	var possibleSpecies:Array = []
+	for speciesID in species:
+		var theSpeciesObj = GlobalRegistry.getSpecies(speciesID)
+		if(theSpeciesObj):
+			possibleSpecies.append(theSpeciesObj)
 	
-	var skinColors = GlobalRegistry.getSpecies(RNG.pick(species)).generateSkinColors()
+	if(possibleSpecies.empty()):
+		possibleSpecies = [GlobalRegistry.getSpecies(Species.Canine)]
+	
+	var skinColors = RNG.pick(possibleSpecies).generateSkinColors()
 	return skinColors
 	
 
@@ -17,6 +23,8 @@ static func getRandomSkinForSpecies(species:Array) -> String:
 	var possibleSkins:Array = []
 	for speciesOne in species:
 		var theSpecies = GlobalRegistry.getSpecies(speciesOne)
+		if(!theSpecies):
+			continue
 		var skinType = theSpecies.getSkinType()
 		if(species.size() > 1 && speciesOne == Species.Human):
 			skinType = SkinType.SkinAndFur
@@ -41,6 +49,14 @@ static func colorInterpolateStr(col1, col2, weight:float) -> String:
 	
 	#return col1.linear_interpolate(col2, weight).to_html()
 	return Color.from_hsv(col1.h*(1.0-weight)+col2.h*weight, col1.s*(1.0-weight)+col2.s*weight, col1.v*(1.0-weight)+col2.v*weight).linear_interpolate(col1.linear_interpolate(col2, weight), 0.7).to_html()
+
+static func getPlayerSlaveryStartList() -> Array:
+	var result:Array = []
+	
+	for tfID in GlobalRegistry.getPlayerSlaveryDefs():
+		var tf = GlobalRegistry.getPlayerSlaveryDef(tfID)
+		result.append([tf.id, tf.getVisibleName()])
+	return result
 
 static func getTFListCanStart() -> Array:
 	var result:Array = []

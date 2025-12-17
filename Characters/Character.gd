@@ -9,7 +9,7 @@ var npcLevel = 0
 var npcLustInterests = {}
 var npcPersonality = {}
 var npcFetishes = {}
-var npcDefaultFetishInterest = FetishInterest.Likes
+var npcDefaultFetishInterest:float = FetishInterest.Likes
 var npcArmor = {}
 var npcBasePain = null
 var npcBaseLust = null
@@ -106,15 +106,18 @@ func saveData():
 			"data": bodyparts[slot].saveDataNPC(),
 		}
 	
-	data["statusEffects"] = saveStatusEffectsData()
+	if(!statusEffects.empty()):
+		data["statusEffects"] = saveStatusEffectsData()
 	data["inventory"] = inventory.saveData()
 	data["lustInterests"] = lustInterests.saveData()
 	if(menstrualCycle != null):
 		data["menstrualCycle"] = menstrualCycle.saveData()
 	data["bodyFluids"] = bodyFluids.saveData()
 
-	data["timedBuffs"] = saveBuffsData(timedBuffs)
-	data["timedBuffsTurns"] = saveBuffsData(timedBuffsTurns)
+	if(!timedBuffs.empty()):
+		data["timedBuffs"] = saveBuffsData(timedBuffs)
+	if(!timedBuffsTurns.empty()):
+		data["timedBuffsTurns"] = saveBuffsData(timedBuffsTurns)
 	
 	
 	data["lastUpdatedDay"] = lastUpdatedDay
@@ -145,16 +148,26 @@ func loadData(data):
 			continue
 		bodypart.loadDataNPC(bodypartData)
 	
-	loadStatusEffectsData(SAVE.loadVar(data, "statusEffects", {}))
+	if(data.has("statusEffects")):
+		loadStatusEffectsData(SAVE.loadVar(data, "statusEffects", {}))
+	else:
+		for effectID in statusEffects.keys():
+			removeEffect(effectID)
 	inventory.loadDataNPC(SAVE.loadVar(data, "inventory", {}), self)
 	lustInterests.loadData(SAVE.loadVar(data, "lustInterests", {}))
 	bodyFluids.loadData(SAVE.loadVar(data, "bodyFluids", {}))
 
 	if(menstrualCycle != null && data.has("menstrualCycle")):
 		menstrualCycle.loadData(SAVE.loadVar(data, "menstrualCycle", {}))
-
-	timedBuffs = loadBuffsData(SAVE.loadVar(data, "timedBuffs", []))
-	timedBuffsTurns = loadBuffsData(SAVE.loadVar(data, "timedBuffsTurns", []))
+	
+	if(data.has("timedBuffs")):
+		timedBuffs = loadBuffsData(SAVE.loadVar(data, "timedBuffs", []))
+	else:
+		timedBuffs = []
+	if(data.has("timedBuffsTurns")):
+		timedBuffsTurns = loadBuffsData(SAVE.loadVar(data, "timedBuffsTurns", []))
+	else:
+		timedBuffsTurns = []
 	
 	lastUpdatedDay = SAVE.loadVar(data, "lastUpdatedDay", -1)
 	lastUpdatedSecond = SAVE.loadVar(data, "lastUpdatedSecond", -1)
@@ -409,6 +422,7 @@ func onCharacterVisiblyPregnant():
 			GM.main.addLogMessage("News", "You just received news that "+getName()+" is pregnant with your children.")
 			if(isDynamicCharacter()):
 				GM.main.WHS.addEvent(WHEvent.Impregnated, "pc", getID())
+				GM.main.RS.sendSocialEvent("pc", getID(), SocialEventType.GotImpregnated)
 			
 func onCharacterHeavyIntoPregnancy():
 	#print(getName()+" is heavy into pregnancy")
@@ -521,24 +535,28 @@ func processUntilTime(theday:int, theseconds:int):
 	if(lastUpdatedDay == theday && lastUpdatedSecond >= theseconds):
 		return
 	
-	var secondsDiff = 0
+	var secondsDiff:int = 0
 	
-	var dayDiff = theday - lastUpdatedDay
+	var dayDiff:int = theday - lastUpdatedDay
 	if(dayDiff == 0):
 		secondsDiff = theseconds - lastUpdatedSecond
 	else:
 		secondsDiff = 24*60*60*dayDiff - lastUpdatedSecond + theseconds
-		
-	var oldHours = int(float(lastUpdatedSecond) / 60 / 60) + lastUpdatedDay*24
+	
+	if(secondsDiff < 0):
+		Log.error("processUntilTime() trying to process "+str(getID())+" for a negative amount of seconds ("+str(secondsDiff)+")")
+		return
+	
+	var oldHours:int = int(float(lastUpdatedSecond) / 60 / 60) + lastUpdatedDay*24
 	
 	print("PROCESSED "+str(getID())+" FOR "+str(secondsDiff)+" SECONDS")
-	var oneWeekSeconds = 7*24*60*60
-	var oneDaySeconds = 24*60*60
-	var oneHourSeconds = 60*60
-	var processedWeeks = 0
+	var oneWeekSeconds:int = 7*24*60*60
+	var oneDaySeconds:int = 24*60*60
+	var oneHourSeconds:int = 60*60
+	var processedWeeks:int = 0
 	
 	# Processing entire days, then hours, then the rest
-	var secondsToProcess = secondsDiff
+	var secondsToProcess:int = secondsDiff
 	while(secondsToProcess > oneWeekSeconds):
 		if(processedWeeks < 8): # After 2 months we stop processing to not lag as much
 			processTime(oneWeekSeconds)
@@ -553,8 +571,8 @@ func processUntilTime(theday:int, theseconds:int):
 	processTime(secondsToProcess)
 	
 	
-	var newHours = int(float(theseconds) / 60 / 60) + theday*24
-	var hoursPassed = newHours - oldHours
+	var newHours:int = int(float(theseconds) / 60 / 60) + theday*24
+	var hoursPassed:int = newHours - oldHours
 	
 	if(hoursPassed > 0):
 		print("and also for "+str(hoursPassed)+" hours")

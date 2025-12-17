@@ -2,8 +2,8 @@ extends Node
 
 var game_version_major = 0
 var game_version_minor = 1
-var game_version_revision = 9
-var game_version_suffix = "fix1"
+var game_version_revision = 12
+var game_version_suffix = "fix4"
 
 var contributorsCredits:Dictionary = {
 	"Max-Maxou": [
@@ -81,6 +81,7 @@ var contributorsCredits:Dictionary = {
 		"[url=https://github.com/Alexofp/BDCC/pull/104]#1[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/136]#2[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/137]#3[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/209]#4[/url]",
 	],
 	"CKRainbow": [
 		"[url=https://github.com/Alexofp/BDCC/pull/112]#1[/url]",
@@ -89,6 +90,8 @@ var contributorsCredits:Dictionary = {
 		"[url=https://github.com/Alexofp/BDCC/pull/184]#4[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/186]#5[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/189]#6[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/197]#7[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/224]#8[/url]",
 	],
 	"Friskygote": [
 		"[url=https://github.com/Alexofp/BDCC/pull/120]#1[/url]",
@@ -124,19 +127,52 @@ var contributorsCredits:Dictionary = {
 		"[url=https://github.com/Alexofp/BDCC/pull/181]#8[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/187]#9[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/192]#10[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/227]#11[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/228]#12[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/231]#13[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/232]#14[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/242]#15[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/244]#16[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/246]#17[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/249]#18[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/250]#19[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/251]#20[/url]",
 	],
 	"CheeseyCake92": [
 		"[url=https://github.com/Alexofp/BDCC/pull/158]#1[/url]",
 	],
 	"[color=#E88EFF]Fox[color=#CC27DB]2[/color]Code[/color]": [
 		"code",
+		"[url=https://github.com/Alexofp/BDCC/pull/215]#1[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/216]#2[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/230]#3[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/237]#4[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/239]#5[/url]",
+	],
+	"moon-halo-xviii": [
+		"[url=https://github.com/Alexofp/BDCC/pull/196]#1[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/207]#2[/url]",
+	],
+	"MarsDDDDD": [
+		"[url=https://github.com/Alexofp/BDCC/pull/211]#1[/url]",
+	],
+	"Selinoccino": [
+		"[url=https://github.com/Alexofp/BDCC/pull/240]#1[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/241]#2[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/243]#3[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/245]#4[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/247]#5[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/248]#6[/url]",
 	],
 }
+
+var gles2Mode:bool = false
 
 var currentUniqueID = 0
 var currentChildUniqueID = 0
 var currentNPCUniqueID = 0
 var currentTFID := 0
+var currentSave:int = 1
 
 var pathToIDCache:Dictionary = {}
 var IDToPathCache:Dictionary = {}
@@ -152,6 +188,7 @@ var statusEffects: Dictionary = {}
 var statusEffectsRefs: Dictionary = {}
 var statusEffectsCheckedForPC: Array = []
 var statusEffectsCheckedForNPC: Array = []
+var statusEffectsCheckedOnFightStart:Array = []
 var allSpecies: Dictionary = {}
 var items: Dictionary = {}
 var itemsRefs: Dictionary = {}
@@ -217,6 +254,14 @@ var transformationEffects:Dictionary = {}
 var nurseryTasks:Dictionary = {}
 var drugDenEvents:Dictionary = {}
 var drugDenEventRefs:Dictionary = {}
+var playerSlaveryDefs:Dictionary = {}
+var specialRelationships:Dictionary = {}
+var specialRelationshipRefs:Dictionary = {}
+var npcOwnerRefs:Dictionary = {}
+var npcOwners:Dictionary = {}
+var npcOwnerEvents:Dictionary = {}
+var npcOwnerEventIDsByTag:Dictionary = {}
+var npcOwnerTraits:Dictionary = {}
 
 var bodypartStorageNode
 
@@ -233,15 +278,16 @@ signal donationDataUpdated
 signal loadingUpdate(percent, whatsnext)
 signal loadingFinished
 
-var modsSupport = false
-var loadedMods = []
+var modsSupport:bool = false
+var loadedMods:Array = []
+var tempCurrentModOrder:Array = []
 
-var isInitialized = false
+var isInitialized:bool = false
 
-func hasModSupport():
+func hasModSupport() -> bool:
 	return modsSupport
 
-func getLoadedMods():
+func getLoadedMods() -> Array:
 	return loadedMods
 	
 func getModsFolder() -> String:
@@ -293,6 +339,7 @@ func getRawModList():
 func checkModSupport():
 	# If we're in editor we have to do this silly thing
 	# read more here: https://github.com/godotengine/godot/issues/19815
+	# fixed in 4.x but still a problem in 3.x: https://github.com/godotengine/godot/issues/111433
 	if(OS.has_feature("editor")):
 		var _haveBase = ProjectSettings.load_resource_pack("res://BDCC.pck")
 		if(!_haveBase):
@@ -301,7 +348,7 @@ func checkModSupport():
 	else:
 		modsSupport = true
 
-func loadModOrder(theModOrder):
+func loadModOrder(theModOrder:Array):
 	for modEntry in theModOrder:
 		if(modEntry["disabled"]):
 			continue
@@ -309,34 +356,8 @@ func loadModOrder(theModOrder):
 		var _ok = ProjectSettings.load_resource_pack(modEntry["path"])
 		if(_ok):
 			loadedMods.append(modEntry["name"])
-
-func loadMods():
-	var modsFolder = "user://mods"
-	if(OS.get_name() == "Android"):
-		#var permissions: Array = OS.get_granted_permissions() #for Godot 3 branch
-		#if permissions.has("android.permission.READ_EXTERNAL_STORAGE"):
-		var externalDir:String = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
-		var finalDir = externalDir.plus_file("BDCCMods")
-		modsFolder = finalDir
-		var _ok = Directory.new().make_dir(modsFolder)
-	
-	var dir = Directory.new()
-	if dir.open(modsFolder) == OK:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name != "":
-			if dir.current_is_dir():
-				pass
-			else:
-				if(file_name.get_extension() in ["pck", "zip"]):
-					var full_path = modsFolder.plus_file(file_name)
-					#print("Registered mod: " + full_path)
-					var _ok = ProjectSettings.load_resource_pack(full_path)
-					if(_ok):
-						loadedMods.append(file_name)
-			file_name = dir.get_next()
-	else:
-		Log.printerr("An error occurred when trying to access the path "+modsFolder)
+	if(!loadedMods.empty()):
+		Log.print("Loaded mods ("+str(loadedMods.size())+"): "+str(loadedMods))
 
 const CACHE_SCENE = "scene"
 const CACHE_CHAR = "char"
@@ -408,8 +429,9 @@ func newCached(theType:String, theID:String):
 
 
 func _init():
+	gles2Mode = (OS.get_current_video_driver() == OS.VIDEO_DRIVER_GLES2)
+	
 	checkModSupport()
-	#loadMods()
 	
 	bodypartStorageNode = Node.new()
 	add_child(bodypartStorageNode)
@@ -494,6 +516,7 @@ func getDonationDataString():
 const totalStages = 19.0
 
 func registerEverything():
+	createLoadLockFile()
 	var start = OS.get_ticks_usec()
 	loadRegistryCacheFromFile()
 	
@@ -628,10 +651,18 @@ func registerEverything():
 	
 	registerSpeechModifiersFolder("res://Game/SpeechModifiers/")
 	registerSlaveBreakTaskFolder("res://Game/NpcSlavery/BreakTask/")
+	registerSlaveBreakTaskFolder("res://Game/PlayerSlaverySoft/ExtraTasks/")
 	registerSlaveTypeFolder("res://Game/NpcSlavery/SlaveType/")
 	registerSlaveActionFolder("res://Game/NpcSlavery/SlaveActions/")
 	registerSlaveEventFolder("res://Game/NpcSlavery/SlaveEvents/")
 	registerSlaveActivitiesFolder("res://Game/NpcSlavery/SlaveActivities/")
+	
+	registerPlayerSlaveryDefFolder("res://Game/PlayerSlavery/ScenarioDefs/")
+	registerSpecialRelantionshipFolder("res://Game/InteractionSystem/Relationship/SpecialRelationships/")
+	
+	registerNpcOwnerTypeFolder("res://Game/PlayerSlaverySoft/OwnerTypes/")
+	registerNpcOwnerEventFolder("res://Game/PlayerSlaverySoft/Events/")
+	registerNpcOwnerTraitFolder("res://Game/PlayerSlaverySoft/OwnerTraits/")
 	
 	registerInteractionFolder("res://Game/InteractionSystem/Interactions/")
 	registerGlobalTaskFolder("res://Game/InteractionSystem/GlobalTasks/")
@@ -647,6 +678,7 @@ func registerEverything():
 	
 	if(true):
 		var start2 = OS.get_ticks_usec()
+		registerStageSceneFolder("res://Player/StageScene3D/Scenes3/")
 		registerStageSceneFolder("res://Player/StageScene3D/Scenes2/")
 		registerStageSceneFolder("res://Player/StageScene3D/Scenes/")
 		var end2 = OS.get_ticks_usec()
@@ -706,6 +738,7 @@ func registerEverything():
 	var worker_time = (end-start)/1000000.0
 	Log.print("GlobalRegistry fully initialized in: %s seconds" % [worker_time])
 	isInitialized = true
+	deleteLoadLockFile()
 	emit_signal("loadingFinished")
 	
 # The point is that it will still generate unique ids even after saving/loading
@@ -858,8 +891,8 @@ func getBodypartRef(id: String):
 func getBodypartRefs():
 	return bodyparts
 
-func getBodypartsIdsBySlot(_slot):
-	var result = []
+func getBodypartsIdsBySlot(_slot:String) -> Array:
+	var result:Array = []
 	for bodypartID in bodyparts:
 		var bodypart = bodyparts[bodypartID]
 		if(bodypart.getSlot() == _slot):
@@ -1025,6 +1058,8 @@ func registerStatusEffect(path: String):
 		statusEffectsCheckedForPC.append(effectObject)
 	if(effectObject.alwaysCheckedForNPCs):
 		statusEffectsCheckedForNPC.append(effectObject)
+	if(effectObject.subscribeCheckOnFightStart):
+		statusEffectsCheckedOnFightStart.append(effectObject)
 	#effectObject.queue_free()
 
 func registerStatusEffectFolder(folder: String):
@@ -1066,6 +1101,9 @@ func getStatusEffectsAlwaysCheckedForPC():
 func getStatusEffectsAlwaysCheckedForNPC():
 	return statusEffectsCheckedForNPC
 
+func getStatusEffectsCheckedOnFightStart() -> Array:
+	return statusEffectsCheckedOnFightStart
+
 static func sortRegisteredStatusEffectsByPriority_sortFunc(a, b):
 	if a.priorityDuringChecking > b.priorityDuringChecking:
 		return true
@@ -1074,6 +1112,7 @@ static func sortRegisteredStatusEffectsByPriority_sortFunc(a, b):
 func sortRegisteredStatusEffectsByPriority():
 	statusEffectsCheckedForPC.sort_custom(self, "sortRegisteredStatusEffectsByPriority_sortFunc")
 	statusEffectsCheckedForNPC.sort_custom(self, "sortRegisteredStatusEffectsByPriority_sortFunc")
+	statusEffectsCheckedOnFightStart.sort_custom(self, "sortRegisteredStatusEffectsByPriority_sortFunc")
 
 func sortPlayerAttacks_sortFunc(a, b):
 	if getAttack(a).attackPriority > getAttack(b).attackPriority:
@@ -1112,8 +1151,8 @@ func getSpecies(id: String):
 		return null
 	return allSpecies[id]
 
-func getAllPlayableSpecies():
-	var result = {}
+func getAllPlayableSpecies() -> Dictionary:
+	var result:Dictionary = {}
 	for speciesID in allSpecies:
 		if(allSpecies[speciesID].isPlayable()):
 			result[speciesID] = allSpecies[speciesID]
@@ -1982,6 +2021,9 @@ func getSexGoal(id: String):
 		Log.printerr("ERROR: sex goal with the id "+id+" wasn't found")
 		return null
 
+func hasSexGoal(_id:String) -> bool:
+	return sexGoals.has(_id)
+
 func getSexGoals():
 	return sexGoals
 
@@ -2367,6 +2409,7 @@ func loadDatapacksFromFolder(folder: String):
 				var newDatapack:Datapack = Datapack.new()
 				newDatapack.loadedPath = possiblePackPath
 				newDatapack.loadFromResource(newPackResource)
+				newDatapack.id = Util.stripBadCharactersFromID(newDatapack.id)
 				
 				if(datapacks.has(newDatapack.id)):
 					Log.printerr("ERROR: Datapack id collision, two or more datapacks have the same id '"+str(newDatapack.id)+"'")
@@ -2681,6 +2724,148 @@ func getSexReactionHandlersFor(id: int):
 
 
 
+func registerPlayerSlaveryDef(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	playerSlaveryDefs[object.id] = object
+
+func registerPlayerSlaveryDefFolder(folder: String):
+	var scripts = getScriptsInFolder(folder)
+	for scriptPath in scripts:
+		registerPlayerSlaveryDef(scriptPath)
+
+func getPlayerSlaveryDef(id: String):
+	if(playerSlaveryDefs.has(id)):
+		return playerSlaveryDefs[id]
+	else:
+		Log.printerr("ERROR: player slavery with the id "+id+" wasn't found")
+		return null
+		
+func getPlayerSlaveryDefs():
+	return playerSlaveryDefs
+
+
+
+func registerSpecialRelationship(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	specialRelationships[object.id] = loadedClass
+	specialRelationshipRefs[object.id] = object
+
+func registerSpecialRelantionshipFolder(folder: String):
+	var scripts = getScriptsInFolder(folder)
+	for scriptPath in scripts:
+		registerSpecialRelationship(scriptPath)
+
+func createSpecialRelationship(id: String):
+	if(specialRelationships.has(id)):
+		return specialRelationships[id].new()
+	else:
+		Log.printerr("ERROR: special relationship with the id "+id+" wasn't found")
+		return null
+
+func getSpecialRelationshipRef(id: String):
+	if(specialRelationshipRefs.has(id)):
+		return specialRelationshipRefs[id]
+	else:
+		Log.printerr("ERROR: special relationship with the id "+id+" wasn't found")
+		return null
+		
+func getSpecialRelationships():
+	return specialRelationshipRefs
+
+
+
+func registerNpcOwnerType(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	npcOwners[object.id] = loadedClass
+	npcOwnerRefs[object.id] = object
+
+func registerNpcOwnerTypeFolder(folder: String):
+	var scripts = getScriptsInFolder(folder)
+	for scriptPath in scripts:
+		registerNpcOwnerType(scriptPath)
+
+func createNpcOwnerType(id: String):
+	if(npcOwners.has(id)):
+		return npcOwners[id].new()
+	else:
+		Log.printerr("ERROR: npc owner type with the id "+id+" wasn't found")
+		return null
+
+func getNpcOwnerTypeRef(id: String):
+	if(npcOwnerRefs.has(id)):
+		return npcOwnerRefs[id]
+	else:
+		Log.printerr("ERROR: npc owner type with the id "+id+" wasn't found")
+		return null
+		
+func getNpcOwnerTypes():
+	return npcOwnerRefs
+
+
+func registerNpcOwnerEvent(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	npcOwnerEvents[object.id] = loadedClass
+	for tagID in object.reactsToTags:
+		if(!npcOwnerEventIDsByTag.has(tagID)):
+			npcOwnerEventIDsByTag[tagID] = [object.id]
+		else:
+			npcOwnerEventIDsByTag[tagID].append(object.id)
+
+func registerNpcOwnerEventFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerNpcOwnerEvent(scriptPath)
+
+func createNpcOwnerEvent(id: String):
+	if(npcOwnerEvents.has(id)):
+		return npcOwnerEvents[id].new()
+	else:
+		Log.printerr("ERROR: npc owner event with the id "+id+" wasn't found")
+		return null
+
+func getNpcOwnerEvents():
+	return npcOwnerEvents
+
+func getNpcOwnerEventIDsByTag(_tag:String) -> Array:
+	if(!npcOwnerEventIDsByTag.has(_tag)):
+		return []
+	return npcOwnerEventIDsByTag[_tag]
+
+
+func registerNpcOwnerTrait(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	npcOwnerTraits[object.id] = object
+
+func registerNpcOwnerTraitFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerNpcOwnerTrait(scriptPath)
+
+func getNpcOwnerTrait(id: String):
+	if(npcOwnerTraits.has(id)):
+		return npcOwnerTraits[id]
+	else:
+		Log.printerr("ERROR: npc owner trait with the id "+id+" wasn't found")
+		return null
+
+func getNpcOwnerTraits():
+	return npcOwnerTraits
+
+
+
+
+
+
 func saveRegistryCache() -> Dictionary:
 	var data:Dictionary = {
 		pathToIDCache = pathToIDCache,
@@ -2738,3 +2923,19 @@ func loadRegistryCacheFromFile():
 	save_game.close()
 	fillBaseCacheFields()
 
+const loadLockPath = "user://loadlock.lockfile" # Game creates this file when it starts loading. Then deletes it when it finishes loading. If this file exists -> the game crashed during the previous loading
+
+func doesLoadLockFileExist() -> bool:
+	var f:File = File.new()
+	return f.file_exists(loadLockPath)
+
+func createLoadLockFile():
+	var file = File.new()
+	file.open(loadLockPath, File.WRITE)
+	#file.store_string(content)
+	file.close()
+
+func deleteLoadLockFile():
+	if(doesLoadLockFileExist()):
+		var d:Directory = Directory.new()
+		d.remove(loadLockPath)

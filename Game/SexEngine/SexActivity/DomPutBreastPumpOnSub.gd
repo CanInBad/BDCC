@@ -22,6 +22,7 @@ func getSupportedSexTypes():
 	return {
 		SexType.DefaultSex: true,
 		SexType.StocksSex: true,
+		SexType.BitchsuitSex: true,
 	}
 
 func getActivityBaseScore(_sexEngine: SexEngine, _domInfo: SexDomInfo, _subInfo: SexSubInfo):
@@ -87,6 +88,10 @@ func milkingSub_processTurn():
 	affectSub(getSubInfo().fetishScore({Fetish.Lactation: 1.0})+0.3, 0.1, -0.02, 0.0)
 	#getSubInfo().addArousalForeplay(0.03 + max(0.0, getSubInfo().fetishScore({Fetish.Lactation: 0.07})))
 	getSubInfo().stimulateArousalZone(0.2, BodypartSlot.Breasts, 1.0)
+	if(!isZoneOverstimulated(SUB_0, S_BREASTS)):
+		fetishAffect(SUB_0, Fetish.Lactation)
+	else:
+		fetishUp(SUB_0, Fetish.Lactation, -3.0)
 	
 	timesMilked += 1
 	var text:String = ""
@@ -158,7 +163,7 @@ func getActions(_indx:int):
 		addAction("moo", fetish(SUB_0, Fetish.Lactation)*0.3, "Moo", "Do the cute noise", {A_PRIORITY: 0})
 
 		if(isReadyToCumHandled(SUB_0)):
-			addAction("cum", 1.0, "Cum!", "You gonna cum.", {A_PRIORITY: 1001})
+			addAction("cum", 1.0, "Cum!", "You're gonna cum.", {A_PRIORITY: 1001})
 	
 func doAction(_indx:int, _id:String, _action:Dictionary):
 	if(_id == "stopMilking"):
@@ -196,6 +201,7 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 		if(getSub().isLactating()):
 			extraText = ", {sub.yourHis} {sub.breasts} squirt {sub.milk} out from this nipple orgasm"
 		getSubInfo().stimulateArousalZone(0.0, BodypartSlot.Breasts, 2.0)
+		fetishAffect(SUB_0, Fetish.Lactation, 3.0)
 		sendSexEvent(SexEvent.UniqueOrgasm, DOM_0, SUB_0, {orgasmType="breasts"})
 		addGenericOrgasmText(SUB_0, extraText)
 		return

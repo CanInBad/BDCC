@@ -135,16 +135,16 @@ func processTurn():
 	return
 
 func inside_processTurn():
-	stimulate(SUB_0, S_PENIS, DOM_0, usedBodypart, I_TEASE, usedFetish)
-	stimulate(SUB_0, S_MOUTH, DOM_1, S_VAGINA, I_TEASE, Fetish.OralSexGiving)
+	stimulateSexRide(DOM_0, SUB_0, usedBodypart, I_TEASE)
+	stimulateLick(SUB_0, DOM_1, S_VAGINA, I_TEASE)
 	
 	addText("{dom.You} {dom.youAre} being a cock-warmer for {sub.your} {sub.penisShort}.")
 	addText("{dom1.You} {dom1.youAre} sitting on {sub.your} face.")
 	#addText("At the same time, {dom1.You} {dom1.youAre} being a cock-warmer for {sub.your} {sub.penisShort}.")
 
 func sex_processTurn():
-	stimulate(SUB_0, S_PENIS, DOM_0, usedBodypart, I_NORMAL, usedFetish)
-	stimulate(SUB_0, S_MOUTH, DOM_1, S_VAGINA, I_NORMAL, Fetish.OralSexGiving)
+	stimulateSexRide(DOM_0, SUB_0, usedBodypart, I_NORMAL)
+	stimulateLick(SUB_0, DOM_1, S_VAGINA, I_NORMAL)
 	
 	doProcessPussyGrind(DOM_1, SUB_0)
 	doProcessRide(DOM_0, SUB_0, usedBodypart)
@@ -173,9 +173,9 @@ func getActions(_indx:int):
 			addAction("pullOut", getStopScore(), "Pull out", "Pull away from the sub's cock." if _indx == DOM_0 else "Pull away from the sub's mouth.")
 		
 		if(state == ""):
-			addAction("rub", 1.0 if !isReadyToPenetrate(_indx) else 0.4, "Rub", "Rub your cock against them" if isDom0 else "Rub yourself against their cock")
+			addAction("rub", 1.0 if !isReadyToPenetrate(_indx) else 0.4, "Rub", "Rub your cock against them" if isDom0 else "Rub yourself against their cock", {A_PRIORITY: 4})
 			if(isReadyToFuck(SUB_0) && !checkActiveDomPC(_indx) && hasBodypartUncovered(DOM_0, usedBodypart)):
-				addAction("penetrate", 1.0, "Envelop cock" if isDom0 else ("Grind"), "Try to start fucking them!" if isDom0 else ("Try to get the action going"))
+				addAction("penetrate", 1.0, "Envelop cock" if isDom0 else ("Grind"), "Try to start fucking them!" if isDom0 else ("Try to get the action going"), {A_PRIORITY: 5})
 			if(getDom(0).hasReachableVagina() && ((usedBodypart == S_VAGINA && getDom(1).hasReachableVagina()) || (usedBodypart == S_ANUS && getDom(1).hasReachableAnus()))):
 				addAction("switch", 0.0, "Switch positions", "Switch positions with the dom")
 		if(state == "sex" && !checkActiveDomPC(_indx)):
@@ -184,7 +184,7 @@ func getActions(_indx:int):
 				pauseScore = getPauseSexScore(_indx, SUB_0, S_PENIS, usedBodypart)
 			else:
 				pauseScore = getPauseSexScore(_indx, SUB_0, S_MOUTH, S_VAGINA)
-			addAction("pause", pauseScore, "Slow down", "Pause the fucking")
+			addAction("pause", pauseScore, "Slow down", "Pause the fucking", {A_PRIORITY: 1})
 		#if(state == "sex" && (isReadyToCumHandled(DOM_0) || isStrapon(DOM_0)) && (isReadyToCumHandled(SUB_0) || isStrapon(SUB_0))):
 		#	if(!isStrapon(_indx if isDom0 else SUB_0) && !checkActiveDomPC(_indx)):
 		#		addAction("cum", 1.0, "Cum inside", "Cum inside them!" if isDom0 else "Let the sub cum inside you!", {A_PRIORITY: 1001})
@@ -194,7 +194,7 @@ func getActions(_indx:int):
 			addAction("domcum", 1.0, "Cum!", "You're about to cum", {A_PRIORITY: 1001})
 		
 	if(_indx == SUB_0):
-		addAction("pullaway", getResistScore(SUB_0), "Pull away", "Try to pull away", {A_CHANCE: getSubResistChance(30.0, 25.0)})
+		addAction("pullaway", getResistScore(SUB_0), "Pull away", "Try to pull away", {A_CHANCE: getSubResistChance(30.0, 25.0), A_PRIORITY: 2})
 		#if(state == "sex"):
 		#	if(isReadyToCumHandled(SUB_0)):
 		#		addAction("subcum", 1.0, "Cum!", "You're about to cum!", {A_PRIORITY: 1001})
@@ -244,17 +244,17 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 		#addText("{dom.You} {dom.youVerb('rub')} {dom.yourHis} {dom.penisShort} against {sub.your} "+getNameHole(SUB_0, usedBodypart)+".")
 		addText("{dom.You} {dom.youVerb('rub')} {dom.yourHis} "+getNameHole(DOM_0, usedBodypart)+" against {sub.your} {sub.penisShort}.")
 		addText("{dom1.You} gently {dom1.youVerb('grind')} {dom1.yourHis} "+getNameHole(DOM_1, S_VAGINA)+" against {sub.your} face.")
-		stimulate(SUB_0, S_PENIS, DOM_0, usedBodypart, I_TEASE, usedFetish)
-		stimulate(SUB_0, S_MOUTH, DOM_1, S_VAGINA, I_TEASE, Fetish.OralSexGiving)
+		stimulateSexRide(DOM_0, SUB_0, usedBodypart, I_TEASE)
+		stimulateLick(SUB_0, DOM_1, S_VAGINA, I_TEASE)
 		return
 	if(_id == "penetrate"):
 		if(tryPenetrate(SUB_0, DOM_0, usedBodypart)):
-			stimulate(SUB_0, S_MOUTH, DOM_1, S_VAGINA, I_TEASE, Fetish.OralSexGiving)
+			stimulateLick(SUB_0, DOM_1, S_VAGINA, I_TEASE)
 			#penetration(true, SUB_0, DOM_1, usedBodypart2)
 			addText("At the same time, {dom1.you} {dom1.youVerb('lower')} {dom1.yourHis} "+getNameHole(DOM_1, S_VAGINA)+" onto {sub.yourHis} face.")
 			state = "sex"
 		else:
-			stimulate(SUB_0, S_MOUTH, DOM_1, S_VAGINA, I_TEASE, Fetish.OralSexGiving)
+			stimulateLick(SUB_0, DOM_1, S_VAGINA, I_TEASE)
 			#penetration(false, SUB_0, DOM_1, usedBodypart2)
 			#addText("{dom.You} {dom.youVerb('try', 'tries')} to envelop {sub.yourHis} {sub.penisShort} with {dom.yourHis} "+getNameHole(DOM_0, usedBodypart)+".")
 			pass

@@ -39,9 +39,25 @@ func isActivityImpossibleShouldStop() -> bool:
 	return false
 
 func getTags(_indx:int) -> Array:
+	if(state == "sex"):
+		if(_indx == DOM_0):
+			if(subFocus == BodypartSlot.Vagina):
+				return [SexActivityTag.HavingSex, SexActivityTag.MouthUsed, SexActivityTag.VaginaUsed]
+			if(subFocus == BodypartSlot.Penis):
+				return [SexActivityTag.HavingSex, SexActivityTag.MouthUsed, SexActivityTag.PenisUsed, SexActivityTag.PenisInside]
+		if(_indx == SUB_0):
+			if(domFocus == BodypartSlot.Vagina):
+				return [SexActivityTag.HavingSex, SexActivityTag.PreventsSubTeasing, SexActivityTag.MouthUsed, SexActivityTag.VaginaUsed]
+			if(domFocus == BodypartSlot.Penis):
+				return [SexActivityTag.HavingSex, SexActivityTag.PreventsSubTeasing, SexActivityTag.MouthUsed, SexActivityTag.PenisUsed, SexActivityTag.PenisInside]
+	
 	if(_indx == DOM_0):
+		if(subFocus == BodypartSlot.Penis):
+			return [SexActivityTag.HavingSex, SexActivityTag.MouthUsed, SexActivityTag.PenisUsed]
 		return [SexActivityTag.HavingSex, SexActivityTag.MouthUsed]
 	if(_indx == SUB_0):
+		if(domFocus == BodypartSlot.Penis):
+			return [SexActivityTag.HavingSex, SexActivityTag.PreventsSubTeasing, SexActivityTag.MouthUsed, SexActivityTag.PenisUsed]
 		return [SexActivityTag.HavingSex, SexActivityTag.PreventsSubTeasing, SexActivityTag.MouthUsed]
 	return []
 
@@ -87,7 +103,7 @@ func startActivity(_args):
 	affectSub(getSubInfo().fetishScore({Fetish.OralSexGiving: 1.0}), 0.1, -0.2, -0.01)
 	affectDom(getDomInfo().fetishScore({Fetish.OralSexGiving: 1.0}), 0.1, -0.03)
 	
-	addText("{dom.You} {dom.youVerb('position')} {dom.yourself} above {sub.you}, {dom.yourHis} "+domPartNameStr+" hovering tantalizingly close to {sub.yourHis} lips while {dom.yourHis} mouth lines up perfectly with a "+subPartNameStr+".")
+	addText("{dom.You} {dom.youVerb('position')} {dom.yourself} above {sub.you}, {dom.yourHis} "+domPartNameStr+" hovering tantalizingly close to {sub.yourHis} lips while {dom.yourHis} mouth lines up perfectly with {sub.yourHis} "+subPartNameStr+".")
 	return
 
 func onSwitchFrom(_otherActivity, _args):
@@ -238,7 +254,7 @@ func init_doAction(_indx:int, _id:String, _action:Dictionary):
 			
 			text += RNG.pick([
 				"{dom.You} {dom.youVerb('take')} {sub.yourHis} {penis} into {dom.yourHis} mouth, {dom.yourHis} lips sliding down its length.",
-				"{dom.You} {dom.youVerb('wrap')} {dom.yourHis} lips around {sub.yourHis} {penis}, your tongue teasing along its sensitive tip as {dom.youHe} {dom.youVerb('bob')} {dom.yourHis} head up and down.",
+				"{dom.You} {dom.youVerb('wrap')} {dom.yourHis} lips around {sub.yourHis} {penis}, {dom.yourHis} tongue teasing along its sensitive tip as {dom.youHe} {dom.youVerb('bob')} {dom.yourHis} head up and down.",
 			])
 		else:
 			text += RNG.pick([
@@ -296,7 +312,7 @@ func order_doAction(_indx:int, _id:String, _action:Dictionary):
 			
 			text += RNG.pick([
 				"In return, {dom.You} {dom.youVerb('take')} {sub.yourHis} {penis} into {dom.yourHis} mouth, {dom.yourHis} lips sliding down its length.",
-				"Feeling that, {dom.You} {dom.youVerb('wrap')} {dom.yourHis} lips around {sub.yourHis} {penis}, your tongue teasing along its sensitive tip as {dom.youHe} {dom.youVerb('bob')} {dom.yourHis} head up and down.",
+				"Feeling that, {dom.You} {dom.youVerb('wrap')} {dom.yourHis} lips around {sub.yourHis} {penis}, {dom.yourHis} tongue teasing along its sensitive tip as {dom.youHe} {dom.youVerb('bob')} {dom.yourHis} head up and down.",
 			])
 		else:
 			text += RNG.pick([

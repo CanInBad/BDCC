@@ -1,12 +1,19 @@
 extends Reference
 class_name SexEngineResult
 
+var sexType:String = SexType.DefaultSex
 var doms:Dictionary = {}
 var subs:Dictionary = {}
+var subsWon:bool = false
 
 func clear():
 	doms.clear()
 	subs.clear()
+	subsWon = false
+	sexType = SexType.DefaultSex
+
+func getSexType() -> String:
+	return sexType
 
 func hasSub(_subID:String) -> bool:
 	return subs.has(_subID)
@@ -98,6 +105,9 @@ func getTotalOrgasmCount() -> int:
 		result += subs[subID].timesCame
 	return result
 
+func didSubsWin() -> bool:
+	return subsWon
+
 func saveData() -> Dictionary:
 	var domsData:Dictionary = {}
 	for domID in doms:
@@ -107,11 +117,15 @@ func saveData() -> Dictionary:
 		subsData[subID] = subs[subID].saveData()
 	
 	return {
+		sexType = sexType,
 		doms = domsData,
 		subs = subsData,
+		subsWon = subsWon,
 	}
 
 func loadData(_data:Dictionary):
+	sexType = SAVE.loadVar(_data, "sexType", SexType.DefaultSex)
+	subsWon = SAVE.loadVar(_data, "subsWon", false)
 	var domsData:Dictionary = SAVE.loadVar(_data, "doms", {})
 	var subsData:Dictionary = SAVE.loadVar(_data, "subs", {})
 	

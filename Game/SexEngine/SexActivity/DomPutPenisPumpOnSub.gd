@@ -22,6 +22,7 @@ func getSupportedSexTypes():
 		SexType.DefaultSex: true,
 		SexType.StocksSex: true,
 		SexType.SlutwallSex: true,
+		SexType.BitchsuitSex: true,
 	}
 
 func getActivityBaseScore(_sexEngine: SexEngine, _domInfo: SexDomInfo, _subInfo: SexSubInfo):
@@ -100,6 +101,8 @@ func milkingSub_processTurn():
 		"The penis pump pleasures {sub.your} {sub.penis}.",
 		"Pleasure ring of the penis pump strokes {sub.your} {sub.penis}.",
 	])
+	
+	fetishAffect(SUB_0, Fetish.SeedMilking)
 	return
 
 
@@ -111,7 +114,7 @@ func getActions(_indx:int):
 	if(_indx == SUB_0):
 		addAction("moo", fetish(SUB_0, Fetish.Lactation)*0.3, "Moo", "Do the cute noise")
 		if(isReadyToCumHandled(SUB_0)):
-			addAction("cum", 1.0, "Cum!", "You gonna cum.", {A_PRIORITY: 1001})
+			addAction("cum", 1.0, "Cum!", "You're gonna cum.", {A_PRIORITY: 1001})
 
 func doAction(_indx:int, _id:String, _action:Dictionary):
 	if(_id == "stopMilking"):
@@ -156,7 +159,7 @@ func onActivityEnd():
 
 func getOrgasmHandlePriority(_indx:int) -> int:
 	if(_indx == SUB_0):
-		return 3
+		return 2
 	return -1
 
 func saveData():

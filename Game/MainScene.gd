@@ -1,24 +1,25 @@
 extends Control
 class_name MainScene
 
-onready var gameUI = $GameUI
+var gameUI:GameUI
+#onready var agameUI = $GameUI
 onready var charactersNode = $Characters
 onready var dynamicCharactersNode = $DynamicCharacters
 var sceneStack: Array = []
 var messages: Array = []
 var logMessages: Array = []
-var currentDay = 0
-var timeOfDay = 6*60*60 # seconds since 00:00
-var flags = {}
+var currentDay:int = 0
+var timeOfDay:int = 6*60*60 # seconds since 00:00
+var flags:Dictionary = {}
 var flagsCache = null
-var moduleFlags = {}
-var datapackFlags = {}
+var moduleFlags:Dictionary = {}
+var datapackFlags:Dictionary = {}
 var playerScene = preload("res://Player/Player.gd")
 var overriddenPlayerScene = preload("res://Player/OverriddenPlayer.gd")
 var overridenPC
 var originalPC
-var roomMemories = {}
-var lootedRooms = {}
+var roomMemories:Dictionary = {}
+var lootedRooms:Dictionary = {}
 var rollbacker:Rollbacker
 var encounterSettings:EncounterSettings
 var currentlyTestingScene = false
@@ -31,14 +32,16 @@ var WHS:WorldHistory = WorldHistory.new()
 var SAB:SlaveAuctionBidders = SlaveAuctionBidders.new()
 var SCI:Science = Science.new()
 var DrugDenRun:DrugDen
+var PS:PlayerSlaveryBase
+var PSH:PlayerSlaveryHolder = PlayerSlaveryHolder.new()
 
-var staticCharacters = {}
-var charactersToUpdate = {}
-var dynamicCharacters = {}
-var dynamicCharactersPools = {}
+var staticCharacters:Dictionary = {}
+var charactersToUpdate:Array = []
+var dynamicCharacters:Dictionary = {}
+var dynamicCharactersPools:Dictionary = {}
 
-var loadedDatapacks = {}
-var datapackCharacters = {}
+var loadedDatapacks:Dictionary = {}
+var datapackCharacters:Dictionary = {}
 
 signal time_passed(_secondsPassed)
 signal saveLoadingFinished
@@ -86,11 +89,12 @@ func connectSignalsToPC(who):
 	_s = who.connect("orificeBecomeMoreLoose", self, "_on_Player_orificeBecomeMoreLoose")
 	_s = who.connect("exchangedCumDuringRubbing", self, "_on_Player_exchangedCumDuringRubbing")
 	_s = who.connect("skillLevelChanged", self, "_on_Player_skillLevelChanged")
-	_s = who.connect("stat_changed", $GameUI, "_on_Player_stat_changed")
+	_s = who.connect("stat_changed", gameUI, "_on_Player_stat_changed")
 	_s = who.connect("holePainfullyStretched", self, "_on_Player_holePinafullyStretched")
 	_s = who.connect("gotWoundedBy", self, "_on_Player_gotWoundedBy")
 
 func _exit_tree():
+	rollbacker.onDestroy()
 	GM.main = null
 	
 func createStaticCharacters():
@@ -147,7 +151,7 @@ func removeDynamicCharacter(characterID, printDebug = true):
 		if(printDebug):
 			Log.print("removeDynamicCharacter(): Removing "+str(characterID)+" character")
 		removeDynamicCharacterFromAllPools(characterID)
-		RS.removeAllEntriesOf(characterID)
+		RS.onCharDelete(characterID)
 		IS.deletePawn(characterID)
 		
 		dynamicCharacters[characterID].queue_free()
@@ -211,6 +215,18 @@ func getDynamicCharactersPools():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	if(OPTIONS.getUILayoutFinal() == OPTIONS.LAYOUT_TOUCH_VERTICAL):
+		gameUI = load("res://Game/UI/GameUITouchVertical.tscn").instance()
+	elif(OPTIONS.getUILayoutFinal() == OPTIONS.LAYOUT_TOUCH_HORIZONTAL):
+		gameUI = load("res://Game/UI/GameUITouchHorizontal.tscn").instance()
+	else:
+		gameUI = load("res://Game/UI/GameUI.tscn").instance()
+	#gameUI = load("res://Game/UI/GameUITouchVertical.tscn").instance()
+	add_child(gameUI)
+	gameUI.connect("onDevComButton", self, "_on_GameUI_onDevComButton")
+	gameUI.connect("on_option_button", self, "_on_GameUI_on_option_button")
+	gameUI.connect("on_rollback_button", self, "_on_GameUI_on_rollback_button")
+	
 	GM.main = self
 	createStaticCharacters()
 	call_deferred("updateStaticCharacters")
@@ -233,10 +249,12 @@ func _ready():
 	Console.addCommand("clearflag", self, "consoleClearFlag", ["flagID"], "Resets the game flag, be very careful")
 	Console.addCommand("setmoduleflag", self, "consoleSetModuleFlagBool", ["moduleID", "flagID", "trueOrFalse"], "Changes the game flag, be very careful")
 	Console.addCommand("clearmoduleflag", self, "consoleClearModuleFlag", ["moduleID", "flagID"], "Resets the game flag, be very careful")
+	Console.addCommand("become", self, "consoleBecome", ["charID"], "Become another character")
 	#Console.addCommand("ae", self, "consoleAnimationEditor", [], "Animation editor")
 	applyAllWorldEdits()
 	
 func startNewGame():
+	GlobalRegistry.currentSave = 1
 	GM.ES.registerDatapackEvents(loadedDatapacks.keys())
 	for scene in sceneStack:
 		scene.queue_free()
@@ -341,11 +359,14 @@ func _on_GameUI_on_option_button(method, args):
 	pickOption(method, args)
 	
 func pickOption(method, args):
-	rollbacker.pushRollbackState()
+	GM.PROFILE.start("pickOption")
+	rollbacker.notifyMadeChoice()
+	
 	IS.resetExtraText()
 	GM.main.clearMessages()
 	GlobalTooltip.resetTooltips()
 	
+	GM.PROFILE.start("react")
 	if(GM.ES.checkButtonInput(method, args)):
 		pass
 		
@@ -353,11 +374,16 @@ func pickOption(method, args):
 		sceneStack.back().react(method, args)
 		#if(sceneStack.back().react(method, args)):
 		#	return
+	GM.PROFILE.finish("react")
 
 	allowExecuteOnce = true # For 'run code once' code block
 	runCurrentScene()
 	
+	rollbacker.pushRollbackState()
+	GM.PROFILE.finish("pickOption")
+	
 func runCurrentScene():
+	GM.PROFILE.start("runCurrentScene")
 	if(sceneStack.size() > 0):
 		sceneStack.back().run()
 		
@@ -370,6 +396,7 @@ func runCurrentScene():
 		GM.ui.translateText()
 	updateStuff()
 	allowExecuteOnce = false
+	GM.PROFILE.finish("runCurrentScene")
 
 func reRun():
 	runCurrentScene()
@@ -437,7 +464,16 @@ func getCurrentFightScene():
 			return scene
 	return null
 
-func supportsSexEngine():
+func isCharIDFighting(_charID:String) -> bool:
+	for scene in sceneStack:
+		if(scene.sceneID == "FightScene"):
+			if(_charID == "pc"): # Might have to be changed if I add npc vs npc fights
+				return true
+			if(scene.enemyID == _charID):
+				return true
+	return false
+
+func supportsSexEngine() -> bool:
 	for scene in sceneStack:
 		if(scene.supportsSexEngine()):
 			return true
@@ -467,7 +503,15 @@ func saveData():
 	data["relationshipSystem"] = RS.saveData()
 	data["auctionBidders"] = SAB.saveData()
 	data["science"] = SCI.saveData()
+	data["playerSlaveryHolder"] = PSH.saveData()
 	data["drugDen"] = DrugDenRun.saveData() if DrugDenRun != null else null
+	if(PS):
+		data["playerSlavery"] = {
+			id = PS.id,
+			data = PS.saveData(),
+		}
+	else:
+		data["playerSlavery"] = null
 	
 	data["scenes"] = []
 	for scene in sceneStack:
@@ -498,11 +542,16 @@ func loadData(data):
 	encounterSettings.loadData(SAVE.loadVar(data, "encounterSettings", {}))
 	GM.GES.loadData(SAVE.loadVar(data, "gameExtenders", {}))
 	loadedDatapacks = SAVE.loadVar(data, "loadedDatapacks", {})
-	datapackCharacters = SAVE.loadVar(data, "datapackCharacters", {})
+	var newDatapackCharacters:Dictionary = SAVE.loadVar(data, "datapackCharacters", {})
+	datapackCharacters.clear()
+	for datapackID in newDatapackCharacters:
+		var fixedDatapackID:String = Util.stripBadCharactersFromID(datapackID)
+		datapackCharacters[fixedDatapackID] = newDatapackCharacters[datapackID]
 	IS.loadData(SAVE.loadVar(data, "interactionSystem", {}))
 	RS.loadData(SAVE.loadVar(data, "relationshipSystem", {}))
 	SAB.loadData(SAVE.loadVar(data, "auctionBidders", {}))
 	SCI.loadData(SAVE.loadVar(data, "science", {}))
+	PSH.loadData(SAVE.loadVar(data, "playerSlaveryHolder", {}))
 		
 	
 	var scenes = SAVE.loadVar(data, "scenes", [])
@@ -534,6 +583,21 @@ func loadData(data):
 		DrugDenRun.loadData(SAVE.loadVar(data, "drugDen", {}))
 	else:
 		DrugDenRun = null
+	
+	if(data.has("playerSlavery") && data["playerSlavery"] is Dictionary):
+		var theSlaveryID:String = SAVE.loadVar(data["playerSlavery"], "id", "")
+		var theSlaveryDef = GlobalRegistry.getPlayerSlaveryDef(theSlaveryID)
+		if(!theSlaveryDef):
+			PS = null
+		else:
+			var theSlavery = theSlaveryDef.createSlavery()
+			if(!theSlavery):
+				PS = null
+			else:
+				PS = theSlavery
+				PS.loadData(SAVE.loadVar(data["playerSlavery"], "data", {}))
+	else:
+		PS = null
 	
 	GM.world.loadData(SAVE.loadVar(data, "world", {}))
 	#GM.world.updatePawns(IS)
@@ -590,24 +654,58 @@ func getMessages():
 func clearMessages():
 	messages = []
 
-func getTimeCap():
+func getTimeCap() -> int:
 	return 23 * 60 * 60
 
-func isVeryLate():
+func isVeryLate() -> bool:
 	return timeOfDay >= getTimeCap()
 
+const MAX_STOP_PROCESS_CHAR_CHECK = 10
+
+var internal_stopProcShift:int = 0
+
 func stopProcessingUnusedCharacters():
-	for charID in charactersToUpdate.keys():
-		var character = getCharacter(charID)
-		if(character != null):
+	# Process this in batches?
+	
+	GM.PROFILE.start("stopProcessingUnusedCharacters")
+	var charAm:int = charactersToUpdate.size()
+	
+	var batchesAmount:int = int(ceil(float(charAm) / float(MAX_STOP_PROCESS_CHAR_CHECK)))
+	if(internal_stopProcShift >= batchesAmount):
+		internal_stopProcShift = 0
+	
+	#Log.print("internal_stopProcShift: "+str(internal_stopProcShift))
+	for _i in range(MAX_STOP_PROCESS_CHAR_CHECK):
+		var _ii:int = _i * batchesAmount + internal_stopProcShift
+		var _indx:int = charAm - _ii - 1
+		if(_indx < 0 || _indx >= charAm):
+			continue
+		var charID:String = charactersToUpdate[_indx]
+		
+		var character:BaseCharacter = getCharacter(charID)
+		if(character):
 			character.updateNonBattleEffects()
-		if(character == null || !character.shouldBeUpdated()):
+		if(!character || !character.shouldBeUpdated()):
 			print("STOPPED PROCESSING: "+str(charID))
-			charactersToUpdate.erase(charID)
-			if(character != null):
+			charactersToUpdate.remove(_indx)
+			if(character):
 				character.onStoppedProcessing()
-		elif(character != null && !characterIsVisible(charID)):
-			character.updateNonBattleEffects()
+		#elif(character && !characterIsVisible(charID)):
+		#	character.updateNonBattleEffects()
+	
+	internal_stopProcShift += 1
+	GM.PROFILE.finish("stopProcessingUnusedCharacters")
+#	for charID in charactersToUpdate.keys():
+#		var character = getCharacter(charID)
+#		if(character != null):
+#			character.updateNonBattleEffects()
+#		if(character == null || !character.shouldBeUpdated()):
+#			print("STOPPED PROCESSING: "+str(charID))
+#			charactersToUpdate.erase(charID)
+#			if(character != null):
+#				character.onStoppedProcessing()
+#		elif(character != null && !characterIsVisible(charID)):
+#			character.updateNonBattleEffects()
 
 func processTime(_seconds):
 	_seconds = int(round(_seconds))
@@ -617,35 +715,50 @@ func processTime(_seconds):
 	doTimeProcess(_seconds)
 	stopProcessingUnusedCharacters()
 
-func doTimeProcess(_seconds):
-	# This splits long sleeping times into 1 hour chunks
-	IS.processTime(_seconds)
-	SCI.processTime(_seconds)
+func doTimeProcess(_seconds:int):
+	if(_seconds < 0):
+		Log.printerr("doTimeProcess() called with a negative amount of seconds! _seconds="+str(_seconds))
+		return
 	
-	var copySeconds = _seconds
+	GM.PROFILE.start("doTimeProcess")
+	if(!PS):
+		IS.processTime(_seconds)
+		#GM.PROFILE.start("SCI.processTime")
+		SCI.processTime(_seconds)
+		#GM.PROFILE.finish("SCI.processTime")
+	
+	GM.PROFILE.start("CHARACTERS.processTime")
+	# This splits long sleeping times into 1 hour chunks
+	var copySeconds := _seconds
 	while(copySeconds > 0):
 		var clippedSeconds = min(60*60, copySeconds)
+		#GM.PROFILE.start("GM.pc.processTime")
 		GM.pc.processTime(clippedSeconds)
+		#GM.PROFILE.finish("GM.pc.processTime")
 		
 		for characterID in charactersToUpdate:
 			var character = getCharacter(characterID)
 			if(character != null):
+				#GM.PROFILE.start(characterID+".processTime")
 				character.processTime(clippedSeconds)
+				#GM.PROFILE.finish(characterID+".processTime")
 		
 		copySeconds -= clippedSeconds
+	GM.PROFILE.finish("CHARACTERS.processTime")
 	
 	GM.ui.onTimePassed(_seconds)
 	
-	var oldHours = int((timeOfDay - _seconds) / 60 / 60)
-	var newHours = int(timeOfDay / 60 / 60)
-	var hoursPassed = newHours - oldHours
+	var oldHours := int((timeOfDay - _seconds) / 60 / 60)
+	var newHours := int(timeOfDay / 60 / 60)
+	var hoursPassed := newHours - oldHours
 
 	if(hoursPassed > 0):
 		hoursPassed(hoursPassed)
 	
 	emit_signal("time_passed", _seconds)
+	GM.PROFILE.finish("doTimeProcess")
 
-func hoursPassed(howMuch):
+func hoursPassed(howMuch:int):
 	GM.pc.hoursPassed(howMuch)
 	
 	for characterID in charactersToUpdate:
@@ -659,13 +772,13 @@ func hoursPassed(howMuch):
 			if(character != null && character.isSlaveToPlayer()):
 				character.getNpcSlavery().hoursPassed(howMuch)
 	
-	RS.decayRelationships(howMuch)
+	RS.hoursPassed(howMuch)
 
-func processTimeUntil(newseconds):
+func processTimeUntil(newseconds:int):
 	if(timeOfDay >= newseconds):
 		return
 	
-	var timeDiff = newseconds - timeOfDay
+	var timeDiff := newseconds - timeOfDay
 	
 	timeOfDay = newseconds
 	doTimeProcess(timeDiff)
@@ -694,6 +807,7 @@ func startNewDay():
 	WHS.onNewDay()
 	IS.afterNewDay()
 	SCI.onNewDay()
+	RS.onNewDay()
 	
 	SAVE.triggerAutosave()
 	
@@ -949,14 +1063,27 @@ func updateStuff():
 	
 	var isDrugDen:bool = isOnDrugDenRun()
 	var playerIsBlindfolded = GM.pc.isBlindfolded()
-	GM.world.setDarknessVisible(playerIsBlindfolded || isDrugDen)
-	if(playerIsBlindfolded || isDrugDen):
-		if(isDrugDen && !playerIsBlindfolded):
-			GM.world.setDarknessSize(64)
-		elif(GM.pc.canHandleBlindness()):
-			GM.world.setDarknessSize(64)
-		else:
-			GM.world.setDarknessSize(16)
+	
+	var shouldDarknessBeVisible:bool = playerIsBlindfolded || isDrugDen
+	var thePSDarkness:float = -1.0
+	if(PS):
+		thePSDarkness = PS.getPCViewDistance()
+		if(thePSDarkness > 0.0):
+			shouldDarknessBeVisible = true
+	
+	GM.world.setDarknessVisible(shouldDarknessBeVisible)
+	if(shouldDarknessBeVisible):
+		var theDist:float = 9999
+		if(isDrugDen):
+			theDist = min(64, theDist)
+		if(thePSDarkness > 0.0):
+			theDist = min(thePSDarkness, theDist)
+		if(playerIsBlindfolded):
+			if(GM.pc.canHandleBlindness()):
+				theDist = min(64, theDist)
+			else:
+				theDist = min(16, theDist)
+		GM.world.setDarknessSize(theDist)
 			
 	for worldEdit in GlobalRegistry.getRegularWorldEdits():
 		worldEdit.apply(GM.world)
@@ -1384,12 +1511,96 @@ func getDebugActions():
 				},
 			],
 		},
-		
+		{
+			"id": "startSlavery",
+			"name": "Start Player Slavery",
+			"args": [
+#				{
+#					"id": "slaveryID",
+#					"name": "Slavery id",
+#					"type": "list",
+#					"value": GlobalRegistry.getPlayerSlaveryDefs().keys().front(),
+#					"values": TFUtil.getPlayerSlaveryStartList(),
+#				},
+			],
+		},
+		{
+			"id": "startSlaveryFast",
+			"name": "Start Player Slavery FAST",
+			"args": [
+				{
+					"id": "slaveryID",
+					"name": "Slavery id",
+					"type": "list",
+					"value": GlobalRegistry.getPlayerSlaveryDefs().keys().front(),
+					"values": TFUtil.getPlayerSlaveryStartList(),
+				},
+			],
+		},
+		{
+			"id": "stopSlavery",
+			"name": "Stop Player Slavery",
+			"args": [
+			],
+		},
+		{
+			"id": "addBodywritings",
+			"name": "Add bodywritings",
+			"args": [
+				{
+					"id": "amount",
+					"name": "Amount",
+					"type": "number",
+					"value": 10,
+				},
+			],
+		},
+		{
+			"id": "clearBodywritings",
+			"name": "Clear writings",
+			"args": [
+			],
+		},
+		{
+			"id": "startSoftSlavery",
+			"name": "Start soft slavery",
+			"args": [
+			],
+		},
+		{
+			"id": "makefriend",
+			"name": "Make a friend",
+			"args": [
+			],
+		},
 	]
 
 func doDebugAction(id, args = {}):
 	print(id, " ", args)
 	
+	if(id == "makefriend"):
+		for _i in range(10):
+			var randID:String = RNG.pick(dynamicCharacters)
+			if(RS.hasSpecialRelationship(randID)):
+				continue
+			if(RS.getAffection(randID, "pc") >= 0.5):
+				continue
+			var theChar:BaseCharacter = getCharacter(randID)
+			if(!theChar || theChar.hasEnslaveQuest() || theChar.isSlaveToPlayer()):
+				continue
+			RS.addAffection(randID, "pc", 2.0)
+			return
+			#
+			
+		return
+	if(id == "addBodywritings"):
+		var theAm:int = args["amount"]
+		for _i in range(theAm):
+			GM.pc.addBodywritingRandom()
+		GM.pc.updateAppearance()
+	if(id == "clearBodywritings"):
+		GM.pc.clearBodywritings(true, true)
+		GM.pc.updateAppearance()
 	if(id == "forceProgressTFs"):
 		GM.pc.getTFHolder().forceProgressAll()
 	if(id == "accelerateTFs"):
@@ -1399,6 +1610,26 @@ func doDebugAction(id, args = {}):
 			addMessage(args["tfid"] +" transformation is currently not possible.")
 		else:
 			GM.pc.getTFHolder().startTransformation(args["tfid"])
+	if(id == "startSlavery"):
+		if(PS):
+			return
+		#PSH.storePlayersItems()
+		#runScene("PlayerSlaveryPickScene")
+		runScene(GlobalRegistry.getModule("PlayerSlaveryModule").getSlaveryStartScene())
+		#startPlayerSlavery(args["slaveryID"], true)
+	if(id == "startSlaveryFast"):
+		if(PS):
+			return
+		#PSH.storePlayersItems()
+		#runScene("PlayerSlaveryPickScene")
+		#runScene(GlobalRegistry.getModule("PlayerSlaveryModule").getSlaveryStartScene())
+		startPlayerSlavery(args["slaveryID"], true)
+	if(id == "stopSlavery"):
+		if(PS):
+			stopPlayerSlavery()
+			GM.pc.setLocation(GM.pc.getCellLocation())
+			while(sceneStack.size() > 1):
+				endCurrentScene()
 	if(id == "undoTFs"):
 		GM.pc.undoAllTransformations()
 	if(id == "applyTFs"):
@@ -1524,7 +1755,10 @@ func doDebugAction(id, args = {}):
 		
 	if(id == "spyRandom"):
 		runScene("SpyOnPawnScene")
-		
+	
+	if(id == "startSoftSlavery"):
+		runScene("SoftSlaveryQuickStartScene")
+	
 	if(id == "duplicateAndEnslave"):
 		var theNpcID = args["npcID"]
 		#if(args["cnpcID"] != ""):
@@ -1612,10 +1846,42 @@ func consoleSetModuleFlagBool(moduleID, flagID, valuestr):
 func consoleClearFlag(flagID):
 	clearFlag(flagID)
 	Console.printLine("Flag cleared")
-	
+
 func consoleClearModuleFlag(moduleID, flagID):
 	clearModuleFlag(moduleID, flagID)
 	Console.printLine("Flag cleared")
+
+func consoleBecome(charID):
+	if charID == "pc":
+		return
+	var character = getCharacter(charID)
+	if character == null:
+		Log.printerr("ERROR: character with the id "+charID+" wasn't found")
+		return
+	if character == GM.pc:
+		return
+	# Hyper specialized code for the player
+	GM.pc.getTFHolder().undoAllTransformations()
+	GM.pc.setGender(character.getGender())
+	GM.pc.setPronounGender(character.getPronounGender())
+	GM.pc.setSpecies(character.getSpecies())
+	GM.pc.pickedSkin = character.pickedSkin
+	GM.pc.pickedSkinRColor = character.pickedSkinRColor
+	GM.pc.pickedSkinGColor = character.pickedSkinGColor
+	GM.pc.pickedSkinBColor = character.pickedSkinBColor
+	GM.pc.setThickness(character.getThickness())
+	GM.pc.setFemininity(character.getFemininity())
+	for slot in BodypartSlot.getAll():
+		if character.hasBodypart(slot):
+			var charBodypart = character.getBodypart(slot)
+			var playerBodypart = GM.pc.getBodypart(slot)
+			if playerBodypart == null or charBodypart.id != playerBodypart.id:
+				playerBodypart = GlobalRegistry.createBodypart(charBodypart.id)
+				GM.pc.giveBodypart(playerBodypart)
+			playerBodypart.loadData(charBodypart.saveData())
+		else:
+			GM.pc.removeBodypart(slot)
+	GM.pc.updateAppearance()
 
 func _on_GameUI_on_rollback_button():
 	rollbacker.rollback()
@@ -1638,6 +1904,14 @@ func isCharacterInAnySexEngine(_charID:String) -> bool:
 	
 	return false
 
+func isCharacterInAnyNPCEvent(_charID:String) -> bool:
+	for scene in sceneStack:
+		if(scene.sceneID == "NpcOwnerEventRunnerScene"):
+			if(scene.runner && scene.runner.isCharIDInvolvedAllEvents(_charID)):
+				return true
+	
+	return false
+
 func updateCharacterUntilNow(charID):
 	var character = getCharacter(charID)
 	if(character != null):
@@ -1646,7 +1920,7 @@ func updateCharacterUntilNow(charID):
 
 func startUpdatingCharacter(charID):
 	if(!charactersToUpdate.has(charID)):
-		charactersToUpdate[charID] = true
+		charactersToUpdate.append(charID)
 		print("BEGAN PROCESSING "+str(charID))
 		var character = getCharacter(charID)
 		if(character != null):
@@ -1895,3 +2169,47 @@ func stopDungeonRun():
 	if(DrugDenRun != null):
 		DrugDenRun.endRun()
 	DrugDenRun = null
+
+func startPlayerSlavery(_slaveryID:String, storeInv:bool = false):
+	if(PS):
+		Log.printerr("Trying to start player slavery while one is running already!")
+		return
+	
+	var theDef = GlobalRegistry.getPlayerSlaveryDef(_slaveryID)
+	if(!theDef):
+		return
+	
+	var theSlavery = theDef.createSlavery()
+	if(!theSlavery):
+		Log.printerr("Slavery Def didn't gave the game a slavery object!")
+		return
+	
+	if(storeInv):
+		PSH.storePlayersItems()
+		
+	PS = theSlavery
+	PS.onSlaveryStart()
+	var theStartSceneID:String = PS.getStartScene()
+	if(theStartSceneID == ""):
+		Log.printerr("Player slavery didn't give us a start scene!")
+		return
+	runScene(theStartSceneID)
+
+func stopPlayerSlavery():
+	if(!PS):
+		return
+		
+	PS.onSlaveryEnd()
+	PSH.givePlayerItemsBack()
+	PS = null
+
+func checkPCOnALeash() -> bool: # Maybe I could expand this onto other pawn reactions
+	var theCurrentScene = getCurrentScene()
+	if(theCurrentScene):
+		if(theCurrentScene.sceneID == "ParadedOnALeashScene"):
+			return true
+		if(theCurrentScene.sceneID == "NpcOwnerEventRunnerScene"):
+			if(theCurrentScene.runner.isPlayerOnALeash()):
+				return true
+	return false
+	

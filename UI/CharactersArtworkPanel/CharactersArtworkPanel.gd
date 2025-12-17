@@ -17,7 +17,7 @@ func _ready():
 	#addCharacter("tavi", [])
 	#addCharacter("risha", [])
 	pass
-	
+
 func clear():
 	characters.clear()
 	textureRect.textures = null
@@ -25,12 +25,13 @@ func clear():
 	textureRect3.textures = null
 	currentCharacter = null
 	updateMainCharacter()
-	
+
 func addCharacter(charID:String, variant:Array):
 	var data = {}
 	
 	var character = GlobalRegistry.getCharacter(charID)
 	if(character != null):
+		variant = variant.duplicate()
 		character.adjustArtworkVariant(variant)
 	
 	var isGenericPortrait = true
@@ -105,7 +106,7 @@ func removeCharacter(charID:String):
 		currentCharacter = keys[index]
 		updateMainCharacter()
 	updateImages()
-		
+
 func updateImages():
 	if(characters.size() == 0):
 		textureRect.textures = null
@@ -188,14 +189,14 @@ func _on_NameLabel_mouse_entered():
 		var charData = characters[currentCharacter]
 		
 		if(charData.has("imageArtist") && charData["imageArtist"]):
-			GlobalTooltip.showTooltip(character.getName() + ", " + character.getSpeciesFullName(), character.getSmallDescription()+"\n\n[i]Art drawn by "+str(charData["imageArtist"])+"[/i]", true)
+			GlobalTooltip.showTooltip(nameLabel, character.getName() + ", " + character.getSpeciesFullName(), character.getSmallDescriptionWithRelationship()+"\n\n[i]Art drawn by "+str(charData["imageArtist"])+"[/i]", true)
 			return
 	
-	GlobalTooltip.showTooltip(character.getName() + ", " + character.getSpeciesFullName(), character.getSmallDescription(), true)
+	GlobalTooltip.showTooltip(nameLabel, character.getName() + ", " + character.getSpeciesFullName(), character.getSmallDescriptionWithRelationship(), true)
 
 
 func _on_NameLabel_mouse_exited():
-	GlobalTooltip.hideTooltip()
+	GlobalTooltip.hideTooltip(nameLabel)
 
 func hasNonGenericPortrait():
 	for charID in characters:

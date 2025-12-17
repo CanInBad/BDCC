@@ -40,7 +40,7 @@ func getCheckTagsSub() -> Array:
 func startActivity(_args):
 	addText("{dom.You} {dom.youVerb('lie')} down and {dom.youVerb('interlock')} legs with {sub.you}, ready to start grinding "+RNG.pick(["pussies", "pussy slits", "kitties", "clits"])+" against each other"+getThroughClothingText(DOM_0, BodypartSlot.Vagina)+"!")
 	
-	stimulate(DOM_0, S_VAGINA, SUB_0, S_VAGINA, I_TEASE, Fetish.Tribadism)
+	stimulateTribadism(DOM_0, SUB_0, I_TEASE)
 	
 	#affectSub(subInfo.fetishScore({Fetish.Tribadism: 1.0}), 0.1, -0.1, -0.01)
 	#affectDom(domInfo.fetishScore({Fetish.Tribadism: 1.0}), 0.1, -0.03)
@@ -53,7 +53,7 @@ func grinding_processTurn():
 		"{dom.You} "+RNG.pick(["dry {dom.youVerb('hump')}", "dry {dom.youVerb('fuck')}"])+" {sub.you}, stimulating each others "+RNG.pick(["pussies", "slits", "kitties"])+".",
 	])
 	
-	stimulate(DOM_0, S_VAGINA, SUB_0, S_VAGINA, I_NORMAL, Fetish.Tribadism)
+	stimulateTribadism(DOM_0, SUB_0, I_NORMAL)
 #
 #		affectSub(subInfo.fetishScore({Fetish.Tribadism: 1.0}), 0.1, -0.1, -0.01)
 #		affectDom(domInfo.fetishScore({Fetish.Tribadism: 1.0}), 0.1, -0.03)
@@ -96,6 +96,7 @@ func getActions(_indx:int):
 	if(_indx == SUB_0):
 		addAction("pullaway", getResistScore(SUB_0), "Pull away", "Try to pull away", {
 			A_CHANCE: getResistChance(SUB_0, DOM_0, RESIST_LEGS_FOCUS, 30.0, 25.0),
+			A_PRIORITY: 2,
 		})
 
 func doAction(_indx:int, _action:String, _actionDict:Dictionary):
@@ -120,7 +121,7 @@ func doAction(_indx:int, _action:String, _actionDict:Dictionary):
 
 func init_getActions(_indx:int):
 	if(_indx == DOM_0):
-		addAction("startgrinding", 1.0, "Start grinding", "Begin to rub kitties together!")
+		addAction("startgrinding", 1.0, "Start grinding", "Begin to rub kitties together!", {A_PRIORITY: 4})
 
 func init_doAction(_indx:int, _action:String, _actionDict:Dictionary):
 	if(_action == "startgrinding"):
@@ -128,17 +129,17 @@ func init_doAction(_indx:int, _action:String, _actionDict:Dictionary):
 		addTextPick([
 			"{dom.You} began grinding "+RNG.pick(["pussies", "kitties", "vulvae"])+" together with {sub.you}, stimulating each other's clits"+getThroughClothingText(DOM_0, BodypartSlot.Vagina)+"!",
 		])
-		stimulate(DOM_0, S_VAGINA, SUB_0, S_VAGINA, I_TEASE, Fetish.Tribadism)
+		stimulateTribadism(DOM_0, SUB_0, I_TEASE)
 
 func grinding_getActions(_indx:int):
 	if(_indx == DOM_0):
-		addAction("moanDom", 0.3, "Moan", "Show how much you enjoy it.")
+		addAction("moanDom", 0.3, "Moan", "Show how much you enjoy it.", {A_PRIORITY: 3})
 		if(isReadyToCum(DOM_0) && isHandlingOrgasms(DOM_0)):
-			addAction("cumDom", 1.0, "Cum!", "You gonna cum.", {A_PRIORITY:1001})
+			addAction("cumDom", 1.0, "Cum!", "You're gonna cum.", {A_PRIORITY:1001})
 	if(_indx == SUB_0):
-		addAction("moanSub", getComplyScore(SUB_0)/3.0, "Moan", "Show how much you enjoy it.")
+		addAction("moanSub", getComplyScore(SUB_0)/3.0, "Moan", "Show how much you enjoy it.", {A_PRIORITY: 3})
 		if(isReadyToCum(SUB_0) && isHandlingOrgasms(SUB_0)):
-			addAction("cumSub", 1.0, "Cum!", "You gonna cum.", {A_PRIORITY:1001})
+			addAction("cumSub", 1.0, "Cum!", "You're gonna cum.", {A_PRIORITY:1001})
 
 func grinding_doAction(_indx:int, _action:String, _actionDict:Dictionary):
 	if(_action == "moanDom"):
@@ -158,6 +159,7 @@ func grinding_doAction(_indx:int, _action:String, _actionDict:Dictionary):
 		if(doCheckDoubleOrgasm()):
 			satisfyGoals()
 			return
+		fetishAffect(DOM_0, Fetish.Tribadism, 3.0)
 		
 		cumAmount += 1
 		if(cumAmount >= 2):
@@ -173,6 +175,7 @@ func grinding_doAction(_indx:int, _action:String, _actionDict:Dictionary):
 		if(doCheckDoubleOrgasm()):
 			satisfyGoals()
 			return
+		fetishAffect(SUB_0, Fetish.Tribadism, 3.0)
 		
 		cumAmount += 1
 		if(cumAmount >= 2):
@@ -195,6 +198,8 @@ func doCheckDoubleOrgasm():
 			addText("[b]Double orgasm![/b]")
 			addGenericOrgasmText(DOM_0)
 			addGenericOrgasmText(SUB_0)
+			fetishAffect(DOM_0, Fetish.Tribadism, 3.0)
+			fetishAffect(SUB_0, Fetish.Tribadism, 3.0)
 			return true
 	return false
 	

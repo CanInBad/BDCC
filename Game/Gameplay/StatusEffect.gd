@@ -13,6 +13,7 @@ const Blocking = "Blocking"
 const Defocussing = "Defocussing"
 const PrimedAttack = "PrimedAttack"
 const DrugStrong = "DrugStrong"
+const AuraOfDominance = "AuraOfDominance"
 
 # Sex engine effects
 const SexEngineLikes = "SexEngineLikes"
@@ -82,3 +83,6 @@ const MaternalGlow = "MaternalGlow"
 const TaviWombMark = "TaviWombMark"
 const JackiCumInUrethra = "JackiCumInUrethra"
 const ArticaFullWithPlantEggs = "ArticaFullWithPlantEggs"
+
+# Special effects
+const PSMilkCafeProduction = "PSMilkCafeProduction"

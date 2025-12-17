@@ -22,6 +22,7 @@ func getSupportedSexTypes():
 		SexType.DefaultSex: true,
 		SexType.StocksSex: true,
 		SexType.SlutwallSex: true,
+		SexType.BitchsuitSex: true,
 	}
 
 func getActivityBaseScore(_sexEngine: SexEngine, _domInfo: SexDomInfo, _subInfo: SexSubInfo):
@@ -90,7 +91,7 @@ func init_processTurn():
 		
 		endActivity()
 		addText("{dom.You} {dom.youVerb('take')} off {sub.yourHis} "+str(theitem.getCasualName())+".")
-
+		
 func reactActivityEnd(_otheractivity):
 	if(checkRemoved()):
 		endActivity()
@@ -112,6 +113,7 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 				damageText = damageClothes(SUB_0)
 			addText("{sub.You} {sub.youVerb('manage', 'managed')} to resist {dom.yourHis} attempt to undress."+((" Struggling leads to {dom.name} ripping {sub.your} clothes. "+damageText) if damageText != "" else ""))
 			reactSub(SexReaction.ActivelyResisting, [50])
+			fetishUp(SUB_0, Fetish.Exhibitionism, -3.0)
 			return
 		
 		getDomInfo().addAnger(0.1)
@@ -120,6 +122,7 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 			damageText = damageClothes(SUB_0)
 		addText("{sub.You} {sub.youVerb('try', 'tries')} to resist {dom.yourHis} hands but {sub.youVerb('fail')}."+((" Struggling leads to {dom.name} ripping {sub.your} clothes. "+damageText) if damageText != "" else ""))
 		reactSub(SexReaction.Resisting, [50])
+		fetishUp(SUB_0, Fetish.Exhibitionism, -5.0)
 		return
 
 func getItemToRemove(character):

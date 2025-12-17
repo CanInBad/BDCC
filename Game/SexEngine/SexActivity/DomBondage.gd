@@ -20,6 +20,7 @@ func getSupportedSexTypes():
 	return {
 		SexType.DefaultSex: true,
 		SexType.StocksSex: true,
+		SexType.BitchsuitSex: true,
 	}
 
 func isStocksSex() -> bool:
@@ -105,8 +106,9 @@ func getStartActions(_sexEngine: SexEngine, _domInfo: SexDomInfo, _subInfo: SexS
 				continue
 			
 			if(_domInfo.getChar().isPlayer()):
+				var itemCategory:Array = getCategory() + item.getSexEngineSubcategory()
 #func addStartAction(_aArgs:Array, _aName:String, _aDesc:String, _aScore:float, _aExtra:Dictionary = {}):
-				addStartAction(["pc", item.uniqueID], item.getVisibleName(), "Restraint level: "+str(restraintData.getLevel()) + "\n" + item.getCombatDescription(), theActivityScore, {A_CATEGORY: (getCategory() if (!countsByItemID.has(item.id) || countsByItemID[item.id] <= 1) else (getCategory() + [str(countsByItemID[item.id])+"x"+item.getVisibleName()]))})
+				addStartAction(["pc", item.uniqueID], item.getVisibleName(), "Restraint level: "+str(restraintData.getLevel()) + "\n" + item.getCombatDescription(), theActivityScore, {A_CATEGORY: (itemCategory if (!countsByItemID.has(item.id) || countsByItemID[item.id] <= 1) else (itemCategory + [str(countsByItemID[item.id])+"x"+item.getVisibleName()]))})
 			else:
 				#canActuallyPutOn += 1
 				addStartAction(["npc", item.id], "", "", theActivityScore*item.getAIForceItemWeight(dom, sub))
@@ -207,6 +209,9 @@ func processTurn():
 		
 		addText(text)
 		
+		fetishAffect(SUB_0, Fetish.Bondage, 3.0)
+		fetishAffect(DOM_0, Fetish.Rigging, 3.0)
+		
 		if(item && item.getRestraintData()):
 			var bondageSexReaction:int = item.getRestraintData().sexReaction
 			if(bondageSexReaction >= 0):
@@ -222,10 +227,13 @@ func doAction(_indx:int, _actionID:String, _action:Dictionary):
 		if(RNG.chance(70.0 - getDomInfo().getAngerScore()*60.0)):
 			progressGoal(SexGoal.TieUp)
 			getDomInfo().addAnger(0.3)
+			fetishUp(SUB_0, Fetish.Bondage, -1.0)
+			fetishUp(DOM_0, Fetish.Rigging, -4.0)
 			endActivity()
 			addText("{sub.You} {sub.youVerb('manage', 'managed')} to resist {dom.yourHis} attempt to force a restraint!")
 			return
 		
+		fetishUp(SUB_0, Fetish.Bondage, -1.0)
 		getDomInfo().addAnger(0.1)
 		addText("{sub.You} {sub.youVerb('try', 'tries')} to resist {dom.yourHis} attempt at restraining {sub.youHim} but {sub.youVerb('fail')}.")
 		reactSub(SexReaction.Resisting, [50])

@@ -16,6 +16,12 @@ func getGoals():
 		SexGoal.DoFeetplay: 1.0,
 	}
 
+func getSupportedSexTypes():
+	return {
+		SexType.DefaultSex: true,
+		SexType.BitchsuitSex: true,
+	}
+
 func canStartActivity(_sexEngine: SexEngine, _domInfo: SexDomInfo, _subInfo: SexSubInfo):
 	return .canStartActivity(_sexEngine, _domInfo, _subInfo)
 
@@ -55,7 +61,7 @@ func kissingfeet_processTurn():
 	react(SexReaction.FeetplayKissingFeet, [20, 10])
 
 func rubpussy_processTurn():
-	getSubInfo().stimulateArousalZone(0.1, BodypartSlot.Vagina, 0.5)
+	stimulateRubWithFoot(DOM_0, SUB_0, S_VAGINA, I_NORMAL, SPEED_SLOW)
 	affectSub(getSubInfo().fetishScore({Fetish.FeetplayReceiving: 1.0})+0.3, 0.1, -0.005, -0.002)
 	rubWithFeet(DOM_0, SUB_0, S_VAGINA)
 	
@@ -72,7 +78,7 @@ func rubpussy_processTurn():
 		react(SexReaction.FeetplayRubbingPussy, [20, 10])
 
 func rubpenis_processTurn():
-	getSubInfo().stimulateArousalZone(0.1, BodypartSlot.Penis, 0.5)
+	stimulateRubWithFoot(DOM_0, SUB_0, S_PENIS, I_NORMAL, SPEED_SLOW)
 	affectSub(getSubInfo().fetishScore({Fetish.FeetplayReceiving: 1.0})+0.3, 0.1, -0.005, -0.002)
 	rubWithFeet(DOM_0, SUB_0, S_PENIS)
 	
@@ -112,7 +118,8 @@ func getActions(_indx:int):
 		if(state in [""]):
 			addAction("stompchest", getDomInfo().getSadisticActionStore(), "Stomp", "Stomp on their chest!")
 		if(state in [""]):
-			addAction("pinhead", 1.0 - (float(didTeasing) * 1.0), "Pin head", "Move your feet to their head")
+			if(getSexType() == SexType.DefaultSex):
+				addAction("pinhead", 1.0 - (float(didTeasing) * 1.0), "Pin head", "Move your feet to their head")
 		if(state in [""]):
 			if(getSub().hasReachableVagina()):
 				addAction("rubpussy", 0.5, "Rub pussy", "Start rubbing their pussy with your feet")
@@ -159,13 +166,13 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 		sendSexEvent(SexEvent.PainInflicted, DOM_0, SUB_0, {pain=howMuchAddPain,isDefense=false,intentional=true})
 		getDomInfo().addAnger(-0.1)
 		getSubInfo().addFear(0.2)
-		if(RNG.chance(20)):
-			getSub().doWound(getDomID())
 		addTextPick([
 			"{dom.You} {dom.youVerb('stomp')} on {sub.yourHis} chest [b]really hard[/b].",
 			"{dom.You} {dom.youVerb('kick')} {sub.yourHis} sides [b]really hard[/b]."
 		])
 		react(SexReaction.FeetplayStompChest, [100.0, 40.0])
+		if(RNG.chance(20)):
+			doWound(DOM_0, SUB_0)
 		return
 	if(_id == "pinhead"):
 		state = "onhead"
@@ -208,14 +215,14 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 		sendSexEvent(SexEvent.PainInflicted, DOM_0, SUB_0, {pain=howMuchAddPain,isDefense=false,intentional=true})
 		getDomInfo().addAnger(-0.1)
 		getSubInfo().addFear(0.3)
-		if(RNG.chance(20)):
-			getSub().doWound(getDomID())
 		addTextPick([
 			"{dom.You} {dom.youVerb('stomp')} on {sub.yourHis} pussy firmly!",
 			"{dom.You} {dom.youVerb('kick')} {sub.yourHis} pussy sadistically!",
 			"{dom.You} {dom.youVerb('stomp')} on {sub.yourHis} pussy firmly, bringing an extreme amount of pain!"
 		])
 		react(SexReaction.FeetplayStompPussy, [100.0, 40.0])
+		if(RNG.chance(20)):
+			doWound(DOM_0, SUB_0)
 		return
 	if(_id == "stompcock"):
 		affectDom(getDomInfo().fetishScore({Fetish.Sadism: 1.0})+0.0, 0.1, 0.0)
@@ -225,14 +232,14 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 		sendSexEvent(SexEvent.PainInflicted, DOM_0, SUB_0, {pain=howMuchAddPain,isDefense=false,intentional=true})
 		getDomInfo().addAnger(-0.1)
 		getSubInfo().addFear(0.3)
-		if(RNG.chance(20)):
-			getSub().doWound(getDomID())
 		addTextPick([
 			"{dom.You} {dom.youVerb('stomp')} on {sub.yourHis} cock firmly!",
 			"{dom.You} {dom.youVerb('kick')} {sub.yourHis} cock sadistically!",
 			"{dom.You} {dom.youVerb('stomp')} on {sub.yourHis} balls, bringing an extreme amount of pain!"
 		])
 		react(SexReaction.FeetplayStompPenis, [100.0, 40.0])
+		if(RNG.chance(20)):
+			doWound(DOM_0, SUB_0)
 		return
 	if(_id == "stop"):
 		endActivity()
@@ -349,6 +356,11 @@ func loadData(_data):
 	waitTimer = SAVE.loadVar(_data, "waitTimer", 0)
 
 func getAnimation():
+	if(getSexType() == SexType.BitchsuitSex):
+		if(state in ["rubpussy", "rubpenis"]):
+			return [StageScene.PuppyFeetCrotch, "crotch", {pc=DOM_0, npc=SUB_0}]
+		return [StageScene.PuppyPinned, "pinned", {pc=DOM_0, npc=SUB_0}]
+	
 	if(state == ""):
 		return [StageScene.SexFeetPlay, "pin", {pc=DOM_0, npc=SUB_0}]
 	if(state == "onhead"):

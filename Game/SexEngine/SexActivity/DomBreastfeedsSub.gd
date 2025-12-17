@@ -30,7 +30,7 @@ func getTags(_indx:int) -> Array:
 
 func startActivity(_args):
 	addText("{dom.You} {dom.youVerb('sit')} on {sub.your} lap and {dom.youVerb('push', 'pushes')} {dom.yourHis}"+getThroughClothingTextCustom(DOM_0, BodypartSlot.Breasts, " clothed")+" chest into {sub.yourHis} face.")
-	stimulate(SUB_0, S_MOUTH, DOM_0, S_BREASTS, I_TEASE, Fetish.Lactation)
+	stimulateBreasts(SUB_0, DOM_0, S_MOUTH, I_TEASE)
 	noticedSore = getDom().hasEffect(StatusEffect.SoreNipplesAfterMilking)
 	react(SexReaction.DomBreastfeedsSubStart, [100, 50])
 
@@ -101,7 +101,7 @@ func feeding_processTurn():
 				" {dom.Your} breasts suddenly began [b]producing {dom.milk}[/b]!",
 			])
 		
-		stimulate(SUB_0, S_MOUTH, DOM_0, S_BREASTS, I_NORMAL, Fetish.Lactation, SPEED_SLOW)
+		stimulateBreasts(SUB_0, DOM_0, S_MOUTH, I_NORMAL, SPEED_SLOW)
 #		affectSub(subInfo.fetishScore({Fetish.Lactation: 1.0}), 0.1, -0.1, -0.01)
 #		affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.1, -0.03)
 #		subInfo.addArousalForeplay(0.05)
@@ -136,14 +136,11 @@ func feeding_processTurn():
 		
 		if(howMuchCollected > 0.0):
 			for fluidID in fluidByAmount:
-				var fluidObject:FluidBase = GlobalRegistry.getFluid(fluidID)
-				if(fluidObject == null):
-					continue
-				
 				var share:float = fluidByAmount[fluidID] / totalAmount
-				var resultMessage:String = fluidObject.onSwallow(getSub(), share*howMuchCollected*10.0)
-				if(resultMessage != null && resultMessage != ""):
-					extraMessages.append(resultMessage)
+				
+				var swallowData:Dictionary = getSub().doSwallow(fluidID, share*howMuchCollected*10.0)
+				if(swallowData.has("text") && swallowData["text"] != ""):
+					extraMessages.append(swallowData["text"])
 		
 		var text:String = RNG.pick([
 			"{sub.You} {sub.youVerb('feed')} on {dom.your} "+RNG.pick(["leaky", "lactating"])+" nipples, consuming "+howMuchCollectedStr+".",
@@ -163,7 +160,7 @@ func feeding_processTurn():
 #		affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.1, -0.03)
 #		subInfo.addArousalForeplay(0.1)
 #		domInfo.addArousalForeplay(0.1)
-		stimulate(SUB_0, S_MOUTH, DOM_0, S_BREASTS, I_NORMAL, Fetish.Lactation, SPEED_SLOW)
+		stimulateBreasts(SUB_0, DOM_0, S_MOUTH, I_NORMAL, SPEED_SLOW)
 		getDomInfo().stimulateArousalZone(0.1, BodypartSlot.Breasts, 1.0)
 		
 		if(gropeAmount > 20 && RNG.chance(2) && !getDom().hasPerk(Perk.MilkNoSoreNipples) && !getDom().hasEffect(StatusEffect.SoreNipplesAfterMilking)):
@@ -188,7 +185,7 @@ func getActions(_indx:int):
 			var praiseScore:float = -getDomInfo().getAngerScore() + max(0.0, fetish(DOM_0, Fetish.Lactation)*0.5 - personality(DOM_0, PersonalityStat.Subby)*0.5)
 			addAction("praise", praiseScore, "Praise", "Tell them how well they do")
 		if(isReadyToCumHandled(DOM_0)):
-			addAction("cum", 1.0, "Cum!", "You gonna cum.", {A_PRIORITY: 1001})
+			addAction("cum", 1.0, "Cum!", "You're gonna cum.", {A_PRIORITY: 1001})
 		
 		var stopScore:float = 1.0
 		var breasts:BodypartBreasts = getDom().getBodypart(BodypartSlot.Breasts)
@@ -252,7 +249,7 @@ func doAction(_indx:int, _actionID:String, _action:Dictionary):
 			setState("feeding")
 			addText("{dom.You} {dom.youVerb('force')} {sub.you} to start feeding on {dom.yourHis} {dom.breasts}!")
 			
-			stimulate(SUB_0, S_MOUTH, DOM_0, S_BREASTS, I_TEASE, Fetish.Lactation)
+			stimulateBreasts(SUB_0, DOM_0, S_MOUTH, I_TEASE)
 #			affectSub(subInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.1, -0.01)
 #			affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.03)
 #			subInfo.addArousalForeplay(0.05)
@@ -263,7 +260,7 @@ func doAction(_indx:int, _actionID:String, _action:Dictionary):
 				"{dom.You} {dom.youVerb('pull')} {sub.your} head close to {dom.yourHis} breasts, trying to start feeding {sub.youHim}.",
 			])
 			
-			stimulate(SUB_0, S_MOUTH, DOM_0, S_BREASTS, I_TEASE, Fetish.Lactation, SPEED_VERYSLOW)
+			stimulateBreasts(SUB_0, DOM_0, S_MOUTH, I_TEASE, SPEED_VERYSLOW)
 			#affectSub(subInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.1, -0.01)
 			#affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.03)
 	if(_actionID == "stop"):
@@ -275,7 +272,7 @@ func doAction(_indx:int, _actionID:String, _action:Dictionary):
 		setState("feeding")
 		addText("{sub.You} began actively feeding on {dom.your} {dom.breasts}!")
 		
-		stimulate(SUB_0, S_MOUTH, DOM_0, S_BREASTS, I_TEASE, Fetish.Lactation)
+		stimulateBreasts(SUB_0, DOM_0, S_MOUTH, I_TEASE)
 		#affectSub(subInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.1, -0.01)
 		#affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.03)
 		#subInfo.addArousalForeplay(0.05)
@@ -304,7 +301,7 @@ func doAction(_indx:int, _actionID:String, _action:Dictionary):
 				getDomInfo().addPain(3)
 				sendSexEvent(SexEvent.PainInflicted, SUB_0, DOM_0, {pain=3,isDefense=false,intentional=false})
 			
-			stimulate(SUB_0, S_HANDS, DOM_0, S_BREASTS, I_NORMAL, Fetish.Lactation)
+			stimulateBreasts(SUB_0, DOM_0, S_HANDS, I_NORMAL)
 			#domInfo.stimulateArousalZone(0.2, BodypartSlot.Breasts, 1.0)
 			#affectSub(subInfo.fetishScore({Fetish.Lactation: 1.0}), 0.1, -0.1, -0.01)
 			#affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.1, -0.03)
@@ -314,7 +311,7 @@ func doAction(_indx:int, _actionID:String, _action:Dictionary):
 				"{sub.You} {sub.youVerb('massage')} {dom.yourHis} {dom.breasts}, stimulating them.",
 				"{sub.You} {sub.youVerb('knead')} {dom.yourHis} {dom.breasts} with {sub.yourHis} hands.",
 			])
-			stimulate(SUB_0, S_HANDS, DOM_0, S_BREASTS, I_NORMAL, Fetish.Lactation)
+			stimulateBreasts(SUB_0, DOM_0, S_HANDS, I_NORMAL)
 			#domInfo.stimulateArousalZone(0.2, BodypartSlot.Breasts, 1.0)
 			#affectSub(subInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.1, -0.01)
 			#affectDom(domInfo.fetishScore({Fetish.Lactation: 1.0}), 0.02, -0.03)

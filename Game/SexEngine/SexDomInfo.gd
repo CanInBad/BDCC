@@ -117,6 +117,10 @@ func processTurn():
 #	var evilness = personality.getStat(PersonalityStat.Evilness)
 #	anger = Util.moveNumberTowards(anger, evilness, 0.01)
 
+	var forcedAnger:float = getChar().getCustomAttribute(BuffAttribute.AngerInSex)
+	if(forcedAnger > 0.0 && anger < forcedAnger):
+		anger = Util.moveNumberTowards(anger, forcedAnger, 0.1)
+	
 	.processTurn()
 	angerFull += anger
 
@@ -197,6 +201,9 @@ func affectPersonality(_personality:Personality, _fetishHolder:FetishHolder):
 					theChanges.append("{npc.name} became slightly more kind after not being so angry.")
 	
 	return GM.ui.processString(Util.join(theChanges, "\n"), {npc=charID})
+
+func isDom() -> bool:
+	return true
 
 func getOpponentInfo():
 	return getSexEngine().subs[getSexEngine().subs.keys()[0]]

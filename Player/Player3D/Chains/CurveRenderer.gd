@@ -19,6 +19,7 @@ var curve := Curve3D.new()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	#curve.bake_interval = 22.5
 	curve.clear_points()
 	curve.add_point(Vector3(0,0,0))
 	curve.add_point(Vector3(-1,0,0))

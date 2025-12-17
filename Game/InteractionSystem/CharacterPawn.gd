@@ -68,6 +68,9 @@ func onDelete():
 	if(pawnType != null):
 		pawnType.onPawnDeleted(self)
 
+func getCharID() -> String:
+	return charID
+
 func getChar() -> BaseCharacter:
 	if(charID == ""):
 		return null
@@ -419,14 +422,11 @@ func isHighSecInmate() -> bool:
 	return isInmate() && getChar().getInmateType() == InmateType.HighSec
 
 func isSlaveToPlayer():
-	return getChar().isSlaveToPlayer()
+	var theChar = getChar()
+	return theChar != null && theChar.isSlaveToPlayer()
 
 func getNpcSlavery() -> NpcSlave:
 	return getChar().getNpcSlavery()
-
-func sendSlaveryActivityEvent(_eventID:String, _args:Dictionary):
-	if(isSlaveToPlayer()):
-		getNpcSlavery().onInteractionEvent(_eventID, _args)
 
 func getSlutSkillMod() -> float:
 	if(!isSlaveToPlayer()):
@@ -505,22 +505,7 @@ func calculatePowerScore(ignoreCurrentState:bool = false) -> float:
 	var theChar:BaseCharacter = getChar()
 	if(theChar == null):
 		return 0.0
-	
-	var finalScore:float = 0.0
-	
-	finalScore += theChar.painThreshold() * 0.01
-	finalScore += theChar.lustThreshold() * 0.01
-	finalScore += theChar.getMaxStamina() * 0.005
-	
-	finalScore += theChar.getLevel() * 0.1
-	finalScore += theChar._getAttacks().size() * 0.1
-	
-	if(!ignoreCurrentState):
-		finalScore *= (1.0 - theChar.getPainLevel()*0.9)
-		finalScore *= (1.0 - theChar.getLustLevel()*0.8)
-		finalScore *= (1.0 - theChar.getStaminaLevel()*0.5)
-	
-	return finalScore
+	return theChar.calculatePowerScore(ignoreCurrentState)
 
 func getHowMuchLikesPawn(otherPawn, isClamped:bool = false) -> float:
 	var theChar:BaseCharacter = getChar()
@@ -631,6 +616,8 @@ func canGrabAndFuck() -> bool:
 	return true
 
 func isOnALeash() -> bool:
+	if(isPlayer() && GM.main.checkPCOnALeash()):
+		return true
 	if(currentInteraction == null):
 		return false
 	if(currentInteraction.isRoleOnALeash(currentInteraction.getRoleForPawn(self))):
@@ -712,3 +699,16 @@ func getPawnTypeID() -> String:
 
 func getPawnType():
 	return GlobalRegistry.getPawnType(getPawnTypeID())
+
+func getPawnRelationshipTextAndColor() -> Array:
+	var special:SpecialRelationshipBase = GM.main.RS.getSpecialRelationship(charID)
+	if(special):
+		return [special.getMapTag(), special.getCategoryColor()]
+	
+	return ["", Color.white]
+
+func getSpecialRelationship() -> SpecialRelationshipBase:
+	return GM.main.RS.getSpecialRelationship(charID)
+
+func getID() -> String:
+	return charID

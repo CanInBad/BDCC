@@ -52,6 +52,13 @@ func getCharacterCreatorDesc():
 func getCompatibleSpecies():
 	return []
 
+func getCompatibleSpeciesFinal() -> Array:
+	var theSpecies = getCompatibleSpecies()
+	if(!(theSpecies is Array)):
+		Log.printerr(id+".getCompatibleSpecies() RETURNS BAD VALUE ("+str(theSpecies)+"), SUPPOSED TO BE AN ARRAY")
+		return []
+	return theSpecies
+
 func getSpeciesScores() -> Dictionary:
 	var result:Dictionary = {}
 	
@@ -68,7 +75,7 @@ func getSpeciesScores() -> Dictionary:
 	elif(theLimbSlot in [BodypartSlot.Hair]):
 		scoreToAdd = 0.23
 	
-	for theSpecies in getCompatibleSpecies():
+	for theSpecies in getCompatibleSpeciesFinal():
 		result[theSpecies] = scoreToAdd
 	
 	return result
@@ -282,19 +289,23 @@ func saveData():
 	if(sensitiveZone != null):
 		result["sensitiveZone"] = sensitiveZone.saveData()
 	if(supportsSkin()):
-		result["pickedSkin"] = pickedSkin
-		if(pickedRColor is Color):
-			result["pickedRColor"] = pickedRColor.to_html()
-		else:
-			result["pickedRColor"] = pickedRColor
-		if(pickedGColor is Color):
-			result["pickedGColor"] = pickedGColor.to_html()
-		else:
-			result["pickedGColor"] = pickedGColor
-		if(pickedBColor is Color):
-			result["pickedBColor"] = pickedBColor.to_html()
-		else:
-			result["pickedBColor"] = pickedBColor
+		if(pickedSkin != null):
+			result["skin"] = pickedSkin
+		if(pickedRColor != null):
+			if(pickedRColor is Color):
+				result["r"] = pickedRColor.to_html()
+			else:
+				result["r"] = pickedRColor
+		if(pickedGColor != null):
+			if(pickedGColor is Color):
+				result["g"] = pickedGColor.to_html()
+			else:
+				result["g"] = pickedGColor
+		if(pickedBColor != null):
+			if(pickedBColor is Color):
+				result["b"] = pickedBColor.to_html()
+			else:
+				result["b"] = pickedBColor
 	return result
 
 func loadData(_data):
@@ -308,20 +319,42 @@ func loadData(_data):
 		else:
 			sensitiveZone.loadData(SAVE.loadVar(_data, "sensitiveZone", {}))
 	if(supportsSkin()):
-		if(_data.has("pickedSkin")):
+		if(_data.has("skin")):
+			pickedSkin = SAVE.loadVar(_data, "skin", null)
+		elif(_data.has("pickedSkin")):
 			pickedSkin = SAVE.loadVar(_data, "pickedSkin", null)
-		if(_data.has("pickedRColor")):
+		else:
+			pickedSkin = null
+		if(_data.has("r")):
+			pickedRColor = SAVE.loadVar(_data, "r", null)
+			if(pickedRColor is String):
+				pickedRColor = Color(pickedRColor)
+		elif(_data.has("pickedRColor")):
 			pickedRColor = SAVE.loadVar(_data, "pickedRColor", null)
 			if(pickedRColor is String):
 				pickedRColor = Color(pickedRColor)
-		if(_data.has("pickedGColor")):
+		else:
+			pickedRColor = null
+		if(_data.has("g")):
+			pickedGColor = SAVE.loadVar(_data, "g", null)
+			if(pickedGColor is String):
+				pickedGColor = Color(pickedGColor)
+		elif(_data.has("pickedGColor")):
 			pickedGColor = SAVE.loadVar(_data, "pickedGColor", null)
 			if(pickedGColor is String):
 				pickedGColor = Color(pickedGColor)
-		if(_data.has("pickedBColor")):
+		else:
+			pickedGColor = null
+		if(_data.has("b")):
+			pickedBColor = SAVE.loadVar(_data, "b", null)
+			if(pickedBColor is String):
+				pickedBColor = Color(pickedBColor)
+		elif(_data.has("pickedBColor")):
 			pickedBColor = SAVE.loadVar(_data, "pickedBColor", null)
 			if(pickedBColor is String):
 				pickedBColor = Color(pickedBColor)
+		else:
+			pickedBColor = null
 
 func saveDataForTF():
 	return saveData()
@@ -452,61 +485,50 @@ func generateRandomSkinIfCan(_dynamicCharacter):
 func generateRandomColors(_dynamicCharacter):
 	pass
 
-static func findPossibleBodypartIDs(bodypartSlot, acharacter, theSpecies:Array, customNpcGender=null) -> Array:
-	var possible = []
-	#var fullWeight = 0.0
-	#if(!BodypartSlot.isEssential(bodypartSlot)):
-	#	possible.append([null, 1.0])
+static func findPossibleBodypartIDs(bodypartSlot:String, acharacter, theSpecies:Array, customNpcGender=null, _isTF:bool = false) -> Array:
+	var theActualNpcGender:String = acharacter.calculateNpcGender() if customNpcGender==null else customNpcGender
+	var possible:Array = []
+
+	var allAllowed:Dictionary = {} # Contains all bodyparts that are 'allowed' by the list of species
+	for playerSpecie in theSpecies:
+		var speciesObject = GlobalRegistry.getSpecies(playerSpecie)
+		if(!speciesObject):
+			continue
+		var theAllowed:Array = speciesObject.getAllowedBodypartsForNPCGender(theActualNpcGender, _isTF)
+		for allowedBodypartID in theAllowed:
+			allAllowed[allowedBodypartID] = true
 	
+	var maxScore:float = 0.0
 	var allbodypartsIDs = GlobalRegistry.getBodypartsIdsBySlot(bodypartSlot)
 	for bodypartID in allbodypartsIDs:
 		var bodypart = GlobalRegistry.getBodypartRef(bodypartID)
-		var supportedSpecies = bodypart.getCompatibleSpecies()
+		var supportedSpecies:Array = bodypart.getCompatibleSpeciesFinal()
 		
-		var hasInSupported = false
-		var hasInAllowed = false
+		var hasInSupported:bool = false
+		var hasInAllowed:bool = allAllowed.has(bodypartID)
 		
-		for supported in supportedSpecies:
-			if((supported in theSpecies) || supported == Species.AnyNPC): # || supported == Species.Any
-				hasInSupported = true
-				break
-			
-		for playerSpecie in theSpecies:
-			var speciesObject = GlobalRegistry.getSpecies(playerSpecie)
-			if(bodypartID in speciesObject.getAllowedBodyparts()):
-				hasInAllowed = true
-				break
+		if(!hasInAllowed): # No reason to check if we're already in allowed
+			for supported in supportedSpecies:
+				if((supported in theSpecies) || supported == Species.AnyNPC): # || supported == Species.Any
+					hasInSupported = true
+					break
 		
 		if(hasInSupported || hasInAllowed):
 			var weight = bodypart.npcGenerationWeight(acharacter)
 			if(weight != null && weight > 0.0):
 				possible.append([bodypartID, weight])
-				#fullWeight += weight
-
-	# Adding the default bodypart of this species into the mix
-	for specie in theSpecies:
-		var speciesObject = GlobalRegistry.getSpecies(specie)
-		var bodypartID = speciesObject.getDefaultForSlotForNpcGender(bodypartSlot, acharacter.calculateNpcGender() if customNpcGender==null else customNpcGender)
-		var alreadyHasInPossible = false
-		for possibleEntry in possible:
-			if(possibleEntry[0] == bodypartID):
-				alreadyHasInPossible = true
-				break
-		if(alreadyHasInPossible):
-			continue
-		if(bodypartID == null):
-			possible.append(["", 1.0])
-			#fullWeight += 1.0
-			continue
-		var bodypart = GlobalRegistry.getBodypartRef(bodypartID)
-		var weight = bodypart.npcGenerationWeight(acharacter)
-		if(weight != null && weight > 0.0):
-			possible.append([bodypartID, weight])
-			#fullWeight += weight
+				if(weight > maxScore):
+					maxScore = weight
+	
+	# If we don't have any bodyparts that are guranteed to be picked (weight >= 1.0), we insert an optional empty bodypart
+	if(maxScore < 1.0 && !BodypartSlot.isEssential(bodypartSlot)):
+		possible.append(["", 1.0])
+	
 	return possible
 
-static func findPossibleBodypartIDsDict(bodypartSlot, acharacter, theSpecies:Array, customNpcGender=null) -> Dictionary:
-	var idsAr:Array = findPossibleBodypartIDs(bodypartSlot, acharacter, theSpecies, customNpcGender)
+# Used for transformation logic
+static func findPossibleBodypartIDsDict(bodypartSlot:String, acharacter, theSpecies:Array, customNpcGender=null, _isTF:bool = false) -> Dictionary:
+	var idsAr:Array = findPossibleBodypartIDs(bodypartSlot, acharacter, theSpecies, customNpcGender, _isTF)
 	var result:Dictionary = {}
 	
 	for idEntry in idsAr:

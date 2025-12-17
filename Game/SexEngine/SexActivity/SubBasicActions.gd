@@ -18,6 +18,7 @@ func getSupportedSexTypes():
 		SexType.DefaultSex: true,
 		SexType.StocksSex: true,
 		SexType.SlutwallSex: true,
+		SexType.BitchsuitSex: true,
 	}
 
 func isStocksSex() -> bool:
@@ -80,6 +81,7 @@ func startActivity(_args):
 		
 		addText(text)
 		reactSub(SexReaction.ResistingRestraints, [30])
+		fetishUp(SUB_0, Fetish.Bondage, -1.0)
 		return
 	
 	if(actionID in ["apologize"]):

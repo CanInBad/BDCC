@@ -5,6 +5,103 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.1.12] - 2025-12-03
+### Added
+- A 'soft slavery' system for the player! The player character can now get enslaved by one of the dynamic npcs on the prison. A few ways to trigger this: the npc might just offer to make you their prison bitch, you might ask to become one, a very-likely outcome of losing a nemesis ambush. Or you can just use a new debug action. You can have multiple owners.
+- When enslaved, your owner will approach you once every few days to do something with you (an event). Each time you submit, their influence over you will increase. Fighting back will decrease the influence until they stop being your owner.
+- Resisting your owner will make them punish you. If you get punished too much, your owner might to get rid of you, selling you off or giving you away to a certain someone.
+- As your owner gains influence levels, they will develop 'owner traits'. There are 9 possible owner traits in total, they will affect what things the owners will do to you. You, the player, will also gradually unlock stuff like ability to change your nickname or ability to set limits.
+- You can also make friends! If you earn enough affection with someone, they will become your friend. Friends are more likely to help you overall and they will also sometimes try to protect you from your owner.
+- Added begging inside sex engine. As a sub, you can now beg the doms to do something specific with you. They might decide to agree or ignore you.
+- You can now see relative chances of the NPC's actions during interactions with them.
+- The 'Me' menu has a 'Relationships' button that allows you to see all your friends, owners and nemesis. It's also an easy way to meet them.
+- The modded BDCC launcher now has a button to check if you have any outdated mods that are known to crash the game on the new version. The list of mods that broke can be updated by me so please report them!
+
+### Changed
+- Perfomance optimizations for pawns. The game should especially run better with high pawn counts (above 40).
+- One-line buttons should fit more text (like before the touch UI update)
+- Debug info from the troubleshooting screen should be more useful hopefully.
+- Escaping getting choked should be easier in the sex engine.
+- The requirements of starting sex engine scenes got lessened. You now only need free arms/hands.
+- Timed buffs status effect shows buffs in a better format.
+- TF pill descriptions got improved.
+- Refactored the code that picks bodyparts. Should make the lives of modders easier.
+- You can now use the task list to view the nursery bounties.
+
+### Fixed
+- Game should crash less when mods are removed. Game should crash less overall too.
+- Dynamic npcs that are stuck in stocks or otherwise busy will not appear in scenes.
+- Text color of the disabled buttons should be more obvious (like before the touch UI update)
+- A lot of typos got fixed.
+- Datapack IDs are now forcibly stripped of any bad letters.
+- Rollbacker fixed, shouldn't rollback twice in certain conditions anymore.
+- Threesomes with npcs wearing strapons shouldn't have a chance to softlock anymore.
+
+### Contributions
+- [Fixed a crash when loading a save for some players](https://github.com/Alexofp/BDCC/pull/224) (by CKRainbow)
+- [Fix femininity values for generated dynamic npcs](https://github.com/Alexofp/BDCC/pull/227) (by keerifox)
+- [Prostitution interaction got updated with dom/sub requests](https://github.com/Alexofp/BDCC/pull/228) (by keerifox)
+- [Fix portable mode on Linux](https://github.com/Alexofp/BDCC/pull/230) (by Fox2Code)
+- [Fix some typos](https://github.com/Alexofp/BDCC/pull/231) (by keerifox)
+- [Haircut menu quality-of-life changes](https://github.com/Alexofp/BDCC/pull/232) (by keerifox)
+- [Add GM.ui.getCharactersPanel().reloadArtworkImages() API](https://github.com/Alexofp/BDCC/pull/237) (by Fox2Code)
+- [Add "become" console command](https://github.com/Alexofp/BDCC/pull/239) (by Fox2Code)
+- [Fixed some misgendering and a small typo](https://github.com/Alexofp/BDCC/pull/240) (by Selinoccino)
+- [Consistency fixes](https://github.com/Alexofp/BDCC/pull/241) (by Selinoccino)
+- [Capitalizations, minor changes & one slight text variation](https://github.com/Alexofp/BDCC/pull/243) (by Selinoccino)
+- [Add macros (they've, were/weren't, aren't, have/haven't etc.)](https://github.com/Alexofp/BDCC/pull/242) (by keerifox)
+- [Pronoun selection tweaks](https://github.com/Alexofp/BDCC/pull/244) (by keerifox)
+- [Minor changes, misgendering & verb fixes, punctuation & spelling changes](https://github.com/Alexofp/BDCC/pull/245) (by Selinoccino)
+- [Macros: yours/theirs (possessive pronoun)](https://github.com/Alexofp/BDCC/pull/246) (by keerifox)
+- [Grammar and spelling and stuff, again](https://github.com/Alexofp/BDCC/pull/247) (by Selinoccino)
+- [Computer hacking minigame rewrite and update](https://github.com/Alexofp/BDCC/pull/248) (by Selinoccino)
+- [Group TF pills in sex engine](https://github.com/Alexofp/BDCC/pull/249) (by keerifox)
+- [Fix crash upon slave going unconscious while tasked with sex work](https://github.com/Alexofp/BDCC/pull/250) (by keerifox)
+- [Ability to forbid NPCs from adding bodywritings/tallymarks. Ability to beg for bodywritings](https://github.com/Alexofp/BDCC/pull/251) (by keerifox)
+
+## [0.1.11] - 2025-09-17
+### Added
+- The game's UI has been refactored to support the new (optional) touch-friendly UI layouts! New (optional) layouts: [horizontal left-handed](https://github.com/user-attachments/assets/74722e3b-6d01-453e-a17b-72ada6528896), [horizontal right-handed](https://github.com/user-attachments/assets/aa5c0e77-c47b-4717-9899-b1b9e0e56e57) and [vertical](https://github.com/user-attachments/assets/930deadc-f6f9-4630-bbee-fc9eba4ddd04). (The current 'normal' layout is kept as is) Android version will automatically pick the new horizontal touch-friendly layout. But it is possible to override this in the settings.
+- Better options screen. It is now divided into 4 tabs rather than one giant list.
+- On Android, you can now pinch the screen to zoom in/out. Works with the doll window and the minimap.
+- Android version now has a better app icon.
+
+### Changed
+- Skin textures now have texture compression enabled (this increased the game's filesize but also drastically lowered the VRAM usage by almost 5x). Built-in skins are also now dynamically loaded when needed rather than loaded into memory at all times. This should lower the game's VRAM usage by a lot. Sorry if something broke. (A note for modders: the compression takes like 10 minutes when you open the game in the godot editor for the first time, don't be scared)
+- The default save name now includes the current save number. (Example: 'Rahi - Save 1 - Medical wing') (Inspired by shadowlin21's [Pull request](https://github.com/Alexofp/BDCC/pull/219))
+- The rollback feature now uses a separate thread to save the game's state, allowing for a smoother experience. (Might introduce problems, can be disabled in the settings)
+
+### Fixed
+- Everywhere where time is displayed (latest release date, save date), the correct timezone is now used, making the time correct.
+- Tooltips shouldn't 'stick' as much anymore.
+- Quick load button is now disabled if there is no quicksave present
+- Export/import save buttons should now work on the Android version again.
+- Milking Eliza now should add fluids towards the chemistry lab/bounties.
+- Strapon sex shouldn't softlock anymore with dom npcs.
+
+## [0.1.10] - 2025-09-04
+### Added
+- Player slavery system! You can now be sold on the Blacktail Market yourself, which will trigger one of the 2 new soft bad ends (with more to come hopefully, these are really hard to make x3). There are 3 ways to trigger the player slavery: a certain new event near the underground arena, a 50/50 chance if you get found unconscious, or losing an ambush.
+- 2 player slavery soft-bad end scenarios, one non-lewd and one that's very lewd. The first scenario is about being a shaft miner slave on the planet! The second scenario is about being a cow/bull slave for a space cafe! Multiple endings for both. These are little self-contained repetable slavery stories basically.
+- [Visible bodywritings system!](https://github.com/user-attachments/assets/eada3561-cae1-42bf-9626-2e86602f1f26) Dolls now display bodywritings on them. Completely dynamic system, the game generates textures with the bodywritings on the fly. Uses quite a bit of VRAM so this settings can be turned off.
+- Nemesis system! Wait, no, that's patented.. Nemesis.. relationships! If you really upset the dynamic npcs, they now have a chance to become your nemesis! Nemesis npcs will hate you with every fiber of their digital life. There is no easy way to get rid of this status. While the npc is your nemesis, they will begin planning an ambush on you. The ambush can happen at any day, at any time.. but you can spot it getting prepared if you have an eye for it. An ambush is an event where your nemesis will try to attack you while you have some handicap to your power.
+- Dynamic fetishes system. The fetishes of dynamic npcs will now dynamically change after each sex. Depending on how satisfied they were and what fetishes they were exposed to, they can now learn to like or dislike kinks! The chemistry lab has a new drug that can make this process faster.
+- Permanent bodywritings system. The npcs can now sometimes use a permanent marker instead of a normal one on you. Permanent bodywritings won't get washed away after taking a shower. The only way to get rid of them is by using a new Bio-Scrub Soap item. The player can also use permanent markers on npcs but you will have to find them first.
+- Mod and datapack browsers have a search ([Pull request by PosionFox](https://github.com/Alexofp/BDCC/pull/209))
+
+### Changed
+- Npcs can now be wounded and painfully-stretched too, just like the player. They will go to the medical block on their own sometimes. Eliza can treat your wounded slaves too.
+- The npc slavery 'idle texts' replaced with a better system. The new texts should reflect the state of your slave better too.
+- If you are a sub in a threesome with 2 doms, the game will now automatically switch the target to the dom who interacts with you.
+
+### Fixed
+- A crash that happens if an unconscious npc gets yoinked by a nurse in the middle of the sex.
+- Fixed wrong fetish being checked for the dom in the sex engine (was causing doms to get angry for no reason).
+- Can't pee with portal panties anymore ([Pull request by MarsDDDDD](https://github.com/Alexofp/BDCC/pull/211))
+- Game should crash less after removing mods now (Pull requests by Fox2Code: [#1](https://github.com/Alexofp/BDCC/pull/215), [#2](https://github.com/Alexofp/BDCC/pull/216))
+- Chemistry is fixed ([Pull request by moon-halo-xviii](https://github.com/Alexofp/BDCC/pull/196))
+- Lots of typpps got eleminated
+
 ## [0.1.9] - 2025-06-20
 ### Added
 - Huge sex engine refactor. Most of its code was improved to make it more modular and easier to create content for. But that's not the main reason behind the refactor..
@@ -574,7 +671,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Turn-based fighting
 - Initial player customization
 
-[Unreleased]: https://github.com/Alexofp/BDCC/compare/0.1.9...main
+[Unreleased]: https://github.com/Alexofp/BDCC/compare/0.1.12...main
+[0.1.12]: https://github.com/Alexofp/BDCC/compare/0.1.11...0.1.12
+[0.1.11]: https://github.com/Alexofp/BDCC/compare/0.1.10...0.1.11
+[0.1.10]: https://github.com/Alexofp/BDCC/compare/0.1.9...0.1.10
 [0.1.9]: https://github.com/Alexofp/BDCC/compare/0.1.8...0.1.9
 [0.1.8]: https://github.com/Alexofp/BDCC/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/Alexofp/BDCC/compare/0.1.6...0.1.7

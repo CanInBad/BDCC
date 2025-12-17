@@ -5,30 +5,79 @@ var rollbackStates:Array = []
 var currentChoice = 0
 var rollbacking:bool = false
 
+var needsExtraRollback:bool = true
+var hasPointlessRollback:bool = false
+
+var usesThread:bool = false
+var saveThread:Thread
+
+func _init():
+	usesThread = OPTIONS.isRollbackThreadEnabled()
+	if(usesThread):
+		saveThread = Thread.new()
+
+func onDestroy():
+	if(usesThread && saveThread.is_active()):
+		saveThread.wait_to_finish()
+
+func notifyMadeChoice():
+	if(usesThread && saveThread.is_active()):
+		saveThread.wait_to_finish()
+	
+	if(OPTIONS.isRollbackEnabled() && needsExtraRollback):
+		needsExtraRollback = false
+		pushRollbackState_THREAD()
+
 func pushRollbackState():
-	if(OPTIONS.isRollbackEnabled()):
-		currentChoice += 1
-		if(currentChoice < OPTIONS.getRollbackSaveEveryXChoices()):
-			return
+	if(!OPTIONS.isRollbackEnabled()):
+		return
 		
-		currentChoice = 0
-		var newdata = SAVE.saveData().duplicate(true)
-		if(newdata != null):
-			rollbackStates.append(newdata)
+	currentChoice += 1
+	if(currentChoice < OPTIONS.getRollbackSaveEveryXChoices()):
+		return
+	currentChoice = 0
 		
-		if(rollbackStates.size() > OPTIONS.getRollbackSlotsAmount()):
-			rollbackStates.pop_front()
+	if(usesThread):
+		if(saveThread.is_active()):
+			saveThread.wait_to_finish()
+		saveThread = Thread.new()
+		saveThread.start(self, "pushRollbackState_THREAD")
+	else:
+		pushRollbackState_THREAD()
+	hasPointlessRollback = true
+
+
+func pushRollbackState_THREAD():
+	var newdata = SAVE.saveData().duplicate(true)
+	if(newdata != null):
+		rollbackStates.append(newdata)
+	
+	if(rollbackStates.size() > (OPTIONS.getRollbackSlotsAmount()+1)):
+		rollbackStates.pop_front()
 			
 func canRollback():
 	if(GM.main != null && !GM.main.canRollback()):
 		return false
-	return rollbackStates.size() > 0
+	if(rollbackStates.size() > 0):
+		return true
+	return false
 
 func clear():
 	rollbackStates.clear()
 	
 func rollback():
+	if(usesThread && saveThread.is_active()):
+		saveThread.wait_to_finish()
 	if(!canRollback()):
+		return
+	
+	if(hasPointlessRollback):
+		hasPointlessRollback = false
+		rollbackStates.pop_back()
+	needsExtraRollback = true
+	
+	if(rollbackStates.empty()):
+		Log.error("Something went wrong, rollbacker doesn't have a state to rollback to.")
 		return
 	
 	Log.print("ROLLBACK")

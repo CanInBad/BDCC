@@ -159,7 +159,7 @@ func doProgress(_context:Dictionary) -> Dictionary:
 	if(nextStep == "addhorns"):
 		addedhorns = true
 		
-		var possiblePartIDs:Dictionary = Bodypart.findPossibleBodypartIDsDict(BodypartSlot.Horns, theChar, [Species.Demon], NpcGender.Female)
+		var possiblePartIDs:Dictionary = Bodypart.findPossibleBodypartIDsDict(BodypartSlot.Horns, theChar, [Species.Demon], NpcGender.Female, true)
 		if(possiblePartIDs.empty()):
 			return {}
 		var newPartID:String = RNG.pickWeightedDict(possiblePartIDs)
@@ -237,6 +237,10 @@ func getBuffs() -> Array:
 	if(nipsStage >= 2):
 		result.append_array([
 			buff(Buff.BreastsForcedLactationBuff),
+		])
+	if(nipsStage >= 3):
+		result.append_array([
+			buff(Buff.FetishSpecificGainBuff, [Fetish.Lactation, 100.0]),
 		])
 			
 	return result

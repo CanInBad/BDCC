@@ -200,7 +200,7 @@ func doProgress(_context:Dictionary) -> Dictionary:
 	if(nextStep == "switchhair"):
 		switchedhair = true
 		
-		var possiblePartIDs:Dictionary = Bodypart.findPossibleBodypartIDsDict(BodypartSlot.Hair, theChar, theChar.getSpecies(), NpcGender.Female)
+		var possiblePartIDs:Dictionary = Bodypart.findPossibleBodypartIDsDict(BodypartSlot.Hair, theChar, theChar.getSpecies(), NpcGender.Female, true)
 		if(possiblePartIDs.empty()):
 			return {}
 		var newPartID:String = RNG.pickWeightedDict(possiblePartIDs)
@@ -330,6 +330,7 @@ func getBuffs() -> Array:
 		result.append_array([
 			buff(Buff.SensitivityGainBuff, [BodypartSlot.Anus, 10*anusStage*anusStage]),
 			buff(Buff.GenitalElasticityBuff, [20*anusStage]),
+			buff(Buff.FetishSpecificGainBuff, [Fetish.AnalSexReceiving, 50*anusStage]),
 		])
 	if(penisStage >= 1):
 		result.append_array([

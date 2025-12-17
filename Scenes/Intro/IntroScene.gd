@@ -21,7 +21,7 @@ func _run():
 
 		saynn("[say=intro_detective]Come in and take a seat.[/say]")
 
-		saynn("You look at him, the [b]guy has clear canine features[/b] and a wolf mane, behind him is a fluffy tail. [b]You decide to step inside[/b]. It’s a well-lit small room with just a table, two metal chairs and a security camera in the corner. Panic is still there, the guy pushes you in slightly and locks the door behind before sitting down on one of the chairs himself and watching you.")
+		saynn("You look at him, the [b]guy has clear canine features[/b] and a wolf mane, behind him is a fluffy tail. [b]You decide to step inside[/b]. It’s a well-lit small room with just a table, two metal chairs and a security camera in the corner. Panic is still there, the guy pushes you in slightly and locks the door behind him before sitting down on one of the chairs himself and watching you.")
 
 		addButton("Take a seat", "Well, what else is there to do", "take_a_sit")
 
@@ -32,7 +32,7 @@ func _run():
 		
 		saynn("You sit on the second chair, the one that is further from the only exit. You take a better look at the guy. He is clearly a wolf, quite tall, in his forties, gray fur, black pants and a white t-shirt.")
 
-		saynn("[say=intro_detective]Name is Jake, IIPF, threat assessment division. If you want some water let me know, I can bring a bottle for you[/say]")
+		saynn("[say=intro_detective]Name is Jake, IIPF, threat assessment division. If you want some water let me know, I can bring a bottle for you.[/say]")
 
 		saynn("[b]Your head is still fuzzy[/b], you could clearly use some water but you shake your head and refuse. The wolf’s voice seems quite calm, his eyes do follow your motions but he is mostly relaxed in the chair.")
 
@@ -87,7 +87,7 @@ func _run():
 		addButton("Lawyer up", "You’re not gonna tell him shit", "wantlawyer")
 		
 	if(state == "didntdoit"):
-		saynn("[say=pc]There is no way, I didn’t do anything, your machine failed, not me[/say]")
+		saynn("[say=pc]There is no way, I didn’t do anything, your machine failed, not me.[/say]")
 
 		saynn("Your hands shake, the panic returns.")
 
@@ -127,11 +127,11 @@ func _run():
 	if(state == "staysilent"):
 		saynn("Now you feel angry. You grit your teeth and keep your mouth shut, arms crossed. Jake sees that and tilts his head down before exhaling audibly, seems like he is about to give up.")
 
-		saynn("[say=intro_detective]’Fraid you leave me no choice[/say]")
+		saynn("[say=intro_detective]’Fraid you leave me no choice.[/say]")
 
 		saynn("Jake stands up, moves the chair back and [b]grabs something off of his belt[/b]. It looks like some kind of [b]drug injector[/b]. Then he arms it and [b]begins closing distance[/b].")
 
-		saynn("[say=pc]Hey! What is that[/say]")
+		saynn("[say=pc]Hey! What is that.[/say]")
 
 		saynn("He doesn’t stop, he tries to swiftly inject it into your neck but you shove him away. And then again. He shows his fangs and growls at you before lunging forward and grabbing your arms. He is strong, you can only push him away so long before he overpowers you. [b]You feel a prick[/b]. Ow. What a fucker. Jake puts the used thing away and leaves you alone, taking a seat again. You’re still angry but.. [b]your head starts to feel.. light..[/b]")
 
@@ -148,7 +148,7 @@ func _run():
 		addButton("Confess", "Maybe you actually did it..", "admit")
 	
 	if(state == "admit"):
-		saynn("[say=pc]Fine.. I will tell you everything[/say]")
+		saynn("[say=pc]Fine.. I will tell you everything.[/say]")
 
 		saynn("Wolf nods.")
 
@@ -168,11 +168,11 @@ func _run():
 
 		saynn("[say=pc]Um..[/say]")
 
-		saynn("[say=intro_detective]Name wouldn’t be enough, you need proof[/say]")
+		saynn("[say=intro_detective]Name wouldn’t be enough, you need proof.[/say]")
 
 		saynn("[say=pc]I don’t..[/say]")
 
-		saynn("[say=intro_detective]Even if you were, you failed a mindtest. And I’m afraid the judge has no reason to not believe the mindtest. Machines can’t lie[/say]")
+		saynn("[say=intro_detective]Even if you were, you failed a mindtest. And I’m afraid the judge has no reason to not believe the mindtest. Machines can’t lie.[/say]")
 
 		saynn("You feel helpless, you keep trying to come up with a worthy excuse but there is nothing. After about ten seconds of silence Jake stands up and grabs something from his belt, metal handcuffs.")
 
@@ -183,9 +183,9 @@ func _run():
 	if(state == "crime_theft"):
 		saynn("You exhale all the air.")
 
-		saynn("[say=pc]First of all, I had to, I had no choice, I really needed the money[/say]")
+		saynn("[say=pc]First of all, I had to, I had no choice, I really needed the money.[/say]")
 
-		saynn("[say=intro_detective]People go to work when they need money[/say]")
+		saynn("[say=intro_detective]People go to work when they need money.[/say]")
 
 		saynn("[say=pc]I needed it quick, okay? Not everyone is privileged, not everyone has rich parents or was born in a good place on a wealthy planet. You have no right to judge me. I saw the only opportunity and I took it. Yes, I stole the money, I did it. I’m a thief, criminal, thug, whatever you wanna call me. Try wearing my shoes first. I didn’t kill anyone or ruin anyone’s life.[/say]")
 
@@ -195,7 +195,7 @@ func _run():
 
 		saynn("Jake stands up and grabs something from his belt, metal handcuffs.")
 
-		saynn("[say=intro_detective]I will have to cuff you, sit still[/say]")
+		saynn("[say=intro_detective]I will have to cuff you, sit still.[/say]")
 
 		saynn("The wolf grabs your hands and cuffs them together. Then he walks towards the exit.")
 
@@ -210,13 +210,13 @@ func _run():
 
 		saynn("[say=pc]I made the world better, okay? I shouldn’t even be here, I’m not a danger to anyone, I got my revenge.[/say]")
 
-		saynn("[say=intro_detective]Violence only causes more violence. What will you do if someone will try to get revenge for the person you murdered? Have a nice chit-chat? Hating someone doesn’t give you the right to end their life, we’re not animals.[/say]")
+		saynn("[say=intro_detective]Violence only causes more violence. What will you do if someone tries to get revenge for the person you murdered? Have a nice chit-chat? Hating someone doesn’t give you the right to end their life, we’re not animals.[/say]")
 
 		saynn("[say=pc]Whatever you say, I don’t like you.[/say]")
 
 		saynn("Jake stands up and grabs something from his belt, metal handcuffs.")
 
-		saynn("[say=intro_detective]I will have to cuff you, sit still[/say]")
+		saynn("[say=intro_detective]I will have to cuff you, sit still.[/say]")
 
 		saynn("The wolf grabs your hands and cuffs them together. Then he walks towards the exit.")
 
@@ -227,11 +227,11 @@ func _run():
 
 		saynn("[say=intro_detective]Do you have a license?[/say]")
 
-		saynn("[say=pc]License? No? Why would I need a license to whore myself out[/say]")
+		saynn("[say=pc]License? No? Why would I need a license to whore myself out.[/say]")
 
 		saynn("[say=intro_detective]Sexual services aren’t really that different from any other types of services, the intergalactic law allows it as long as you have a license. If you can do it for free why shouldn’t you be able to get paid for it. The license proves that you don’t have any STDs or other diseases. You pay taxes and in exchange you get the same benefits as any other worker.[/say]")
 
-		saynn("[say=pc]Well, I don’t have it. My planet doesn’t follow the intergalactic law[/say]")
+		saynn("[say=pc]Well, I don’t have it. My planet doesn’t follow the intergalactic law.[/say]")
 
 		saynn("Jake nods.")
 
@@ -271,7 +271,7 @@ func _run():
 
 		saynn("The officer stops reading and guides his attention towards you.")
 
-		saynn("[say=intro_detective]This is a trial. The judges made their decision. Soon you will be repositioned into the facility called Broken Dreams Correctional Center where you will be serving the punishment. Your sentence is…[/say]")
+		saynn("[say=intro_detective]This is a trial. The judges made their decision. Soon you will be relocated into the facility called Broken Dreams Correctional Center where you will be serving the punishment. Your sentence is…[/say]")
 
 		saynn("He looks at the tablet again and takes a short pause.")
 
@@ -279,7 +279,7 @@ func _run():
 
 		saynn("He gestures to the two officers.")
 
-		saynn("[say=intro_detective]Put {pc.him} in a holding cell, transit shuttle is gonna arrive soon[/say]")
+		saynn("[say=intro_detective]Put {pc.him} in a holding cell, transit shuttle is gonna arrive soon.[/say]")
 
 		saynn("Shocked, you struggle to say anything comprehensible, the officers quickly do their task and drag you out of the room.")
 		
