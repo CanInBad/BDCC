@@ -19,8 +19,8 @@ logs/
 # whe the vscdoium still use the same namespace
 .vscode/**
 
-# doll changes
-AssetsSource/*/DollSkeleton3.*
+# doll changes, update because she uses this now, tbh I should just pick another random numnber
+AssetsSource/*/DollSkeleton5456.*
 
 # compact testing
 Modules/SynthSpecies
