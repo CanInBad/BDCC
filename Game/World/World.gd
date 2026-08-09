@@ -27,6 +27,7 @@ var lastAimedRoomID = null
 
 var pawns:Dictionary = {}
 var entities:Dictionary = {}
+var missionRooms:Array = []
 
 var roomConnectionScene = preload("res://Game/World/RoomConnection.tscn")
 onready var worldFloorScene = load("res://Game/World/WorldFloor.tscn")
@@ -175,7 +176,7 @@ func addTransitions(floorIDs:Array = []):
 	if(floorIDs.empty()):
 		floorIDs = cells.keys()
 	
-	for floorid in cells:
+	for floorid in floorIDs:
 		var floorcells = cells[floorid]
 		for pos in floorcells:
 			var _room = floorcells[pos]
@@ -248,7 +249,6 @@ func _ready():
 				
 				registerRoom(f.id, cell)
 	
-	addTransitions()
 	#print(roomDict)
 	#aimCamera("ScriptedRoom")#"cellblock_orange_playercell")
 
@@ -321,11 +321,13 @@ func switchToFloor(floorID):
 		else:
 			floorObject.visible = false
 
-func aimCamera(roomID, instantly = false):
+func aimCamera(roomID, instantly:bool = false) -> bool:
+	if(!(roomID is String)): # getRoomByID expects a string
+		return false
 	var room = getRoomByID(roomID)
 	
 	if(!room):
-		return
+		return false
 		
 	switchToFloor(room.getFloorID())
 		
@@ -339,6 +341,7 @@ func aimCamera(roomID, instantly = false):
 	lastAimedRoomID = roomID
 	if(instantly):
 		camera.reset_smoothing()
+	return true
 
 func zoomIn(mult:float = 1.0):
 	camera.zoom *= 1.1 * mult
@@ -401,7 +404,7 @@ func getEntity(_theID:String):
 		return null
 	return entities[_theID]
 
-func moveEntity(_theID:String, loc:String):
+func moveEntity(_theID:String, loc:String, _customOffset:bool = false, _theOffset:Vector2 = Vector2(0.0, 0.0)):
 	var theEntity = getEntity(_theID)
 	if(!theEntity):
 		return
@@ -412,7 +415,7 @@ func moveEntity(_theID:String, loc:String):
 		return
 	
 	if(room.getFloorID() == theEntity.floorid):
-		theEntity.moveToPos(room.global_position)
+		theEntity.moveToPos(room.global_position, _customOffset, _theOffset)
 		theEntity.loc = loc
 	else:
 		theEntity.get_parent().remove_child(theEntity)
@@ -420,7 +423,7 @@ func moveEntity(_theID:String, loc:String):
 		roomFloor.add_child(theEntity)
 		theEntity.loc = loc
 		theEntity.floorid = roomFloor.id
-		theEntity.global_position = getRoomByID(loc).global_position + Vector2(RNG.randf_range(-16.0, 16.0), RNG.randf_range(-16.0, 16.0))
+		theEntity.global_position = getRoomByID(loc).global_position + (Vector2(RNG.randf_range(-16.0, 16.0), RNG.randf_range(-16.0, 16.0)) if !_customOffset else _theOffset)
 		#createWorldPawn(charID, pawn, loc)
 
 func deleteEntity(_theID:String):
@@ -429,7 +432,7 @@ func deleteEntity(_theID:String):
 	entities[_theID].queue_free()
 	entities.erase(_theID)
 
-func createEntity(theID:String, theTexture:Texture, loc:String):
+func createEntity(theID:String, theTexture:Texture, loc:String, _customOffset:bool = false, _theOffset:Vector2 = Vector2(0.0, 0.0)):
 	if(entities.has(theID)):
 		entities[theID].queue_free()
 		var _ok = entities.erase(theID)
@@ -441,7 +444,11 @@ func createEntity(theID:String, theTexture:Texture, loc:String):
 	newWorldEntity.loc = loc
 	newWorldEntity.id = theID
 	newWorldEntity.floorid = roomFloor.id
-	newWorldEntity.global_position = getRoomByID(loc).global_position + Vector2(RNG.randf_range(-16.0, 16.0), RNG.randf_range(-16.0, 16.0))
+	newWorldEntity.global_position = getRoomByID(loc).global_position
+	if(!_customOffset):
+		newWorldEntity.position += Vector2(RNG.randf_range(-16.0, 16.0), RNG.randf_range(-16.0, 16.0))
+	else:
+		newWorldEntity.position += _theOffset
 	newWorldEntity.setTexture(theTexture)
 	entities[theID] = newWorldEntity
 
@@ -735,6 +742,20 @@ func canMeetInLoc(_loc:String) -> bool:
 		return false
 	return canMeetOnFloor(theRoom.getFloorID())
 
+func setMissionRooms(_roomIDs:Array):
+	for theOldRoomID in missionRooms:
+		var theRoom = getRoomByID(theOldRoomID)
+		if(!theRoom):
+			continue
+		theRoom.setMissionSpriteVisible(false)
+	
+	missionRooms = _roomIDs.duplicate()
+	for theNewRoomID in missionRooms:
+		var theRoom = getRoomByID(theNewRoomID)
+		if(!theRoom):
+			continue
+		theRoom.setMissionSpriteVisible(true)
+
 func saveData():
 	var data = {}
 	data["lastAimedRoomID"] = lastAimedRoomID
@@ -749,5 +770,3 @@ func loadData(data):
 		camera.zoom = Vector2(SAVE.loadVar(data, "zoomx", 1.0), SAVE.loadVar(data, "zoomy", 1.0))
 	
 	updateDarknessSize()
-	if(lastAimedRoomID != null && lastAimedRoomID != ""):
-		aimCamera(lastAimedRoomID, true)

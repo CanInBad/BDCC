@@ -60,7 +60,7 @@ func getPillOptions() -> Dictionary:
 		lenArray.append([theLen, str(theLen)+"cm"])
 	
 	var dicks:Array = [["", "Random"]]
-	for dickID in GlobalRegistry.getBodypartsIdsBySlot(BodypartSlot.Penis):
+	for dickID in GlobalRegistry.getBodypartsIdsBySlotForTF(BodypartSlot.Penis):
 		dicks.append([dickID, GlobalRegistry.getBodypartRef(dickID).getName()])
 	
 	return {
@@ -101,7 +101,7 @@ func doProgress(_context:Dictionary) -> Dictionary:
 	
 	var newPartID:String = specificPartID
 	if(newPartID == "" || GlobalRegistry.getBodypartRef(newPartID) == null):
-		var possiblePartIDs:Array = GlobalRegistry.getBodypartsIdsBySlot(BodypartSlot.Penis)#Bodypart.findPossibleBodypartIDsDict(BodypartSlot.Penis, theChar, theChar.getSpecies(), NpcGender.Male)
+		var possiblePartIDs:Array = GlobalRegistry.getBodypartsIdsBySlotForTF(BodypartSlot.Penis)#Bodypart.findPossibleBodypartIDsDict(BodypartSlot.Penis, theChar, theChar.getSpecies(), NpcGender.Male)
 		if(possiblePartIDs.has("")):
 			possiblePartIDs.erase("")
 		if(theChar.hasPenis()):
@@ -130,7 +130,7 @@ func doProgress(_context:Dictionary) -> Dictionary:
 
 func reactProgress(_context:Dictionary, _result:TFResult):
 	if(getStage() == 0):
-		addText("{npc.YouHe} {npc.youVerb('feel')} a strange warmth spreading through {npc.yourHis} lower abdomen, as if something new is starting to take shape beneath the surface.")
+		addText("{npc.YouHe} {npc.youHeVerb('feel')} a strange warmth spreading through {npc.yourHis} lower abdomen, as if something new is starting to take shape beneath the surface.")
 		return
 	addText(_result.getAllTFTexts())
 	

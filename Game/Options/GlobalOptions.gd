@@ -13,6 +13,11 @@ const LAYOUT_TOUCH_VERTICAL = 3
 const SCREEN_HORIZONTAL = 0
 const SCREEN_VERTICAL = 1
 
+const ANDROID_SAVE_FOLDER_DOCUMENTS := 0
+const ANDROID_SAVE_FOLDER_GAME_DATA := 1
+const ANDROID_SAVE_FOLDER_DOWNLOADS := 2
+var androidSaveFolder:int = ANDROID_SAVE_FOLDER_DOWNLOADS
+
 var currentSupportsVertical:bool = false
 var currentScreenOrientation:int = SCREEN_HORIZONTAL # not saved
 signal onScreenOrientationChange
@@ -38,6 +43,7 @@ var bellyMaxSizeModifier: float = 1.0
 var optimizeChilds:bool = true
 var maxKeepPCKids:int = 50
 var maxKeepNPCKids:int = 30
+var bigEggsGrowthMult:float = 2.0
 
 # Sandbox options
 var sandboxPawnCount:int = 30
@@ -107,6 +113,7 @@ func resetToDefaults():
 	webTextInputFallback = false
 	menstrualCycleLengthDays = 7
 	eggCellLifespanHours = 48
+	bigEggsGrowthMult = 2.0
 	playerPregnancyTimeDays = 5
 	npcPregnancyTimeDays = 5
 	bellySizeDependsOnLitterSize = false
@@ -189,7 +196,10 @@ func getMenstrualCycleLengthDays():
 
 func getEggCellLifespanHours():
 	return eggCellLifespanHours
-	
+
+func getBigEggsGrowthMult() -> float:
+	return bigEggsGrowthMult
+
 func getPlayerPregnancyTimeDays():
 	return playerPregnancyTimeDays
 	
@@ -363,6 +373,20 @@ func getChangeableOptions():
 					"value": showModdedLauncher,
 					"tab": TAB_GAME,
 				},
+				{
+					"name": "(Android) Mods folder",
+					"description": "On Android devices, the game will use this folder to search for mods. Exported saves will go into this folder too.",
+					"id": "androidSaveFolder",
+					"type": "list",
+					"value": androidSaveFolder,
+					"values": [
+						[ANDROID_SAVE_FOLDER_DOCUMENTS, "Documents folder"],
+						[ANDROID_SAVE_FOLDER_DOWNLOADS, "Downloads folder"],
+						[ANDROID_SAVE_FOLDER_GAME_DATA, "data/org.rahimew.bdcc/files"],
+					],
+					"tab": TAB_GAME,
+					"hide": (OS.get_name() != "Android"),
+				},
 			],
 		},
 		{
@@ -464,6 +488,24 @@ func getChangeableOptions():
 					"id": "impregnationChanceModifier",
 					"type": "int",
 					"value": impregnationChanceModifier,
+					"tab": TAB_GAMEPLAY,
+				},
+				{
+					"name": "Big eggs growth multiplier",
+					"description": "How much faster should the big eggs develop compared to the normal pregnancy. Big eggs are the ones that you have to lay.",
+					"id": "bigEggsGrowthMult",
+					"type": "list",
+					"value": bigEggsGrowthMult,
+					"values": [
+						[0.25, "25%"],
+						[0.5, "50%"],
+						[1.0, "100% (same as egg cells)"],
+						[1.5, "150%"],
+						[2.0, "200% (default)"],
+						[3.0, "300%"],
+						[4.0, "400%"],
+						[5.0, "500%"],
+					],
 					"tab": TAB_GAMEPLAY,
 				},
 				{
@@ -1110,6 +1152,8 @@ func applyOption(categoryID, optionID, value):
 			showModdedLauncher = value
 			if(showModdedLauncher):
 				var _ok = OS.request_permissions()
+		if(optionID == "androidSaveFolder"):
+			androidSaveFolder = value
 	
 	
 	if(categoryID == "pregnancy"):
@@ -1133,6 +1177,8 @@ func applyOption(categoryID, optionID, value):
 			maxKeepPCKids = value
 		if(optionID == "maxKeepNPCKids"):
 			maxKeepNPCKids = value
+		if(optionID == "bigEggsGrowthMult"):
+			bigEggsGrowthMult = value
 	
 	if categoryID == "difficulty":
 		if optionID == "hardStruggleEnabled":
@@ -1330,6 +1376,7 @@ func saveData():
 		"fetchNewRelease": fetchNewRelease,
 		"menstrualCycleLengthDays": menstrualCycleLengthDays,
 		"eggCellLifespanHours": eggCellLifespanHours,
+		"bigEggsGrowthMult": bigEggsGrowthMult,
 		"playerPregnancyTimeDays": playerPregnancyTimeDays,
 		"npcPregnancyTimeDays": npcPregnancyTimeDays,
 		"impregnationChanceModifier": impregnationChanceModifier,
@@ -1385,6 +1432,7 @@ func saveData():
 		"webTextInputFallback": webTextInputFallback,
 		"fullscreen": fullscreen,
 		"profilerEnabled": profilerEnabled,
+		"androidSaveFolder": androidSaveFolder,
 	}
 	
 	return data
@@ -1395,6 +1443,7 @@ func loadData(data):
 	fpsLimit = loadVar(data, "fpsLimit", 0)
 	menstrualCycleLengthDays = loadVar(data, "menstrualCycleLengthDays", 7)
 	eggCellLifespanHours = loadVar(data, "eggCellLifespanHours", 48)
+	bigEggsGrowthMult = loadVar(data, "bigEggsGrowthMult", 2.0)
 	playerPregnancyTimeDays = loadVar(data, "playerPregnancyTimeDays", 5)
 	npcPregnancyTimeDays = loadVar(data, "npcPregnancyTimeDays", 5)
 	impregnationChanceModifier = loadVar(data, "impregnationChanceModifier", 100)
@@ -1450,6 +1499,7 @@ func loadData(data):
 	webTextInputFallback = loadVar(data, "webTextInputFallback", false)
 	fullscreen = loadVar(data, "fullscreen", false)
 	profilerEnabled = loadVar(data, "profilerEnabled", false)
+	androidSaveFolder = loadVar(data, "androidSaveFolder", ANDROID_SAVE_FOLDER_DOCUMENTS if data.has("showModdedLauncher") else ANDROID_SAVE_FOLDER_DOWNLOADS)
 
 func saveToFile():
 	var saveData = saveData()

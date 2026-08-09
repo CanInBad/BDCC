@@ -50,7 +50,7 @@ func _on_CloseButton_pressed():
 
 
 func _on_ModsFolderButton_pressed():
-	var _ok = OS.shell_open(ProjectSettings.globalize_path("user://mods"))
+	var _ok = Util.fixed_shell_open(ProjectSettings.globalize_path("user://mods"))
 
 
 func _on_ImportModDialog_file_selected(path:String):
@@ -159,7 +159,7 @@ func _on_AddModButton_pressed():
 #					has_permissions = true
 					
 			var d = Directory.new()
-			var externalDir:String = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+			var externalDir:String = Util.getAndroidSaveFolder()#OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 			var finalDir = externalDir.plus_file("BDCCMods")
 			d.make_dir_recursive(finalDir)
 			#$ImportModDialog.current_dir = finalDir
@@ -195,11 +195,11 @@ func _on_ConfirmationDialog_confirmed():
 
 
 func _on_WikiButton_pressed():
-	var _ok = OS.shell_open("https://github.com/Alexofp/BDCC/wiki")
+	var _ok = Util.fixed_shell_open("https://github.com/Alexofp/BDCC/wiki")
 
 
 func _on_ModsLabel_meta_clicked(meta):
-	var _ok = OS.shell_open(meta)
+	var _ok = Util.fixed_shell_open(meta)
 
 
 func _on_SkinsFolderButton_pressed():
@@ -207,4 +207,4 @@ func _on_SkinsFolderButton_pressed():
 		$AndroidPathAlert.dialog_text = "Custom skins on android are loaded from \"Documents/BDCCMods/custom_skins\"\nCreate that folder if it doesn't exist."
 		$AndroidPathAlert.popup_centered()
 	else:
-		var _ok = OS.shell_open(ProjectSettings.globalize_path("user://custom_skins"))
+		var _ok = Util.fixed_shell_open(ProjectSettings.globalize_path("user://custom_skins"))

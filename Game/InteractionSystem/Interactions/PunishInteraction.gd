@@ -34,6 +34,15 @@ func init_text():
 		addAction("sexsub", "Submit to", "Let them fuck you", "sexSub", 1.0, 60, {})
 	else:
 		addDisabledAction("Submit to", "They can't fuck you with their restraints..")
+	if(getRoleChar("punisher").isPlayer()):
+		var elizaModule = GlobalRegistry.getModule("ElizaModule")
+		if(elizaModule && elizaModule.hasAccessToTentacles()):
+			if(!punisherRestraintsPreventPulling && getRoleChar("target").getInventory().hasEquippedItemWithTag(ItemTag.AllowsEnslaving) && canGetToStocks()):
+				addAction("tentacles", "Tentacles", "Get them punished by the tentacles in your cell", "default", 0.0, 60, {})
+			elif(punisherRestraintsPreventPulling):
+				addDisabledAction("Tentacles", "You can't do that with restraints on your arms..")
+			else:
+				addDisabledAction("Tentacles", ""+("They need to be wearing a collar for this!" if canGetToStocks() else "Your cell is too far..")+"")
 	addAction("leave", "Leave", "Just leave", "justleave", 1.0, 30, {})
 
 	addDefeatButtons("punisher", "target")
@@ -42,6 +51,8 @@ func init_do(_id:String, _args:Dictionary, _context:Dictionary):
 	if(_id == "stocks"):
 		setState("about_to_stocks", "punisher")
 		#sendSocialEvent("punisher", "target", SocialEventType.PunishStocks)
+	if(_id == "tentacles"):
+		setState("about_to_tentacles", "punisher")
 	if(_id == "slutwall"):
 		setState("about_to_slutwall", "punisher")
 		#sendSocialEvent("punisher", "target", SocialEventType.PunishSlutwall)
@@ -53,6 +64,29 @@ func init_do(_id:String, _args:Dictionary, _context:Dictionary):
 	if(_id == "leave"):
 		setState("just_leaving", "punisher")
 
+
+func about_to_tentacles_text():
+	saynn("{punisher.name} clips a leash to {target.your} collar.")
+	addAction("cell", "Escort", "Escort them towards your cell", "default", 1.0, 60, {})
+
+func about_to_tentacles_do(_id:String, _args:Dictionary, _context:Dictionary):
+	if(_id == "cell"):
+		setState("pulling_to_cell_tentacles", "punisher")
+		goTowards(GM.pc.getCellLocation())
+
+func pulling_to_cell_tentacles_text():
+	saynn("{punisher.name} is pulling {target.name} towards {punisher.his} cell!")
+	addAction("cell", "Escort", "Pull them towards your cell", "default", 1.0, 60, {})
+
+func pulling_to_cell_tentacles_do(_id:String, _args:Dictionary, _context:Dictionary):
+	if(_id == "cell"):
+		goTowards(GM.pc.getCellLocation())
+		if(getLocation() == GM.pc.getCellLocation()):
+			var theTargetID:String = getRoleID("target")
+			runScene("PSPCTentaclesPunish", [theTargetID])
+			startInteraction("InScene", {main=theTargetID})
+			stopMe()
+			#setState("about_to_lock_stocks", "punisher")
 
 func about_to_stocks_text():
 	saynn("{punisher.name} clips a leash to {target.your} collar.")
@@ -204,7 +238,7 @@ func getAnimData() -> Array:
 		return [StageScene.SlutwallSex, "tease", {pc="target", npc="punisher"}]
 	if(getState() == "in_stocks"):
 		return [StageScene.StocksSexOral, "tease", {npc="punisher", pc="target"}]
-	if(getState() in ["pulling_to_stocks", "pulling_to_slutwall"]):
+	if(getState() in ["pulling_to_stocks", "pulling_to_slutwall", "pulling_to_cell_tentacles"]):
 		if(getLocation() != "main_punishment_spot" && getLocation() != "fight_slutwall"):
 			return [StageScene.Duo, "walk", {pc="target", npc="punisher", npcAction="walk", flipNPC=true, bodyState={leashedBy="punisher"}}]
 	if(getState() in [""]):
@@ -223,12 +257,12 @@ func getPreviewLineForRole(_role:String) -> String:
 	return .getPreviewLineForRole(_role)
 
 func isRoleOnALeash(_role:String) -> bool:
-	if(_role == "target" && getState() in ["pulling_to_stocks", "pulling_to_slutwall"]):
+	if(_role == "target" && getState() in ["pulling_to_stocks", "pulling_to_slutwall", "pulling_to_cell_tentacles"]):
 		return true
 	return false
 	
 func isRoleLeashing(_role:String) -> bool:
-	if(_role == "punisher" && getState() in ["pulling_to_stocks", "pulling_to_slutwall"]):
+	if(_role == "punisher" && getState() in ["pulling_to_stocks", "pulling_to_slutwall", "pulling_to_cell_tentacles"]):
 		return true
 	return false
 

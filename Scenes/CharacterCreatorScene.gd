@@ -5,6 +5,7 @@ var pickedFirstSpeciesHybrid = ""
 var pickedAttribID = ""
 var bodyPickedAttribID = ""
 var debugMode = false
+var savedPage:int = 0
 
 var colorPickerScene = preload("res://UI/ColorPickerWidget.tscn")
 
@@ -70,6 +71,7 @@ func _run():
 		addButton("back", "Back", "pickhybrid1")
 
 	if(state == "pickedspecies"):
+		savedPage = 0
 		playAnimation(StageScene.Solo, "stand", {bodyState={naked=true,hard=true}})
 		
 		if(debugMode):
@@ -102,13 +104,13 @@ func _run():
 			sayn(curAttrib[0]+": "+str(curAttrib[1]))
 			
 
-		addButton("Confirm", "I like it", "donecreating")
+		addExtraButtonAt(0, "Confirm", "Confirm your character", "donecreating")
 		
 		for slot in allSlots:
 			var slotName = BodypartSlot.getVisibleName(slot)
 			addButton(slotName, "Change this bodypart", "pickbodypart", [slot])
 			
-		addButton("Body attributes", "Change your femininity, thickness and so", "bodyAttributes")
+		addExtraButtonAt(3, "Body attributes", "Change your femininity, thickness and so", "bodyAttributes")
 			
 		# DEBUG testing stuff, feel free to remove
 		if(false):
@@ -126,23 +128,25 @@ func _run():
 			
 		
 		if(!debugMode):
-			addButton("back", "Back to picking species", "pickspecies")
+			addExtraButtonAt(4, "Change species", "Back to picking species", "pickspecies")
 		else:
-			addButton("Change species", "! This will override all the bodyparts !", "pickspecies")
+			addExtraButtonAt(4, "Change species", "! This will override all the bodyparts !", "pickspecies")
 		
 	if(state == "pickbodypart"):
 		saynn("Choose the bodypart or change the attributes of the current one")
 		
 		addButton("Back", "go back", "pickedspecies")
 		
+		var playerBodypart = null
+		
 		if(GM.pc.hasBodypart(pickingBodypartType)):
-			var bodypart = GM.pc.getBodypart(pickingBodypartType)
+			playerBodypart = GM.pc.getBodypart(pickingBodypartType)
 			
-			sayn("Currently selected: "+bodypart.getCharacterCreatorName())
-			for curAttrib in bodypart.getAttributesText():
+			sayn("Currently selected: "+playerBodypart.getCharacterCreatorName())
+			for curAttrib in playerBodypart.getAttributesText():
 				sayn(curAttrib[0]+": "+str(curAttrib[1]))
 			
-			var attribOptions = bodypart.getPickableAttributes()
+			var attribOptions = playerBodypart.getPickableAttributes()
 			if(attribOptions.size() > 0):
 				addButton("Change current", "Change the attributes of the current bodypart instead of creating a new one", "bodypartAttributes")
 			
@@ -151,7 +155,10 @@ func _run():
 		var playerSpecies: Array = GM.pc.getSpecies()
 			
 		if(!BodypartSlot.isEssential(pickingBodypartType)):
-			addButton("Nothing", "remove it", "removebodypart", [pickingBodypartType])
+			var bodypartIsMissing:bool = (playerBodypart == null)
+			var nothingBodypartName:String = "[Nothing]" if(bodypartIsMissing) else "Nothing"
+			var nothingBodypartDesc:String = "This is the currently selected option" if(bodypartIsMissing) else "Remove the bodypart.\n\nNOTE: This resets the colors and skin of the bodypart."
+			addButton(nothingBodypartName, nothingBodypartDesc, "removebodypart", [pickingBodypartType])
 			
 		var allbodypartsIDs = GlobalRegistry.getBodypartsIdsBySlot(pickingBodypartType)
 		for bodypartID in allbodypartsIDs:
@@ -175,7 +182,13 @@ func _run():
 					break
 			
 			if(hasInSupported || hasInAllowed):
-				addButton(bodypart.getCharacterCreatorName(), bodypart.getCharacterCreatorDesc(), "setbodypart", [bodypart.id])
+				var bodypartIsActive:bool = (playerBodypart != null) && (playerBodypart.id == bodypart.id)
+				var bodypartName:String = ("["+bodypart.getCharacterCreatorName()+"]" if(bodypartIsActive) else bodypart.getCharacterCreatorName())
+				var bodypartDesc:String = bodypart.getCharacterCreatorDescFinal(bodypartIsActive)
+				addButton(bodypartName, bodypartDesc, "setbodypart", [bodypart.id])
+
+		if(savedPage != 0):
+			GM.ui.setCurrentPage(savedPage)
 
 	if(state == "bodypartAttributes"):
 		playAnimation(StageScene.Solo, "stand", {bodyState={naked=true,hard=true}})
@@ -325,26 +338,41 @@ func _react(_action: String, _args):
 			pickingBodypartType = _args[0]
 	
 	if(_action == "removebodypart"):
+		savedPage = GM.ui.getCurrentPage()
+
 		var bodypartSlot = _args[0]
 
 		GM.pc.removeBodypart(bodypartSlot)
-		
-		setState("pickedspecies")
 		return
 	
 	if(_action == "setbodypart"):
-		var bodypartID = _args[0]
-		var bodypart = GlobalRegistry.createBodypart(bodypartID)
-		
-		GM.pc.giveBodypart(bodypart)
-		
-		var pickableOptions = bodypart.getPickableAttributes()
-		if(pickableOptions.size() == 0):
-			setState("pickedspecies")
-		else:
-			setState("bodypartAttributes")
-		
-		
+		savedPage = GM.ui.getCurrentPage()
+
+		var savedRColor = null
+		var savedGColor = null
+		var savedBColor = null
+		var savedSkinId = null
+		var playerHadBodypartInSlot:bool = false
+		if(GM.pc.hasBodypart(pickingBodypartType)):
+			var playerBodypart:Bodypart = GM.pc.getBodypart(pickingBodypartType)
+			savedRColor = playerBodypart.pickedRColor
+			savedGColor = playerBodypart.pickedGColor
+			savedBColor = playerBodypart.pickedBColor
+			if(!playerBodypart.hasCustomSkinPattern()):
+				savedSkinId = playerBodypart.pickedSkin
+			playerHadBodypartInSlot = true
+
+		var newBodypartId = _args[0]
+		var newBodypart = GlobalRegistry.createBodypart(newBodypartId)
+		if(newBodypart != null):
+			if(playerHadBodypartInSlot):
+				newBodypart.pickedRColor = savedRColor
+				newBodypart.pickedGColor = savedGColor
+				newBodypart.pickedBColor = savedBColor
+				if(!newBodypart.hasCustomSkinPattern()):
+					newBodypart.pickedSkin = savedSkinId
+			GM.pc.giveBodypartUnlessSame(newBodypart)
+
 		return
 		
 	if(_action == "pick2species"):
@@ -369,6 +397,7 @@ func saveData():
 	data["pickedAttribID"] = pickedAttribID
 	data["bodyPickedAttribID"] = bodyPickedAttribID
 	data["debugMode"] = debugMode
+	data["savedPage"] = savedPage
 	
 	return data
 	
@@ -380,3 +409,4 @@ func loadData(data):
 	pickedAttribID = SAVE.loadVar(data, "pickedAttribID", "")
 	bodyPickedAttribID = SAVE.loadVar(data, "bodyPickedAttribID", "")
 	debugMode = SAVE.loadVar(data, "debugMode", false)
+	savedPage = SAVE.loadVar(data, "savedPage", 0)

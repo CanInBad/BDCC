@@ -11,6 +11,8 @@ onready var save_game_button = $"%SaveGameButton"
 onready var load_game_button = $"%LoadGameButton"
 onready var datapacks_button = $"%DatapacksButton"
 onready var main_menu_button = $"%MainMenuButton"
+onready var sex_toy_manager_button = $"%SexToyManagerButton"
+onready var content_board_button = $"%ContentBoardButton"
 
 func resizeButtons():
 	var theButtons:Array = [
@@ -19,6 +21,8 @@ func resizeButtons():
 		load_game_button,
 		datapacks_button,
 		main_menu_button,
+		sex_toy_manager_button,
+		content_board_button,
 	]
 	if(OPTIONS.isTouchFriendlyUI()):
 		for theButton in theButtons:
@@ -29,6 +33,7 @@ func resizeButtons():
 
 func _ready():
 	resizeButtons()
+	sex_toy_manager_button.visible = SexToyManager.isEnabled()
 
 func hideAllMenus():
 	mainMenuScreen.visible = false
@@ -76,3 +81,24 @@ func _on_InGameMenu_visibility_changed():
 	if(visible):
 		if(GM.main != null):
 			save_game_button.disabled = !GM.main.canSave()
+
+func _on_SexToyManagerButton_pressed():
+	hideAllMenus()
+	#saveMenuScreen.visible = true
+	var theUI = load("res://Util/SexToySupport/UI/SexToyManagerUI.tscn").instance()
+	theUI.connect("onClosePressed", self, "onSexToyManagerUIClose", [theUI])
+	add_child(theUI)
+
+func onSexToyManagerUIClose(_ui:Control):
+	_ui.queue_free()
+	mainMenuScreen.visible = true
+
+func _on_ContentBoardButton_pressed():
+	var theBoard = load("res://UI/ContentBoard/ContentBoard.tscn").instance()
+	GM.ui.get_parent().add_child(theBoard)
+	theBoard.connect("onClosePressed", self, "onContentBoardClosePressed")
+	GM.ui.visible = false
+
+func onContentBoardClosePressed(_board):
+	_board.queue_free()
+	GM.ui.visible = true

@@ -28,6 +28,27 @@ var verticalModsStr:String = ""
 
 export(Resource) var GlobalTheme
 
+var moduleButtons:Array = []
+const BetterButtonScene := preload("res://Game/UI/Buttons/BetterButton.tscn")
+onready var grid_container = $"%GridContainer"
+var customScreen:Control
+
+func setCustomScreen(_control:Control):
+	if(customScreen):
+		customScreen.queue_free()
+	customScreen = _control
+	add_child(customScreen)
+	customScreen.connect("tree_exiting", self, "clearCustonScreen")
+	main_h_box.visible = false
+
+func clearCustonScreen():
+	if(customScreen):
+		if(!customScreen.is_queued_for_deletion()):
+			customScreen.queue_free()
+		customScreen = null
+	main_h_box.visible = true
+	updateModuleButtons()
+
 func updateVerticalGithubReleaseVisibility():
 	if(OPTIONS.shouldFetchGithubRelease() && OPTIONS.isVerticalOrientation()):
 		vertical_github_release_box.visible = true
@@ -69,6 +90,72 @@ func _ready():
 	
 	OPTIONS.connect("onScreenOrientationChange", self, "updateSidePanelsVisibility")
 	
+	updateModuleButtons()
+
+const BetterButtonsLabelOrder := [
+	"1", "2", "3", "4", "5",
+	"Q", "W", "E", "R", "T",
+	"A", "S", "D", "F", "G",
+	"Z", "X", "C", "V", "B",
+	
+	"6", "7", "8", "9", "0",
+	"Y", "U", "I", "O", "P",
+	"H", "J", "K", "L", ";",
+	"N", "M", ",", ".", "/",
+]
+
+# Basically takes the last button and uses its shortcut key to find the next shortcut key
+# There are lots of safety checks in case the grid has some weird stuff in it because of mods or whatever
+func findFreeShortcutKey() -> String: # Yeah, sorry
+	var theButtons:Array = grid_container.get_children()
+	var theButAm:int = theButtons.size()
+	for _i in theButAm:
+		var _indx:int = theButAm - _i - 1
+		var theButton = theButtons[_indx]
+		if(!(theButton is BetterButton)):
+			continue
+			
+		var theKey:String = theButton.myShortcutKey.capitalize()
+		if(theKey.empty()):
+			continue
+		var theIndx:int = BetterButtonsLabelOrder.find(theKey)
+		if(theIndx < 0):
+			continue
+		if((theIndx+1) >= BetterButtonsLabelOrder.size()):
+			return "-" # Fallback of all fallbacks
+		return BetterButtonsLabelOrder[theIndx+1]
+	return "-"
+
+func updateModuleButtons():
+	if(!grid_container): # In case something is fucked
+		Log.error("Couldn't update the module buttons, the grid reference is missing!")
+		return
+	for theButton in moduleButtons:
+		theButton.queue_free()
+	moduleButtons.clear()
+	
+	for theModuleID in GlobalRegistry.modules:
+		var theModule:Module = GlobalRegistry.modules[theModuleID]
+		var theButtons:Array = theModule.getMenuButtons()
+		
+		#[id, name, desc]
+		for theButtonEntry in theButtons:
+			var theButton := BetterButtonScene.instance()
+			theButton.text = theButtonEntry[1]
+			theButton.myTooltipDesc = theButtonEntry[2]
+			theButton.myShortcutKey = findFreeShortcutKey()
+			
+			moduleButtons.append(theButton)
+			grid_container.add_child(theButton)
+			
+			theButton.connect("pressedActually", self, "onModuleButtonPressed", [theModuleID, theButtonEntry[0]])
+
+func onModuleButtonPressed(_moduleID:String, _buttonID:String):
+	var theModule:Module = GlobalRegistry.getModule(_moduleID)
+	if(!theModule):
+		return
+	theModule.onMenuButton(_buttonID, self)
+
 func updateDonationData():
 	donations_label.bbcode_text = GlobalRegistry.getDonationDataString()
 
@@ -120,7 +207,7 @@ func _on_CreditsButton_pressed():
 
 
 func _on_GithubButton_pressed():
-	var _ok = OS.shell_open("https://github.com/Alexofp/BDCC")
+	var _ok = Util.fixed_shell_open("https://github.com/Alexofp/BDCC")
 
 func getNewRelease():
 	var error = http_request.request("https://api.github.com/repos/Alexofp/BDCC/releases")
@@ -175,7 +262,7 @@ func _on_HTTPRequest_request_completed(result, _response_code, _headers, body):
 	setGithubLabelStr("Latest github release: Nothing found", "")
 
 func _on_GithubReleasesButton_pressed():
-	var _ok = OS.shell_open("https://github.com/Alexofp/BDCC/releases")
+	var _ok = Util.fixed_shell_open("https://github.com/Alexofp/BDCC/releases")
 
 
 func _on_DevClose_pressed():
@@ -220,14 +307,14 @@ func _on_DevLikesGenerator_pressed():
 
 
 func _on_DiscordButton_pressed():
-	var _ok = OS.shell_open("https://discord.gg/7UGYBvQrc3")
+	var _ok = Util.fixed_shell_open("https://discord.gg/7UGYBvQrc3")
 	
 func _on_ChangelogButton_pressed():
-	var _ok = OS.shell_open("https://github.com/Alexofp/BDCC/blob/main/CHANGELOG.md")
+	var _ok = Util.fixed_shell_open("https://github.com/Alexofp/BDCC/blob/main/CHANGELOG.md")
 
 
 func _on_DonationsLabel_meta_clicked(meta):
-	var _ok = OS.shell_open(meta)
+	var _ok = Util.fixed_shell_open(meta)
 
 
 func _on_DevCharCreator_pressed():
@@ -307,3 +394,20 @@ func _on_TroubleshootingButton_pressedActually():
 func _on_TroubleshootingScreen_onClose():
 	hideAllMenus()
 	MainVBox.visible = true
+
+func _on_SexToysButton_pressedActually():
+	main_h_box.visible = false
+	var theMenu = load("res://Util/SexToySupport/UI/SexToyManagerUI.tscn").instance()
+	theMenu.connect("onClosePressed", self, "onMenuClosePressed", [theMenu])
+	add_child(theMenu)
+
+func onMenuClosePressed(_menu):
+	_menu.queue_free()
+	main_h_box.visible = true
+
+
+func _on_DevFetishGenerator_pressedActually():
+	Util.delete_children(devSubScreen)
+	
+	var scene = load("res://UI/NpcFetishGenerator/NpcFetishGenerator.tscn")
+	devSubScreen.add_child(scene.instance())

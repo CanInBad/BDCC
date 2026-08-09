@@ -33,6 +33,7 @@ var slaveTypes = []
 var slaveActions = []
 var slaveEvents = []
 var slaveActivities = []
+var sexReactionHandlers = []
 
 var id = "badmodule"
 var author = "no author"
@@ -46,6 +47,12 @@ func getRegisterName() -> String:
 		return id+" module by "+str(author)
 	return id+" module"
 
+func getAuthorName() -> String:
+	var theStrAuthor:String = str(author)
+	if(theStrAuthor == "Rahi" || theStrAuthor == "no author"):
+		return ""
+	return theStrAuthor
+
 func preInit(): # Called before anything gets registered
 	pass
 
@@ -53,6 +60,8 @@ func postInit(): # Called after everything is registered
 	pass
 
 func register():
+	var theAuthorName:String = getAuthorName()
+	
 	for scene in scenes:
 		GlobalRegistry.registerScene(scene, author)
 	
@@ -72,7 +81,7 @@ func register():
 		GlobalRegistry.registerAttack(attack)
 		
 	for bodypart in bodyparts:
-		GlobalRegistry.registerBodypart(bodypart)
+		GlobalRegistry.registerBodypart(bodypart, theAuthorName)
 	
 	for specie in species:
 		GlobalRegistry.registerSpecies(specie)
@@ -146,6 +155,9 @@ func register():
 	for slaveActivity in slaveActivities:
 		GlobalRegistry.registerSlaveActivity(slaveActivity)
 
+	for sexReactionHandler in sexReactionHandlers:
+		GlobalRegistry.registerSexReactionHandler(sexReactionHandler)
+
 func registerEventTriggers():
 	pass
 
@@ -164,6 +176,9 @@ func increaseFlag(flagID, addvalue = 1):
 func getRandomSceneFor(_sceneType):
 	return []
 
+func isScienceUpgradeVisible(_upgradeID:String) -> bool:
+	return true
+
 func getFlags():
 	return {}
 	
@@ -174,3 +189,36 @@ func flag(type):
 	return {
 		"type": type,
 	}
+
+func resetMainRoute():
+	pass
+
+func resetAllFlags():
+	for theFlag in flagsCache:
+		GM.main.clearModuleFlag(id, theFlag)
+
+func resetAllFlagsWithExceptions(_ignore:Dictionary):
+	for theFlag in flagsCache:
+		if(_ignore.get(theFlag, false)):
+			continue
+		GM.main.clearModuleFlag(id, theFlag)
+
+func menuButton(_id:String, _name:String, _desc:String) -> Array:
+	return [_id, _name, _desc]
+
+# Override this method in your Module to add new buttons to the main menu
+func getMenuButtons() -> Array:
+	## An example
+	#return [menuButton("test", "Test!", "This is a test button")]
+	return []
+
+func onMenuButton(_buttonID:String, _menuScene):
+	Log.print("Module:"+id+" Pressed menu button: "+_buttonID)
+
+#	# An example of how to show some screen on top of the menu
+#	var someGame = load("res://Game/Minigames/Struggling/StrugglingGame.tscn").instance()
+#	someGame.connect("minigameCompleted", self, "onMinigameCompleted", [someGame])
+#	_menuScene.setCustomScreen(someGame)
+#
+#func onMinigameCompleted(_res, someGame):
+#	someGame.queue_free()

@@ -210,12 +210,25 @@ func getUsedBodypartName() -> String:
 	if(usedBodypart == BodypartSlot.Anus):
 		theName = "{sub.anusStretch} "+theName
 	
-	if(getSub().getLustLevel() > 0.6):
+	var _isNeedy:bool = getSub().getLustLevel() > 0.6
+	var _isDry:bool = getSub().getLustLevel() < 0.1
+	var _isLubedUp:bool = getSub().hasEffect(StatusEffect.LubedUp)
+	var _hasCumInHole:bool = false
+	if(usedBodypart == BodypartSlot.Vagina):
+		_hasCumInHole = getSub().hasEffect(StatusEffect.HasCumInsideVagina)
+	if(usedBodypart == BodypartSlot.Anus):
+		_hasCumInHole = getSub().hasEffect(StatusEffect.HasCumInsideAnus)
+	
+	if(_hasCumInHole && RNG.chance(30)):
+		theName = RNG.pick(["creamed", "stuffed"])+" "+theName
+	elif(_isNeedy):
 		if(usedBodypart == BodypartSlot.Vagina):
 			theName = RNG.pick(["needy", "awaiting", "inviting"])+" "+theName
 		if(usedBodypart == BodypartSlot.Anus):
 			theName = RNG.pick(["needy", "awaiting", "drippy", "inviting", "wet", "slick", "aroused"])+" "+theName
-	elif(getSub().getLustLevel() < 0.1 && RNG.chance(50)):
+	elif(_isLubedUp):
+		theName = RNG.pick(["lubed up"])+" "+theName
+	elif(_isDry && RNG.chance(50)):
 		if(usedBodypart == BodypartSlot.Vagina):
 			theName = RNG.pick(["dry"])+" "+theName
 		if(usedBodypart == BodypartSlot.Anus):
@@ -366,6 +379,8 @@ func fucking_processTurn():
 		if(straponTimer > 5 && RNG.chance(5.0*straponTimer)):
 			satisfyGoals()
 
+
+
 func getActions(_indx:int):
 	if(_indx == DOM_0):
 		if(state in [""]):
@@ -376,6 +391,9 @@ func getActions(_indx:int):
 				var switchholeScore:float = 5.0 * (-getDomInfo().goalsScore(getGoals(), getSubID()) + getDomInfo().goalsScore({otherGoal: 1.0}, getSubID()))
 				addAction("switchhole", switchholeScore, "Switch hole", "Switch to the sub's "+RNG.pick(otherHoleNames))
 			addAction("stop", getStopScore(), "Stop fuck", "Stop fucking")
+		
+		if(state in ["fucking", "inside"]):
+			addEggStuffButton(DOM_0, SUB_0, usedBodypart)
 		if(state in ["fucking"]):
 			addAction("slowdown", getPauseSexScore(DOM_0, SUB_0, usedBodypart), "Slow down", "Stop fucking for a second..", {A_PRIORITY: 1})
 			
@@ -443,6 +461,8 @@ func getActions(_indx:int):
 				addAction("subcum", 1.0, "Cum!", "You're about to cum!", {A_PRIORITY: 1001})
 		
 func doAction(_indx:int, _id:String, _action:Dictionary):
+	if(_id == "stuffegg"):
+		doStuffEggInto(DOM_0, SUB_0, usedBodypart)
 	if(_id == "straponForceKnot"):
 		# Need a tryKnot func?
 		#if(tryPenetrate())
@@ -567,7 +587,7 @@ func doAction(_indx:int, _id:String, _action:Dictionary):
 				return
 	if(_id == "switchhole"):
 		switchCurrentActivityTo(switchHoleActivity)
-		addText("{dom.You} {dom.youVerb('switch', 'switches')} holes. {dom.YouHe} {dom.youAre} "+RNG.pick(["prodding", "teasing", "rubbing"])+" {sub.your} "+RNG.pick(otherHoleNames)+" now.")
+		addText("{dom.You} {dom.youVerb('switch', 'switches')} holes. {dom.YouHe} {dom.youAreHeIs} "+RNG.pick(["prodding", "teasing", "rubbing"])+" {sub.your} "+RNG.pick(otherHoleNames)+" now.")
 		return
 	if(_id in ["knotinside", "cuminside"]):
 		var cumData:Dictionary = doProcessCumInside(DOM_0, SUB_0, usedBodypart, (_id == "knotinside"))

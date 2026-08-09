@@ -30,7 +30,7 @@ func getPossibleActions():
 			return [{
 					"name": "Program",
 					"scene": "ProgramVisorScene",
-					"description": "Program the visor to suppress one of your drawback perks",
+					"description": "Program the visor to suppress your drawback perks",
 					"onlyWhenCalm": true
 				}]
 	return []
@@ -100,3 +100,6 @@ func getAIForceItemWeight(_whoForcesNpc, _targetNpc):
 		return 0.0
 	var hypnosisValue = _whoForcesNpc.getFetishHolder().getFetishValue(Fetish.HypnosisHypnotist)
 	return hypnosisValue * 1.0
+
+func isRestraintShouldKeep() -> bool:
+	return true

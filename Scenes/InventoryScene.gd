@@ -88,8 +88,8 @@ func _run():
 			say(InventorySlot.getVisibleName(slot)+": "+item.getVisibleName()+"\n")
 		
 		for item in GM.pc.getInventory().getAllItems():
-			var slot = item.getClothingSlot()
-			if(slot == null):
+			var slot:String = item.getClothingSlotSafe()
+			if(slot.empty()):
 				continue
 				
 			if(GM.pc.getInventory().hasSlotEquipped(slot)):
@@ -215,8 +215,8 @@ func onInventoryItemSelected(item: ItemBase):
 		return
 	savedItemUniqueID = item.getUniqueID()
 	
-	var slot = item.getClothingSlot()
-	if(slot != null && !fightMode):
+	var slot = item.getClothingSlotSafe()
+	if(!slot.empty() && !fightMode):
 		if(GM.pc.getInventory().hasSlotEquipped(slot)):
 			if(GM.pc.getInventory().getEquippedItem(slot) == item):
 				addButton("Take off", item.getVisisbleDescription(), "takeoff", [item.getUniqueID()])
@@ -226,6 +226,10 @@ func onInventoryItemSelected(item: ItemBase):
 			addDisabledButton("Put on", "You can't equip this item")
 		else:
 			addButton("Put on", item.getVisisbleDescription(), "puton", [item.getUniqueID()])
+	
+	if(fightMode && !item.canUseInCombat()):
+		addDisabledButton("Can't use!","You can't use this item in combat")
+		return
 	
 	for action in item.getPossibleActions():
 		if(!canDoAction(action)):

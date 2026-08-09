@@ -52,7 +52,7 @@ func setItem(theItem:ItemBase, theMode):
 	if(isGive):
 		$HBoxContainer/HBoxContainer/InteractButton.text = "Give"
 	if(isEquipTake):
-		if(item.getClothingSlot() != null):
+		if(!item.getClothingSlotSafe().empty()):
 			if(item.isWornByWearer()):
 				$HBoxContainer/HBoxContainer/InteractButton.text = "Unequip"
 			else:
@@ -99,7 +99,7 @@ func updateInfo():
 	
 	if(isFightMode):
 		var possibleActions = item.getPossibleActions()
-		if(possibleActions.size() == 1 && canDoAction(possibleActions[0])):
+		if(possibleActions.size() == 1 && canDoAction(possibleActions[0]) && item.canUseInCombat()):
 			showUseButton(true)
 		else:
 			showUseButton(false)

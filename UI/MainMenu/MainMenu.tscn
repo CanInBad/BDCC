@@ -310,6 +310,7 @@ rect_min_size = Vector2( 0, 40 )
 text = "Github Releases"
 
 [node name="GridContainer" type="GridContainer" parent="MainHBox/CenterAreaVBox/MainVBox"]
+unique_name_in_owner = true
 margin_top = 620.0
 margin_right = 754.0
 margin_bottom = 720.0
@@ -376,15 +377,15 @@ text = "Join Discord"
 myTooltipDesc = "Join the game's discord server (18+ only)"
 myShortcutKey = "Q"
 
-[node name="GithubButton" parent="MainHBox/CenterAreaVBox/MainVBox/GridContainer" instance=ExtResource( 11 )]
+[node name="SexToysButton" parent="MainHBox/CenterAreaVBox/MainVBox/GridContainer" instance=ExtResource( 11 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 152.0
 margin_top = 30.0
 margin_right = 300.0
 margin_bottom = 56.0
-text = "Github"
-myTooltipDesc = "Open the game's GitHub page"
+text = "Buttplug.IO"
+myTooltipDesc = "Open the sextoy integration menu"
 myShortcutKey = "W"
 
 [node name="DevToolsButton" parent="MainHBox/CenterAreaVBox/MainVBox/GridContainer" instance=ExtResource( 11 )]
@@ -560,6 +561,16 @@ margin_bottom = 56.0
 text = "Interaction Creator"
 myShortcutKey = "W"
 
+[node name="DevFetishGenerator" parent="MainHBox/CenterAreaVBox/DevToolsScreen/GridContainer" instance=ExtResource( 11 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 304.0
+margin_top = 30.0
+margin_right = 452.0
+margin_bottom = 56.0
+text = "Npc Fetishes Gen."
+myShortcutKey = "3"
+
 [node name="TroubleshootingScreen" parent="MainHBox/CenterAreaVBox" instance=ExtResource( 12 )]
 unique_name_in_owner = true
 visible = false
@@ -695,7 +706,7 @@ unique_name_in_owner = true
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/OptionsButton" to="." method="_on_OptionsButton_pressed"]
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/CreditsButton" to="." method="_on_CreditsButton_pressed"]
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/DiscordButton" to="." method="_on_DiscordButton_pressed"]
-[connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/GithubButton" to="." method="_on_GithubButton_pressed"]
+[connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/SexToysButton" to="." method="_on_SexToysButton_pressedActually"]
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/DevToolsButton" to="." method="_on_DevToolsButton_pressed"]
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/ChangelogButton" to="." method="_on_ChangelogButton_pressed"]
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/MainVBox/GridContainer/ModsButton" to="." method="_on_ModsButton_pressed"]
@@ -711,6 +722,7 @@ unique_name_in_owner = true
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/DevToolsScreen/GridContainer/DevSceneConverter" to="." method="_on_DevSceneConverter_pressed"]
 [connection signal="pressed" from="MainHBox/CenterAreaVBox/DevToolsScreen/GridContainer/SexActivityCreator" to="." method="_on_SexActivityCreator_pressed"]
 [connection signal="pressedActually" from="MainHBox/CenterAreaVBox/DevToolsScreen/GridContainer/InteractionCreator" to="." method="_on_InteractionCreator_pressed"]
+[connection signal="pressedActually" from="MainHBox/CenterAreaVBox/DevToolsScreen/GridContainer/DevFetishGenerator" to="." method="_on_DevFetishGenerator_pressedActually"]
 [connection signal="onClose" from="MainHBox/CenterAreaVBox/TroubleshootingScreen" to="." method="_on_TroubleshootingScreen_onClose"]
 [connection signal="onClosePressed" from="MainHBox/CenterAreaVBox/LoadGameScreen" to="." method="switchToMainMenu"]
 [connection signal="onClosePressed" from="MainHBox/CenterAreaVBox/OptionsScreen" to="." method="switchToMainMenu"]

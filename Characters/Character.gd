@@ -123,6 +123,8 @@ func saveData():
 	data["lastUpdatedDay"] = lastUpdatedDay
 	data["lastUpdatedSecond"] = lastUpdatedSecond
 	data["pregnancyWaitTimer"] = pregnancyWaitTimer
+
+	data["peeProduction"] = peeProduction.saveData()
 	
 	return data
 
@@ -144,7 +146,7 @@ func loadData(data):
 			continue
 		var bodypart = getBodypart(slot)
 		if(bodypartid != bodypart.id):
-			Log.printerr("Bodypart changed for "+getName()+"'s "+str(slot)+", ignoring data (was "+bodypartid+", became "+bodypart.id+")")
+			Log.warning("Bodypart changed for "+getName()+"'s "+str(slot)+", ignoring data (was "+bodypartid+", became "+bodypart.id+")")
 			continue
 		bodypart.loadDataNPC(bodypartData)
 	
@@ -172,6 +174,8 @@ func loadData(data):
 	lastUpdatedDay = SAVE.loadVar(data, "lastUpdatedDay", -1)
 	lastUpdatedSecond = SAVE.loadVar(data, "lastUpdatedSecond", -1)
 	pregnancyWaitTimer = SAVE.loadVar(data, "pregnancyWaitTimer", 0)
+
+	peeProduction.loadData(SAVE.loadVar(data, "peeProduction", {}))
 	
 	updateNonBattleEffects()
 
@@ -238,8 +242,8 @@ func equipDefaultEquipmentEntrySafely(equipEntry):
 	if(itemRef == null):
 		return false
 	
-	var itemSlot = itemRef.getClothingSlot()
-	if(itemSlot == null):
+	var itemSlot:String = itemRef.getClothingSlotSafe()
+	if(itemSlot.empty()):
 		return false
 	
 	if(getInventory().hasSlotEquipped(itemSlot)):
@@ -259,7 +263,9 @@ func equipDefaultEquipmentEntrySafely(equipEntry):
 			for dataID in foundData:
 				theItem.applyDatapackEditVar(dataID, foundData[dataID])
 	
-	return getInventory().equipItem(theItem)
+	if(getInventory().equipItem(theItem)):
+		return true
+	return false
 
 func createEquipment():
 	var theEquip = getDefaultEquipment()
@@ -323,6 +329,7 @@ func processTime(_secondsPassed):
 		if(bodypart == null || !is_instance_valid(bodypart)):
 			continue
 		bodypart.processTime(_secondsPassed)
+	peeProduction.processTime(_secondsPassed)
 	
 	processTimedBuffs(_secondsPassed)
 	
@@ -345,7 +352,7 @@ func processTime(_secondsPassed):
 	GM.GES.callGameExtenders(ExtendGame.npcProcessTime, [self, _secondsPassed])
 	#lastUpdatedDay = GM.main.getDays()
 	#lastUpdatedSecond = GM.main.getTime()
-	lastUpdatedSecond += _secondsPassed
+	#lastUpdatedSecond += _secondsPassed
 	if(isReadyToGiveBirth()):
 		pregnancyWaitTimer += _secondsPassed
 		if(shouldGiveBirth()):
@@ -417,9 +424,15 @@ func updateNonBattleEffects():
 func onCharacterVisiblyPregnant():
 	pregnancyWaitTimer = 0
 	if(getMenstrualCycle() != null):
-		if(getMenstrualCycle().isPregnantFromPlayer()):
+		var isPCPreg:bool = getMenstrualCycle().isPregnantFromPlayer(true, false)
+		var isPCEgg:bool = getMenstrualCycle().isPregnantFromPlayer(false, true)
+		
+		if(isPCPreg || isPCEgg):
 			GM.pc.addSkillExperience(Skill.Breeder, 50)
-			GM.main.addLogMessage("News", "You just received news that "+getName()+" is pregnant with your children.")
+			if(isPCPreg):
+				GM.main.addLogMessage("News", "You just received news that "+getName()+" is pregnant with your children.")
+			elif(isPCEgg):
+				GM.main.addLogMessage("News", "You just received news that "+getName()+"'s eggs got fertilized by you.")
 			if(isDynamicCharacter()):
 				GM.main.WHS.addEvent(WHEvent.Impregnated, "pc", getID())
 				GM.main.RS.sendSocialEvent("pc", getID(), SocialEventType.GotImpregnated)
@@ -507,7 +520,7 @@ func shouldBeUpdated():
 	if(GM.main.characterIsVisible(getID())):
 		return true
 	
-	if(hasEffect(StatusEffect.HasCumInsideAnus) || hasEffect(StatusEffect.HasCumInsideMouth) || hasEffect(StatusEffect.HasCumInsideVagina)):
+	if(hasEffect(StatusEffect.HasCumInsideAnus) || hasEffect(StatusEffect.HasCumInsideMouth) || hasEffect(StatusEffect.HasCumInsideVagina) || hasEffect(StatusEffect.CoveredInCum)):
 		return true
 	
 	if(isPregnant()):
@@ -525,6 +538,7 @@ func checkOldWayOfUpdating(theday:int, theseconds:int):
 		lastUpdatedDay = theday
 		lastUpdatedSecond = theseconds
 
+const DAY_SECONDS := 24*60*60
 func processUntilTime(theday:int, theseconds:int):
 	if(lastUpdatedDay < 0):
 		lastUpdatedDay = theday
@@ -541,7 +555,11 @@ func processUntilTime(theday:int, theseconds:int):
 	if(dayDiff == 0):
 		secondsDiff = theseconds - lastUpdatedSecond
 	else:
-		secondsDiff = 24*60*60*dayDiff - lastUpdatedSecond + theseconds
+		secondsDiff += DAY_SECONDS - lastUpdatedSecond # The rest of the old day
+		secondsDiff += theseconds # The seconds of the new day
+		if(dayDiff > 1):
+			secondsDiff += DAY_SECONDS * (dayDiff - 1) # The skipped days in between
+		#secondsDiff = 24*60*60*dayDiff - lastUpdatedSecond + theseconds
 	
 	if(secondsDiff < 0):
 		Log.error("processUntilTime() trying to process "+str(getID())+" for a negative amount of seconds ("+str(secondsDiff)+")")

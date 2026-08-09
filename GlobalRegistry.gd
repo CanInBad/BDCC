@@ -1,9 +1,9 @@
 extends Node
 
 var game_version_major = 0
-var game_version_minor = 1
-var game_version_revision = 12
-var game_version_suffix = "fix4"
+var game_version_minor = 3
+var game_version_revision = 2
+var game_version_suffix = ""
 
 var contributorsCredits:Dictionary = {
 	"Max-Maxou": [
@@ -137,6 +137,16 @@ var contributorsCredits:Dictionary = {
 		"[url=https://github.com/Alexofp/BDCC/pull/249]#18[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/250]#19[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/251]#20[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/268]#21[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/269]#22[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/316]#23[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/339]#24[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/341]#25[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/345]#26[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/340]#27[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/336]#28[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/342]#29[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/347]#30[/url]",
 	],
 	"CheeseyCake92": [
 		"[url=https://github.com/Alexofp/BDCC/pull/158]#1[/url]",
@@ -148,6 +158,8 @@ var contributorsCredits:Dictionary = {
 		"[url=https://github.com/Alexofp/BDCC/pull/230]#3[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/237]#4[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/239]#5[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/264]#6[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/265]#7[/url]",
 	],
 	"moon-halo-xviii": [
 		"[url=https://github.com/Alexofp/BDCC/pull/196]#1[/url]",
@@ -163,6 +175,45 @@ var contributorsCredits:Dictionary = {
 		"[url=https://github.com/Alexofp/BDCC/pull/245]#4[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/247]#5[/url]",
 		"[url=https://github.com/Alexofp/BDCC/pull/248]#6[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/281]#7[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/282]#8[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/284]#9[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/285]#10[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/287]#11[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/344]#12[/url]",
+	],
+	"SongJo": [
+		"42 great haircuts",
+	],
+	"Meepyneepy": [
+		"[url=https://github.com/Alexofp/BDCC/pull/259]#1[/url]",
+	],
+	"Mari": [
+		"[url=https://github.com/Alexofp/BDCC/pull/266]#1[/url]",
+	],
+	"FrivolousBorks": [
+		"[url=https://github.com/Alexofp/BDCC/pull/267]#1[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/271]#2[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/274]#3[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/275]#4[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/278]#5[/url]",
+	],
+	"Ferricyanide": [
+		"[url=https://github.com/Alexofp/BDCC/pull/280]#1[/url]",
+	],
+	"Zsar": [
+		"[url=https://github.com/Alexofp/BDCC/pull/293]#1[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/321]#2[/url]",
+		"[url=https://github.com/Alexofp/BDCC/pull/317]#3[/url]",
+	],
+	"sleezyIguana": [
+		"[url=https://github.com/Alexofp/BDCC/pull/314]#1[/url]",
+	],
+	"PuroSlavKing": [
+		"[url=https://github.com/Alexofp/BDCC/pull/323]#1[/url]",
+	],
+	"kristijanWolff": [
+		"[url=https://github.com/Alexofp/BDCC/pull/332]#1[/url]",
 	],
 }
 
@@ -193,6 +244,10 @@ var allSpecies: Dictionary = {}
 var items: Dictionary = {}
 var itemsRefs: Dictionary = {}
 var itemsByTag: Dictionary = {}
+var cachedInventorySlotsList:Array = []
+var inventorySlots : Dictionary = {}
+var cachedBodypartSlotsList:Array = []
+var bodypartSlots : Dictionary = {}
 var buffs: Dictionary = {}
 var events: Dictionary = {}
 var modules: Dictionary = {}
@@ -262,6 +317,10 @@ var npcOwners:Dictionary = {}
 var npcOwnerEvents:Dictionary = {}
 var npcOwnerEventIDsByTag:Dictionary = {}
 var npcOwnerTraits:Dictionary = {}
+var recruits:Dictionary = {}
+var missions:Dictionary = {}
+var missionQuests:Dictionary = {}
+var contentBoardEntries:Dictionary = {}
 
 var bodypartStorageNode
 
@@ -295,7 +354,7 @@ func getModsFolder() -> String:
 	if(OS.get_name() == "Android"):
 		#var permissions: Array = OS.get_granted_permissions() #for Godot 3 branch
 		#if permissions.has("android.permission.READ_EXTERNAL_STORAGE"):
-		var externalDir:String = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+		var externalDir:String = Util.getAndroidSaveFolder()#OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 		var finalDir = externalDir.plus_file("BDCCMods")
 		modsFolder = finalDir
 		var _ok = Directory.new().make_dir(modsFolder)
@@ -306,14 +365,14 @@ func getDatapacksFolder() -> String:
 	if(OS.get_name() == "Android"):
 		#var permissions: Array = OS.get_granted_permissions() #for Godot 3 branch
 		#if permissions.has("android.permission.READ_EXTERNAL_STORAGE"):
-		var externalDir:String = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+		var externalDir:String = Util.getAndroidSaveFolder()#OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 		var finalDir = externalDir.plus_file("BDCCMods/Datapacks")
 		modsFolder = finalDir
 		var _ok = Directory.new().make_dir(modsFolder)
 	return modsFolder
 	
-func getRawModList():
-	var result = []
+func getRawModList() -> Array:
+	var result:Array = []
 	
 	var modsFolder = getModsFolder()
 	
@@ -348,7 +407,14 @@ func checkModSupport():
 	else:
 		modsSupport = true
 
+const androidBDCCPCKPath := "user://BDCC.pck"
+
 func loadModOrder(theModOrder:Array):
+	if(theModOrder.size() > 0 && OS.get_name() == "Android"):
+		var theFile := File.new()
+		if(theFile.file_exists(androidBDCCPCKPath)):
+			var _ok = ProjectSettings.load_resource_pack(androidBDCCPCKPath)
+	
 	for modEntry in theModOrder:
 		if(modEntry["disabled"]):
 			continue
@@ -488,7 +554,7 @@ func onDonationDataRequest(result, _response_code, _headers, body):
 	cachedDonationData = donationData
 	emit_signal("donationDataUpdated")
 
-func getDonationDataString():
+func getDonationDataString(_tightGrouping:bool = false):
 	var theData
 	if(cachedDonationData == null):
 		theData = cachedLocalDonationData
@@ -501,14 +567,20 @@ func getDonationDataString():
 	if(theData == null || !validateDonationData(theData)):
 		return ""
 	
-	var newText = "[center][b][url=https://subscribestar.adult/rahi]SubscribeStar[/url][/b]\nCompiled "+str(theData["dateString"])+"\n\n"
+	var newText:String = "[center][b][url=https://subscribestar.adult/rahi]SubscribeStar[/url][/b]\nCompiled "+str(theData["dateString"])+"\n\n"
 	
 	for tierName in theData["tiers"]:
 		if(!theData["entries"].has(tierName)):
 			continue
 		newText += "[b]"+tierName+" tier[/b]\n"
-		for entry in theData["entries"][tierName]:
-			newText += entry["nickname"]+"\n"
+		if(!_tightGrouping):
+			for entry in theData["entries"][tierName]:
+				newText += entry["nickname"]+"\n"
+		else:
+			var theNames:Array = []
+			for entry in theData["entries"][tierName]:
+				theNames.append(entry["nickname"])
+			newText += Util.join(theNames, ", ")+"\n"
 		newText += "\n"
 	newText += "Thank you [color=red]<3[/color][/center]"
 	return newText
@@ -563,6 +635,7 @@ func registerEverything():
 	registerItemFolder("res://Inventory/Items/Weapons/")
 	registerItemFolder("res://Inventory/Items/Clothes/")
 	registerItemFolder("res://Inventory/Items/Unique/")
+	registerItemFolder("res://Inventory/Items/Pills/")
 	
 	registerBuffFolder("res://Inventory/Buffs/")
 	
@@ -590,6 +663,7 @@ func registerEverything():
 	
 	registerEventFolder("res://Events/Event/")
 	registerEventFolder("res://Game/NpcSlavery/SlaveActivitiesEvents/")
+	registerEventFolder("res://Game/DomRoute/MissionEvents/")
 	registerDrugDenEventFolder("res://Game/DrugDen/Events/")
 	
 	emit_signal("loadingUpdate", 7.0/totalStages, "Scenes")
@@ -605,6 +679,8 @@ func registerEverything():
 		registerSceneFolder("res://Scenes/Mineshaft/")
 		registerSceneFolder("res://Game/NpcSlavery/SlaveActionScenes/")
 		registerSceneFolder("res://Game/NpcSlavery/SlaveActionScenes/Prostitution/")
+		registerSceneFolderDeep("res://Game/DomRoute/RecruitScenes/")
+		registerSceneFolderDeep("res://Game/DomRoute/MissionScenes/")
 		
 		var end2 = OS.get_ticks_usec()
 		var worker_time2 = (end2-start2)/1000000.0
@@ -638,6 +714,7 @@ func registerEverything():
 	yield(get_tree(), "idle_frame")
 	
 	registerSexActivitiesFolder("res://Game/SexEngine/SexActivity/")
+	registerSexActivitiesFolder("res://Game/SexEngine/SexActivity/Tentacles/")
 	registerFetishesFolder("res://Game/SexEngine/Fetish/")
 	registerSexGoalsFolder("res://Game/SexEngine/Goal/")
 	registerSexTypeFolder("res://Game/SexEngine/SexType/")
@@ -671,6 +748,9 @@ func registerEverything():
 	registerTransformationsFolder("res://Game/Transformation/TFs/")
 	registerTransformationEffectsFolder("res://Game/Transformation/Effects/")
 	registerNurseryTaskFolder("res://Game/Science/NurseryTasks/")
+	registerRecruitFolder("res://Game/DomRoute/Recruits/")
+	registerMissionFolder("res://Game/DomRoute/Missions/")
+	registerContentBoardEntryFolder("res://UI/ContentBoard/Entries/")
 	
 	emit_signal("loadingUpdate", 11.0/totalStages, "Sex scenes")
 	yield(get_tree(), "idle_frame")
@@ -712,6 +792,19 @@ func registerEverything():
 	yield(get_tree(), "idle_frame")
 	
 	yield(registerModules(), "completed") # 15.0 & 16.0
+	
+	# Caching the bodypart/inventory slots for quicker access
+	if(bodypartSlots.empty()):
+		cachedBodypartSlotsList = BodypartSlot.DEFAULT_SLOTS
+	else:
+		cachedBodypartSlotsList = BodypartSlot.DEFAULT_SLOTS.duplicate()
+		cachedBodypartSlotsList.append_array(bodypartSlots.keys())
+	if(inventorySlots.empty()):
+		cachedInventorySlotsList = InventorySlot.DEFAULT_SLOTS
+	else:
+		cachedInventorySlotsList = InventorySlot.DEFAULT_SLOTS.duplicate()
+		cachedInventorySlotsList.append_array(inventorySlots.keys())
+	
 	
 	findCustomSkins()
 	sortFightClubFighters()
@@ -870,9 +963,16 @@ func registerSceneFolder(folder: String):
 	else:
 		Log.printerr("An error occurred when trying to access the path "+folder)
 
-func registerBodypart(path: String):
+func registerSceneFolderDeep(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerScene(scriptPath)
+
+func registerBodypart(path: String, _authorOverride:String = ""):
 	var bodypart = load(path)
 	var bodypartObject = bodypart.new()
+	if(!_authorOverride.empty()):
+		bodypartObject.author = _authorOverride
 	bodyparts[bodypartObject.id] = bodypartObject
 	bodypartStorageNode.add_child(bodypartObject)
 
@@ -895,6 +995,16 @@ func getBodypartsIdsBySlot(_slot:String) -> Array:
 	var result:Array = []
 	for bodypartID in bodyparts:
 		var bodypart = bodyparts[bodypartID]
+		if(bodypart.getSlot() == _slot):
+			result.append(bodypartID)
+	return result
+
+func getBodypartsIdsBySlotForTF(_slot:String) -> Array:
+	var result:Array = []
+	for bodypartID in bodyparts:
+		var bodypart = bodyparts[bodypartID]
+		if(bodypart.shouldBeExcludedFromTFPick()):
+			continue
 		if(bodypart.getSlot() == _slot):
 			result.append(bodypartID)
 	return result
@@ -1222,6 +1332,57 @@ func getItemIDsByTagSlow(tag):
 
 func getItemRefs():
 	return itemsRefs
+
+
+
+func registerInventorySlot(path: String):
+	var slot = load(path)
+	var slotObj = slot.new()
+	inventorySlots[slotObj.id] = slotObj
+
+func registerInventorySlotFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerInventorySlot(scriptPath)
+
+func getCustomInventorySlots() -> Dictionary:
+	return inventorySlots
+
+func getCustomInventorySlot(slot:String) -> CustomInventorySlot:
+	var slotobj = inventorySlots.get(slot)
+	if !slotobj:
+		Log.printerr("Error: No inventory slot with id '%s' found" % slot)
+	
+	return slotobj
+
+func hasCustomInventorySlot(_slot:String) -> bool:
+	return inventorySlots.has(_slot)
+
+
+func registerBodypartSlot(path: String):
+	var slot = load(path)
+	var slotObj = slot.new()
+	bodypartSlots[slotObj.id] = slotObj
+
+func registerBodypartSlotFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerBodypartSlot(scriptPath)
+
+func getCustomBodypartSlots() -> Dictionary:
+	return bodypartSlots
+
+func getCustomBodypartSlot(slot:String) -> CustomBodypartSlot:
+	var slotobj = bodypartSlots.get(slot)
+	if !slotobj:
+		Log.printerr("Error: No bodypart slot with id '%s' found" % slot)
+	
+	return slotobj
+
+func hasCustomBodypartSlot(_slot:String) -> bool:
+	return bodypartSlots.has(_slot)
+
+
 
 func registerBuff(path: String):
 	var item = load(path)
@@ -2194,7 +2355,7 @@ func getSkinsAllKeys():
 func findCustomSkins():
 	var skinsFolder = "user://custom_skins"
 	if(OS.get_name() == "Android"):
-		var externalDir:String = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+		var externalDir:String = Util.getAndroidSaveFolder()#OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 		var finalDir = externalDir.plus_file("BDCCMods/custom_skins")
 		skinsFolder = finalDir
 	
@@ -2860,6 +3021,80 @@ func getNpcOwnerTrait(id: String):
 
 func getNpcOwnerTraits():
 	return npcOwnerTraits
+
+
+func registerRecruit(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	recruits[object.id] = loadedClass
+
+func registerRecruitFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerRecruit(scriptPath)
+
+func createRecruit(id: String):
+	if(recruits.has(id)):
+		return recruits[id].new()
+	else:
+		Log.printerr("ERROR: recruit with the id "+id+" wasn't found")
+		return null
+
+func getRecruits():
+	return recruits
+
+
+
+func registerMission(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	missions[object.id] = object
+	if(object.addAsAQuest):
+		var newQuest := MissionQuestProxy.new()
+		newQuest.mission = object
+		missionQuests[object.id] = newQuest
+
+func registerMissionFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerMission(scriptPath)
+
+func getMission(id: String):
+	if(missions.has(id)):
+		return missions[id]
+	else:
+		Log.printerr("ERROR: mission with the id "+id+" wasn't found")
+		return null
+
+func getMissions():
+	return missions
+
+
+func registerContentBoardEntry(path: String):
+	var loadedClass = load(path)
+	var object = loadedClass.new()
+	
+	contentBoardEntries[object.id] = object
+
+func registerContentBoardEntryFolder(folder: String):
+	var scripts = getScriptsInFoldersRecursive(folder)
+	for scriptPath in scripts:
+		registerContentBoardEntry(scriptPath)
+
+func getContentBoardEntry(id: String):
+	if(contentBoardEntries.has(id)):
+		return contentBoardEntries[id]
+	else:
+		Log.printerr("ERROR: board entry with the id "+id+" wasn't found")
+		return null
+
+func getContentBoardEntries():
+	return contentBoardEntries
+
+
+
 
 
 

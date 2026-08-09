@@ -34,6 +34,9 @@ var SCI:Science = Science.new()
 var DrugDenRun:DrugDen
 var PS:PlayerSlaveryBase
 var PSH:PlayerSlaveryHolder = PlayerSlaveryHolder.new()
+var RCS:RecruitSystem = RecruitSystem.new()
+var MS:MissionSystem = MissionSystem.new()
+var MRH:MainRouteHistory = MainRouteHistory.new()
 
 var staticCharacters:Dictionary = {}
 var charactersToUpdate:Array = []
@@ -251,7 +254,6 @@ func _ready():
 	Console.addCommand("clearmoduleflag", self, "consoleClearModuleFlag", ["moduleID", "flagID"], "Resets the game flag, be very careful")
 	Console.addCommand("become", self, "consoleBecome", ["charID"], "Become another character")
 	#Console.addCommand("ae", self, "consoleAnimationEditor", [], "Animation editor")
-	applyAllWorldEdits()
 	
 func startNewGame():
 	GlobalRegistry.currentSave = 1
@@ -259,6 +261,9 @@ func startNewGame():
 	for scene in sceneStack:
 		scene.queue_free()
 	sceneStack = []
+	
+	applyAllWorldEdits()
+	GM.world.addTransitions()
 	
 	runScene("IntroScene")
 	#runScene("FightScene", ["testchar"])
@@ -283,15 +288,16 @@ func getNewUniqueSceneID(blockedIDS=[]) -> int:
 		result += 1
 	return result
 
-func runScene(id, _args = [], parentSceneUniqueID = -1):
+func runScene(id, _args = [], parentSceneUniqueID = -1,tag:String=""):
 	var scene = GlobalRegistry.createScene(id)
 	assert(scene != null, "SCENE WITH ID "+str(id)+" IS NOT FOUND. MAKE SURE IT WAS REGISTERED INSIDE THE MODULE.")
 	scene.uniqueSceneID = getNewUniqueSceneID([parentSceneUniqueID])
+	scene.sceneTag = tag
 	if(parentSceneUniqueID >= 0):
 		scene.parentSceneUniqueID = parentSceneUniqueID
 	add_child(scene)
 	sceneStack.append(scene)
-	print("Starting scene "+id)
+	Log.print("Starting scene id="+str(id)+" Args="+str(_args))
 	
 	allowExecuteOnce = true
 	scene.initScene(_args)
@@ -360,6 +366,7 @@ func _on_GameUI_on_option_button(method, args):
 	
 func pickOption(method, args):
 	GM.PROFILE.start("pickOption")
+	Log.print("- Picked '"+str(method)+"' Args="+str(args))
 	rollbacker.notifyMadeChoice()
 	
 	IS.resetExtraText()
@@ -420,8 +427,6 @@ func loadingSavefileFinished():
 	#if(GM.ui != null):
 	#	GM.ui.getStage3d().resetToNothing()
 	reRun()
-	
-	applyAllWorldEdits()
 	
 	if(!rollbacker.rollbacking):
 		WHS.clearHistory()
@@ -504,6 +509,7 @@ func saveData():
 	data["auctionBidders"] = SAB.saveData()
 	data["science"] = SCI.saveData()
 	data["playerSlaveryHolder"] = PSH.saveData()
+	data["recruitSystem"] = RCS.saveData()
 	data["drugDen"] = DrugDenRun.saveData() if DrugDenRun != null else null
 	if(PS):
 		data["playerSlavery"] = {
@@ -512,6 +518,8 @@ func saveData():
 		}
 	else:
 		data["playerSlavery"] = null
+	data["missionSystem"] = MS.saveData()
+	data["mainRouteHistory"] = MRH.saveData()
 	
 	data["scenes"] = []
 	for scene in sceneStack:
@@ -552,7 +560,10 @@ func loadData(data):
 	SAB.loadData(SAVE.loadVar(data, "auctionBidders", {}))
 	SCI.loadData(SAVE.loadVar(data, "science", {}))
 	PSH.loadData(SAVE.loadVar(data, "playerSlaveryHolder", {}))
-		
+	RCS = RecruitSystem.new() # To reset all the state
+	RCS.loadData(SAVE.loadVar(data, "recruitSystem", {}))
+	MS.loadData(SAVE.loadVar(data, "missionSystem", {}))
+	MRH.loadData(SAVE.loadVar(data, "mainRouteHistory", {}))
 	
 	var scenes = SAVE.loadVar(data, "scenes", [])
 	
@@ -567,7 +578,7 @@ func loadData(data):
 		var scene = GlobalRegistry.createScene(id)
 		add_child(scene)
 		sceneStack.append(scene)
-		print("Starting scene "+id)
+		#print("Starting scene "+id)
 		
 		#scene.initScene(_args)
 		scene.loadData(SAVE.loadVar(sceneData, "sceneData", {}))
@@ -603,7 +614,12 @@ func loadData(data):
 	#GM.world.updatePawns(IS)
 	#GM.world.setPawnsShowed(canShowPawns())
 
+	applyAllWorldEdits()
+	GM.world.addTransitions()
 	GM.pc.checkLocation()
+	if(!GM.world.aimCamera(GM.world.lastAimedRoomID, true)):
+		GM.world.aimCamera(GM.pc.getLocation(), true) # backup
+	
 
 func saveCharactersData():
 	var data = {}
@@ -734,6 +750,8 @@ func doTimeProcess(_seconds:int):
 		var clippedSeconds = min(60*60, copySeconds)
 		#GM.PROFILE.start("GM.pc.processTime")
 		GM.pc.processTime(clippedSeconds)
+		#GM.pc.lastUpdatedSecond = timeOfDay
+		#GM.pc.lastUpdatedDay = currentDay
 		#GM.PROFILE.finish("GM.pc.processTime")
 		
 		for characterID in charactersToUpdate:
@@ -741,6 +759,8 @@ func doTimeProcess(_seconds:int):
 			if(character != null):
 				#GM.PROFILE.start(characterID+".processTime")
 				character.processTime(clippedSeconds)
+				character.lastUpdatedSecond = timeOfDay # This makes sure the npc update time is correct
+				character.lastUpdatedDay = currentDay
 				#GM.PROFILE.finish(characterID+".processTime")
 		
 		copySeconds -= clippedSeconds
@@ -835,14 +855,14 @@ func getVisibleTime():
 func getFormattedTimeFromSeconds(howManySeconds:int):
 	return Util.getTimeStringHHMM(howManySeconds)
 
-func getTime():
+func getTime() -> int:
 	return timeOfDay
 
-func getDays():
+func getDays() -> int:
 	return currentDay
 
-func getTimeInGlobalSeconds():
-	return int(currentDay * 24 * 60 * 60) + int(timeOfDay)
+func getTimeInGlobalSeconds() -> int:
+	return currentDay*24*60*60 + timeOfDay
 
 func setFlag(flagID, value):
 	# Handling "ModuleID.FlagID" here
@@ -1153,11 +1173,26 @@ func showLog():
 		return true
 	return false
 
-func checkTFs():
+func checkTFs() -> bool:
 	var tfHolder = GM.pc.getTFHolder()
 	if(tfHolder != null && tfHolder.hasPendingTransformations()):
 		runScene("PlayerTFScene")
 		return true
+	return false
+
+func checkLayEggs() -> bool:
+	if(GM.pc.isReadyToLayEggs()):
+		runScene("PlayerWantsToLayEggsScene")
+		return true
+	return false
+
+func checkExtraScenes(_checkTFs:bool = true, _checkLayEggs:bool = true) -> bool:
+	if(_checkTFs):
+		if(checkTFs()):
+			return true
+	if(_checkLayEggs):
+		if(checkLayEggs()):
+			return true
 	return false
 
 func getLogMessages():
@@ -1334,6 +1369,18 @@ func getDebugActions():
 					"name": "Scene ID",
 					"type": "string",
 					"value": "",
+				},
+				{
+					"id": "sceneTag",
+					"name": "Scene tag",
+					"value": "",
+					"type": "string",
+				},
+				{
+					"id": "sceneArgs",
+					"name": "Scene arguments\n(must start and end\nwith brackets)",
+					"value": "",
+					"type": "string",
 				},
 			]
 		},
@@ -1573,10 +1620,133 @@ func getDebugActions():
 			"args": [
 			],
 		},
+		{
+			"id": "becomeNPC",
+			"name": "Become NPC",
+			"args": [
+				{
+					"id": "npcID",
+					"name": "NPC ID",
+					"value": "pc",
+					"type": "smartlist",
+					"npc": true,
+				},
+				{
+					"id": "cnpcID",
+					"name": "Custom ID",
+					"value": "",
+					"type": "string",
+				},
+			],
+		},
+		{
+			"id": "stuffEgg",
+			"name": "Stuff Egg",
+			"args": [
+				{
+					"id": "eggType",
+					"name": "Egg type",
+					"type": "list",
+					"value": BigEggType.Plant,
+					"values": [
+						[BigEggType.Plant, "Plant egg"],
+						[BigEggType.Unfertilized, "Unfertilized egg"],
+						[BigEggType.Latex, "Latex egg (unused)"],
+					],
+				},
+				{
+					"id": "hole",
+					"name": "Which hole",
+					"type": "list",
+					"value": BodypartSlot.Anus,
+					"values": [
+						[BodypartSlot.Anus, "Anus"],
+						[BodypartSlot.Vagina, "Vagina"],
+						[BodypartSlot.Head, "Throat"],
+					],
+				},
+				{
+					"id": "time",
+					"name": "Seconds until lay",
+					"type": "number",
+					"value": 12*60*60,
+				},
+			],
+		},
+		{
+			"id": "accelerateEggs",
+			"name": "Accelerate eggs",
+			"args": [
+			],
+		},
+		{
+			"id": "startRecruit",
+			"name": "Start recruit",
+			"args": [
+				{
+					"id": "who",
+					"name": "Who",
+					"type": "list",
+					"value": GM.main.RCS.recruits.keys()[0],
+					"values": GM.main.RCS.getDebugActionOptions(),
+				},
+			],
+		},
+		{
+			"id": "startMission",
+			"name": "Start mission",
+			"args": [
+				{
+					"id": "mission",
+					"name": "Mission",
+					"type": "list",
+					"value": GlobalRegistry.missions.keys()[0] if GlobalRegistry.missions.size() > 0 else "",
+					"values": MS.getDebugMissionList(),
+				},
+			],
+		},
+		{
+			"id": "allowMainRouteReset",
+			"name": "Allow Main Route reset",
+			"args": [
+			],
+		},
 	]
 
 func doDebugAction(id, args = {}):
 	print(id, " ", args)
+	
+	if(id == "allowMainRouteReset"):
+		GM.main.MRH.allowCanRestart(true)
+		return
+	if(id == "startMission"):
+		if(!MS.canStartAnyMission()):
+			MS.cancelCurrentMission()
+		MS.startMission(args["mission"])
+		return
+	if(id == "startRecruit"):
+		if(GM.main.RCS.hasCurrent()):
+			addMessage("Can't start a recruiting scene. Already recruiting someone!")
+			return
+		
+		GM.main.RCS.setCurrent(args["who"], true)
+		runScene("RecruitStartScene")
+		# Set loc?
+		return
+	if(id == "accelerateEggs"):
+		var theCycle = GM.pc.getMenstrualCycle()
+		if(theCycle):
+			theCycle.boostBigEggs()
+		return
+	if(id == "stuffEgg"):
+		var theMenstrualCycle:MenstrualCycle = GM.pc.getMenstrualCycle()
+		if(!theMenstrualCycle):
+			return
+		var theTentacleType:int = args["eggType"]
+		var theEggTime:int = int(args["time"])
+		var theOrifice:int = OrificeType.fromBodypart(args["hole"])
+		var _theResult:bool = theMenstrualCycle.addTentacleEgg("pc", theTentacleType, theEggTime, theOrifice)
+		return
 	
 	if(id == "makefriend"):
 		for _i in range(10):
@@ -1593,71 +1763,71 @@ func doDebugAction(id, args = {}):
 			#
 			
 		return
-	if(id == "addBodywritings"):
+	elif(id == "addBodywritings"):
 		var theAm:int = args["amount"]
 		for _i in range(theAm):
 			GM.pc.addBodywritingRandom()
 		GM.pc.updateAppearance()
-	if(id == "clearBodywritings"):
+	elif(id == "clearBodywritings"):
 		GM.pc.clearBodywritings(true, true)
 		GM.pc.updateAppearance()
-	if(id == "forceProgressTFs"):
+	elif(id == "forceProgressTFs"):
 		GM.pc.getTFHolder().forceProgressAll()
-	if(id == "accelerateTFs"):
+	elif(id == "accelerateTFs"):
 		GM.pc.getTFHolder().accelerateAllFull()
-	if(id == "startTF"):
+	elif(id == "startTF"):
 		if(!GM.pc.getTFHolder().canStartTransformation(args["tfid"])):
 			addMessage(args["tfid"] +" transformation is currently not possible.")
 		else:
 			GM.pc.getTFHolder().startTransformation(args["tfid"])
-	if(id == "startSlavery"):
+	elif(id == "startSlavery"):
 		if(PS):
 			return
 		#PSH.storePlayersItems()
 		#runScene("PlayerSlaveryPickScene")
 		runScene(GlobalRegistry.getModule("PlayerSlaveryModule").getSlaveryStartScene())
 		#startPlayerSlavery(args["slaveryID"], true)
-	if(id == "startSlaveryFast"):
+	elif(id == "startSlaveryFast"):
 		if(PS):
 			return
 		#PSH.storePlayersItems()
 		#runScene("PlayerSlaveryPickScene")
 		#runScene(GlobalRegistry.getModule("PlayerSlaveryModule").getSlaveryStartScene())
 		startPlayerSlavery(args["slaveryID"], true)
-	if(id == "stopSlavery"):
+	elif(id == "stopSlavery"):
 		if(PS):
 			stopPlayerSlavery()
 			GM.pc.setLocation(GM.pc.getCellLocation())
 			while(sceneStack.size() > 1):
 				endCurrentScene()
-	if(id == "undoTFs"):
+	elif(id == "undoTFs"):
 		GM.pc.undoAllTransformations()
-	if(id == "applyTFs"):
+	elif(id == "applyTFs"):
 		GM.pc.makeAllTransformationsPermanent()
-	if(id == "toggleISDebug"):
+	elif(id == "toggleISDebug"):
 		isDebuggingIS = !isDebuggingIS
 		if(isDebuggingIS):
 			addMessage("Interaction System debug info is now Enabled")
 		else:
 			addMessage("Interaction System debug info is now Disabled")
 	
-	if(id == "addRep"):
+	elif(id == "addRep"):
 		GM.pc.getReputation().addRep(args["rep"], args["amount"])
 	
-	if(id == "setRep"):
+	elif(id == "setRep"):
 		GM.pc.getReputation().setLevel(args["rep"], args["level"])
 	
-	if(id == "forceSmartlock"):
+	elif(id == "forceSmartlock"):
 		if(GM.main.dynamicCharacters.size() == 0):
 			return
 		var tryAmount = 100
 		while(tryAmount > 0):
 			var itemID = RNG.pick(GlobalRegistry.getItemIDsByTag(ItemTag.BDSMRestraint))
 			var anItem:ItemBase = GlobalRegistry.createItem(itemID)
-			if(anItem.hasTag(ItemTag.ImaginaryRestraint) || anItem.getClothingSlot() == null || anItem.getClothingSlot() in [InventorySlot.Static1, InventorySlot.Static2, InventorySlot.Static3] || anItem.hasTag(ItemTag.AllowsEnslaving) || anItem.hasTag(ItemTag.PortalPanties) || (anItem.restraintData != null && (anItem.restraintData is RestraintUnremovable))):
+			if(anItem.hasTag(ItemTag.ImaginaryRestraint) || anItem.getClothingSlotSafe().empty() || anItem.getClothingSlotSafe() in [InventorySlot.Static1, InventorySlot.Static2, InventorySlot.Static3] || anItem.hasTag(ItemTag.AllowsEnslaving) || anItem.hasTag(ItemTag.PortalPanties) || (anItem.restraintData != null && (anItem.restraintData is RestraintUnremovable))):
 				tryAmount -= 1
 				continue
-			if(GM.pc.getInventory().hasSlotEquipped(anItem.getClothingSlot())):
+			if(GM.pc.getInventory().hasSlotEquipped(anItem.getClothingSlotSafe())):
 				tryAmount -= 5
 				continue
 			
@@ -1666,12 +1836,12 @@ func doDebugAction(id, args = {}):
 			break
 			
 		
-	if(id == "damageClothes"):
+	elif(id == "damageClothes"):
 		GM.pc.damageClothes()
-	if(id == "repairClothes"):
+	elif(id == "repairClothes"):
 		GM.pc.repairAllClothes()
 	
-	if(id == "healPC"):
+	elif(id == "healPC"):
 		GM.pc.addPain(-GM.pc.painThreshold())
 		GM.pc.addLust(-GM.pc.lustThreshold())
 		GM.pc.addStamina(GM.pc.getMaxStamina())
@@ -1680,40 +1850,43 @@ func doDebugAction(id, args = {}):
 		#	var newItem = GlobalRegistry.createItem(itemID)
 		#	GM.pc.getInventory().addItem(newItem)
 	
-	if(id == "addPain"):
+	elif(id == "addPain"):
 		GM.pc.addPain(args["amount"])
 	
-	if(id == "addLust"):
+	elif(id == "addLust"):
 		GM.pc.addLust(args["amount"])
 		
-	if(id == "addStamina"):
+	elif(id == "addStamina"):
 		GM.pc.addStamina(args["amount"])
 		
-	if(id == "addCredits"):
+	elif(id == "addCredits"):
 		GM.pc.addCredits(args["amount"])
 	
-	if(id == "addExp"):
+	elif(id == "addExp"):
 		GM.pc.addExperience(args["amount"])
 	
-	if(id == "addSkillExp"):
+	elif(id == "addSkillExp"):
 		GM.pc.addSkillExperience(args["skillID"], args["amount"])
 	
-	if(id == "resetPCPerks"):
+	elif(id == "resetPCPerks"):
 		GM.pc.getSkillsHolder().resetPickedPerks()
 	
-	if(id == "resetPCStats"):
+	elif(id == "resetPCStats"):
 		GM.pc.getSkillsHolder().resetStats()
 	
-	if(id == "characterCreator"):
+	elif(id == "characterCreator"):
 		runScene("CharacterCreatorScene", [true])
 	
-	if(id == "runScene"):
-		runScene(args["sceneID"])
+	elif(id == "runScene"):
+		var scargs = str2var(args["sceneArgs"])
+		if typeof(scargs)!=TYPE_ARRAY: # invalid args
+			scargs = []
+		runScene(args["sceneID"],scargs,-1,args["sceneTag"])
 	
-	if(id == "removePCRestraints"):
+	elif(id == "removePCRestraints"):
 		GM.pc.removeAllRestraints()
 	
-	if(id == "giveItem"):
+	elif(id == "giveItem"):
 		if(!args.has("itemID") || args["itemID"] == null):
 			return
 		
@@ -1731,35 +1904,35 @@ func doDebugAction(id, args = {}):
 				args["amount"] -= 1
 			Log.print("Item "+item.getStackName()+" added to player")
 		
-	if(id == "openConsole"):
+	elif(id == "openConsole"):
 		Console.toggleConsole()
 	
-	if(id == "animBrowser"):
+	elif(id == "animBrowser"):
 		runScene("SimpleAnimPlayerScene")
 
-	if(id == "skinEditor"):
+	elif(id == "skinEditor"):
 		if(args["cnpcID"] != ""):
 			runScene("ChangeSkinScene", [args["cnpcID"], true])
 		else:
 			runScene("ChangeSkinScene", [args["npcID"], true])
-			
-	if(id == "lactatePC"):
+	
+	elif(id == "lactatePC"):
 		GM.pc.induceLactation()
 		GM.pc.getBodypart(BodypartSlot.Breasts).getFluidProduction().fillPercent(1.0)
 		
-	if(id == "enslaveRandom"):
+	elif(id == "enslaveRandom"):
 		var npcID = NpcFinder.grabNpcIDFromPoolOrGenerate(CharacterPool.Inmates, [], InmateGenerator.new(), {})
 		GlobalRegistry.getModule("NpcSlaveryModule").makeSurePCHasSlaveSpace()
 		runScene("KidnapDynamicNpcScene", [npcID])
 		# runScene("EnslaveDynamicNpcScene", [npcID])
 		
-	if(id == "spyRandom"):
+	elif(id == "spyRandom"):
 		runScene("SpyOnPawnScene")
 	
-	if(id == "startSoftSlavery"):
+	elif(id == "startSoftSlavery"):
 		runScene("SoftSlaveryQuickStartScene")
 	
-	if(id == "duplicateAndEnslave"):
+	elif(id == "duplicateAndEnslave"):
 		var theNpcID = args["npcID"]
 		#if(args["cnpcID"] != ""):
 		#	theNpcID = args["cnpcID"]
@@ -1816,7 +1989,14 @@ func doDebugAction(id, args = {}):
 		GlobalRegistry.getModule("NpcSlaveryModule").makeSurePCHasSlaveSpace()
 		runScene("KidnapDynamicNpcScene", [dynamicCharacter.getID()])
 		# runScene("EnslaveDynamicNpcScene", [npcID])
-		
+	
+	elif(id == "becomeNPC"):
+		if(args["cnpcID"] != ""):
+			consoleBecome(args["cnpcID"])
+		else:
+			consoleBecome(args["npcID"])
+	
+
 func consoleSetFlagBool(flagID, valuestr):
 	var value = false
 	if(valuestr in ["true", "TRUE", "True", "1"]):
@@ -1901,7 +2081,21 @@ func isCharacterInAnySexEngine(_charID:String) -> bool:
 		if(scene.sceneID == "GenericSexScene"):
 			if(scene.sexEngine && scene.sexEngine.isInvolved(_charID)):
 				return true
-	
+	return false
+
+func getSexEngineForCharacterID(_charID:String) -> SexEngine:
+	for scene in sceneStack:
+		if(scene.sceneID == "GenericSexScene"):
+			if(scene.sexEngine && scene.sexEngine.isInvolved(_charID)):
+				return scene.sexEngine
+	return null
+
+func isCharacterInAnyScene(_charID:String, _excludeWorldScene:bool = true) -> bool:
+	for scene in sceneStack:
+		if(_excludeWorldScene && scene.sceneID == "WorldScene"):
+			continue
+		if(scene.hasCharacter(_charID)):
+			return true
 	return false
 
 func isCharacterInAnyNPCEvent(_charID:String) -> bool:
@@ -1912,7 +2106,7 @@ func isCharacterInAnyNPCEvent(_charID:String) -> bool:
 	
 	return false
 
-func updateCharacterUntilNow(charID):
+func updateCharacterUntilNow(charID:String):
 	var character = getCharacter(charID)
 	if(character != null):
 		character.processUntilTime(currentDay, timeOfDay)
@@ -2195,6 +2389,16 @@ func startPlayerSlavery(_slaveryID:String, storeInv:bool = false):
 		return
 	runScene(theStartSceneID)
 
+func isInPlayerSlavery() -> bool:
+	if(!PS):
+		return false
+	return true
+
+func isInSpecificPlayerSlavery(_id:String) -> bool:
+	if(!PS):
+		return false
+	return PS.id == _id
+
 func stopPlayerSlavery():
 	if(!PS):
 		return
@@ -2213,3 +2417,37 @@ func checkPCOnALeash() -> bool: # Maybe I could expand this onto other pawn reac
 				return true
 	return false
 	
+# If this returns true, you shouldn't be able to agree to any new main routes
+func hasCommittedToMainRoute() -> bool:
+	if(hasCommittedToTaviMainRoute()):
+		return true
+	if(hasCommittedToKaitMainRoute()):
+		return true
+	if(hasCommittedToCaptainMainRoute()):
+		return true
+	
+	return false
+
+func hasCommittedToTaviMainRoute() -> bool:
+	if(getFlag("TaviModule.Tavi_Quest2Completed", false)):
+		return true
+	return false
+func hasCommittedToKaitMainRoute() -> bool:
+	if(getFlag("KaitModule.joinedTeam", false)):
+		return true
+	return false
+func hasCommittedToCaptainMainRoute() -> bool:
+	# Change me when you add the new main route
+	#if(getFlag("KaitModule.joinedTeam", false)):
+	#	return true
+	return false
+
+# If we have gotten to any ending, we can restart the main route
+func canRestartMainRoute() -> bool:
+	return MRH.canRestartMainRoute()
+
+func isEventBusy(_checkID:String) -> bool:
+	var checkData = GM.ES.eventCheck(_checkID, [])
+	if(checkData == null):
+		return false
+	return true

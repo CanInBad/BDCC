@@ -1,7 +1,7 @@
 extends ItemBase
 
-var breakChance = 20
-var lastUser = ""
+var breakChance:float = 20.0
+var lastUser:String = ""
 
 func _init():
 	id = "UsedCondom"
@@ -17,6 +17,9 @@ func getDescription():
 
 func getClothingSlot():
 	return InventorySlot.Penis
+
+func generateItemState():
+	itemState = ItemStateUnremovable.new()
 
 func getBuffs():
 	return [
@@ -39,7 +42,7 @@ func saveData():
 func loadData(data):
 	.loadData(data)
 	
-	breakChance = SAVE.loadVar(data, "breakChance", 20)
+	breakChance = SAVE.loadVar(data, "breakChance", 20.0)
 	lastUser = SAVE.loadVar(data, "lastUser", "")
 
 func markLastUser(theName):
